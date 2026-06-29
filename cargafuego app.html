@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Carga de Fuego — Dec. 351/79</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:50px}
+.screen.active{display:block}
+.topbar{background:#7B3300;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#7B3300;box-shadow:0 0 0 3px rgba(123,51,0,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#7B3300;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#5a2500}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#7B3300;border:1.5px solid #7B3300;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-danger{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-copy{width:100%;padding:15px;background:#1a6b3a;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-add{width:100%;padding:10px;border:1.5px dashed #7B3300;border-radius:10px;background:#FFF3EE;color:#7B3300;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-sm{padding:7px 11px;border:1.5px solid #DDD;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.btn-sm.danger{border-color:#EF5350;color:#EF5350}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.naranja{background:#FFF3EE;border-color:#FFAB76;color:#7B3300}
+.nota.verde{background:#E8F5E9;border-color:#81C784;color:#1B5E20}
+.hidden{display:none}
+.sector-card{background:#fff;border-radius:13px;padding:16px;margin-bottom:12px;border:1.5px solid #DDD}
+.sector-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sector-name{font-size:15px;font-weight:700;color:#7B3300}
+.mat-row{background:#FFF8F5;border:1px solid #FFCCAA;border-radius:10px;padding:12px;margin-bottom:8px}
+.mat-label{font-size:12px;font-weight:700;color:#7B3300;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.salida-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.salida-row input{flex:1;padding:9px 10px;font-size:13px}
+.salida-row select{flex-shrink:0;width:105px;padding:9px 6px;font-size:12px}
+.salida-row button{padding:8px 10px;border:1.5px solid #EF5350;border-radius:9px;background:#fff;color:#EF5350;font-size:14px;cursor:pointer;flex-shrink:0}
+.sector-summary{background:#FFF3EE;border:1px solid #FFAB76;border-radius:9px;padding:10px 12px;margin-top:8px;font-size:13px;color:#7B3300;line-height:1.9;font-weight:500}
+.inf-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.inf-section h3{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F0F0F0;padding-bottom:8px;margin-bottom:10px}
+.inf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none}
+.inf-row .ik{color:#555;flex:1;padding-right:8px;line-height:1.4}
+.inf-row .iv{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+#modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end}
+#modal-inner{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:82vh;overflow-y:auto}
+.mat-item{padding:11px 12px;border-bottom:1px solid #F0F0F0;cursor:pointer;font-size:13px;line-height:1.4}
+.mat-item:last-child{border-bottom:none}
+.mat-item:active{background:#FFF3EE}
+.mat-item .pc-val{font-weight:700;color:#7B3300;float:right;margin-left:8px}
+.mat-item .cat-label{font-size:11px;color:#888;display:block;margin-bottom:1px}
+.group-header{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;background:#F8F8F8}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Relevamiento Carga de Fuego</h1>
+  <span>Dec. 351/79 Anexo VII · NFPA 101 · Ley 19.587</span>
+</div>
+
+<!-- ════════════════════════════
+     S1 — DATOS GENERALES
+════════════════════════════ -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos del establecimiento</div>
+    <label class="fl">Fecha de relevamiento</label>
+    <input type="date" id="fecha">
+    <label class="fl">Empresa / establecimiento</label>
+    <input type="text" id="empresa" placeholder="Razón social">
+    <label class="fl">Dirección</label>
+    <input type="text" id="direccion" placeholder="Dirección completa">
+    <label class="fl">Localidad y provincia</label>
+    <input type="text" id="localidad" placeholder="Localidad, Provincia">
+    <label class="fl">Actividad / Rubro</label>
+    <input type="text" id="actividad" placeholder="Ej: Metalúrgica, Depósito, Industria química">
+    <label class="fl">N° de pisos / plantas</label>
+    <input type="number" id="npisos" placeholder="Cantidad de plantas" min="1">
+    <label class="fl">Superficie total cubierta (m²)</label>
+    <input type="number" id="sup_total" placeholder="m² totales del establecimiento" step="0.1">
+  </div>
+
+  <div class="card">
+    <div class="ct">👷 Profesional responsable</div>
+    <label class="fl">Nombre y apellido</label>
+    <input type="text" id="profesional" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula / Registro</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+
+  <div class="card">
+    <div class="ct">📝 Observaciones generales del predio</div>
+    <textarea id="obs_grales" placeholder="Características constructivas generales, materiales de la estructura (hormigón, metálica, mixta), estado general, observaciones relevantes del predio (opcional)"></textarea>
+  </div>
+
+  <button class="btn-main" onclick="showScreen('s2')">Continuar → Sectores ›</button>
+</div>
+
+<!-- ════════════════════════════
+     S2 — SECTORES
+════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="nota naranja" style="margin-top:12px">
+    Relevá cada sector o área por separado. Por cada uno registrá dimensiones, ocupación, materiales combustibles presentes con su peso estimado y salidas de emergencia disponibles.
+  </div>
+  <div id="sectores-container"></div>
+  <button class="btn-add" onclick="addSector()">+ Agregar sector</button>
+  <button class="btn-main" onclick="goInforme()" style="margin-top:16px">📄 Ver relevamiento completo ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver a datos generales</button>
+</div>
+
+<!-- ════════════════════════════
+     S3 — INFORME
+════════════════════════════ -->
+<div id="s3" class="screen">
+  <div style="background:#7B3300;color:#fff;border-radius:13px;padding:15px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Relevamiento de Carga de Fuego</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px">Dec. 351/79 Anexo VII · NFPA 101 · Ley 19.587</div>
+    <div style="font-size:13px;margin-top:6px;opacity:.9" id="inf-sub"></div>
+  </div>
+  <div class="nota naranja">Datos de campo para volcar al Excel de cálculo de carga de fuego. Los valores de Mcal/m² son estimativos.</div>
+  <div id="informe-body"></div>
+  <button class="btn-copy" onclick="copiarInforme()">📋 Copiar datos para Excel</button>
+  <button class="btn-danger" onclick="nuevoRelevamiento()">🔄 Nuevo relevamiento</button>
+</div>
+
+<!-- ════════════════════════════
+     MODAL TABLA MATERIALES
+════════════════════════════ -->
+<div id="modal-overlay" onclick="closeModal()">
+  <div id="modal-inner" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div>
+        <div style="font-size:16px;font-weight:700">Poderes caloríficos</div>
+        <div style="font-size:12px;color:#666;margin-top:2px">Dec. 351/79 Anexo VII — Tocá para seleccionar</div>
+      </div>
+      <button onclick="closeModal()" style="border:none;background:#F0F0F0;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;color:#444;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <input type="text" id="mat-search" placeholder="🔍 Buscar material..." oninput="filtrarMateriales()" style="margin-bottom:10px">
+    <div id="mat-lista"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// TABLA PODERES CALORÍFICOS — Dec. 351/79 Anexo VII
+// Unidad: Mcal/kg
+// ════════════════════════════════════════════════
+const MATERIALES = [
+  {cat:'Maderas y celulósicos',     nombre:'Madera (genérica)',                          pc:4.4},
+  {cat:'Maderas y celulósicos',     nombre:'Madera de pino',                             pc:4.5},
+  {cat:'Maderas y celulósicos',     nombre:'Madera dura (roble, quebracho, algarrobo)',  pc:4.2},
+  {cat:'Maderas y celulósicos',     nombre:'Aglomerado / MDF / OSB',                    pc:4.1},
+  {cat:'Maderas y celulósicos',     nombre:'Papel (genérico)',                           pc:4.0},
+  {cat:'Maderas y celulósicos',     nombre:'Cartón / papel kraft',                      pc:4.0},
+  {cat:'Maderas y celulósicos',     nombre:'Algodón crudo',                             pc:4.0},
+  {cat:'Maderas y celulósicos',     nombre:'Harina / granos secos',                     pc:4.1},
+  {cat:'Maderas y celulósicos',     nombre:'Corcho',                                    pc:4.5},
+  {cat:'Plásticos y sintéticos',    nombre:'Polietileno (PE)',                           pc:11.0},
+  {cat:'Plásticos y sintéticos',    nombre:'Polipropileno (PP)',                         pc:11.0},
+  {cat:'Plásticos y sintéticos',    nombre:'Poliestireno (PS) / telgopor',              pc:10.0},
+  {cat:'Plásticos y sintéticos',    nombre:'PVC — cloruro de polivinilo',               pc:5.0},
+  {cat:'Plásticos y sintéticos',    nombre:'Poliuretano — espuma rígida o flexible',    pc:6.5},
+  {cat:'Plásticos y sintéticos',    nombre:'Nylon / Poliamida (PA)',                    pc:7.9},
+  {cat:'Plásticos y sintéticos',    nombre:'Poliéster (PET)',                           pc:5.5},
+  {cat:'Plásticos y sintéticos',    nombre:'Caucho natural',                            pc:10.0},
+  {cat:'Plásticos y sintéticos',    nombre:'Caucho sintético / SBR',                   pc:10.0},
+  {cat:'Plásticos y sintéticos',    nombre:'Espuma de packaging / EPS',                pc:6.5},
+  {cat:'Combustibles y lubricantes',nombre:'Gasoil / Gas oil',                          pc:10.2},
+  {cat:'Combustibles y lubricantes',nombre:'Nafta / Gasolina',                          pc:10.5},
+  {cat:'Combustibles y lubricantes',nombre:'Aceite mineral lubricante',                 pc:10.0},
+  {cat:'Combustibles y lubricantes',nombre:'Aceite vegetal comestible',                 pc:9.4},
+  {cat:'Combustibles y lubricantes',nombre:'Alcohol etílico (etanol)',                  pc:7.1},
+  {cat:'Combustibles y lubricantes',nombre:'Alcohol metílico (metanol)',                pc:5.3},
+  {cat:'Combustibles y lubricantes',nombre:'Kerosene / jet fuel',                       pc:10.3},
+  {cat:'Tejidos y fibras',          nombre:'Tela de algodón / lino',                   pc:4.0},
+  {cat:'Tejidos y fibras',          nombre:'Tela sintética (poliéster)',                pc:6.0},
+  {cat:'Tejidos y fibras',          nombre:'Lana',                                      pc:4.9},
+  {cat:'Tejidos y fibras',          nombre:'Cuero natural',                             pc:4.5},
+  {cat:'Tejidos y fibras',          nombre:'Cuero sintético / polipiel',               pc:6.0},
+  {cat:'Pinturas y revestimientos', nombre:'Pintura al aceite / esmalte sintético',    pc:9.0},
+  {cat:'Pinturas y revestimientos', nombre:'Pintura en polvo (epoxy / poliéster)',     pc:8.0},
+  {cat:'Pinturas y revestimientos', nombre:'Barniz / laca nitrocelulósica',            pc:8.5},
+  {cat:'Pinturas y revestimientos', nombre:'Solvente / aguarrás mineral',              pc:10.0},
+  {cat:'Pinturas y revestimientos', nombre:'Thinner / diluyente',                      pc:8.5},
+  {cat:'Pinturas y revestimientos', nombre:'Cera / parafina',                          pc:11.0},
+  {cat:'Alimentos y agroindustria', nombre:'Azúcar (sacarosa)',                        pc:3.9},
+  {cat:'Alimentos y agroindustria', nombre:'Almidón / fécula',                         pc:4.2},
+  {cat:'Alimentos y agroindustria', nombre:'Grasa animal',                             pc:9.5},
+  {cat:'Alimentos y agroindustria', nombre:'Cacao / chocolate',                        pc:5.5},
+  {cat:'Alimentos y agroindustria', nombre:'Yerba mate / té / hierbas secas',          pc:4.0},
+  {cat:'Metales combustibles',      nombre:'Aluminio (polvo o viruta fina)',            pc:7.4},
+  {cat:'Metales combustibles',      nombre:'Magnesio (polvo o viruta)',                pc:6.0},
+  {cat:'Otros materiales',          nombre:'Asfalto / betún',                          pc:9.0},
+  {cat:'Otros materiales',          nombre:'Fibra de vidrio con resina epoxi',         pc:3.0},
+  {cat:'Otros materiales',          nombre:'Resina epoxi / poliéster',                pc:7.0},
+  {cat:'Otros materiales',          nombre:'Cartuchos / munición (sin explosivo)',     pc:3.5},
+];
+
+// ════════════════════════════════════════════════
+// ESTADO
+// ════════════════════════════════════════════════
+let sectores = [];
+let modalTarget = null;
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+function init() {
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  renderMatLista();
+  addSector();
+}
+
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ════════════════════════════════════════════════
+// SECTORES
+// ════════════════════════════════════════════════
+function addSector() {
+  sectores.push({
+    nombre:'', piso:'PB', uso:'',
+    largo:'', ancho:'', alto:'',
+    nOcupantes:'', tipoOcupacion:'permanente',
+    materiales:[{nombre:'', pc:'', peso:'', obs:''}],
+    salidas:[{descripcion:'', ancho_m:'', tipo:'puerta'}],
+    obs:''
+  });
+  renderSectores();
+}
+
+function removeSector(idx) {
+  if (sectores.length <= 1) { alert('Debe haber al menos un sector.'); return; }
+  if (!confirm('¿Eliminar este sector?')) return;
+  sectores.splice(idx, 1);
+  renderSectores();
+}
+
+function renderSectores() {
+  const cont = document.getElementById('sectores-container');
+  cont.innerHTML = '';
+  sectores.forEach((s, idx) => {
+    const div = document.createElement('div');
+    div.className = 'sector-card';
+    div.innerHTML = buildSectorHTML(s, idx);
+    cont.appendChild(div);
+    setTimeout(() => updateResumen(idx), 60);
+  });
+}
+
+function buildSectorHTML(s, idx) {
+  // Materiales
+  let matsHTML = '';
+  s.materiales.forEach((m, mi) => {
+    const pc = parseFloat(m.pc), peso = parseFloat(m.peso);
+    const mcal = (pc && peso) ? (pc * peso).toFixed(1) : '';
+    matsHTML += `<div class="mat-row">
+      <div class="mat-label">
+        Material ${mi+1}
+        ${s.materiales.length>1?`<button class="btn-sm danger" onclick="removeMat(${idx},${mi})" style="padding:4px 8px;font-size:12px">✕ Eliminar</button>`:''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:8px">
+        <input type="text" value="${esc(m.nombre)}" placeholder="Nombre del material combustible"
+          oninput="sectores[${idx}].materiales[${mi}].nombre=this.value"
+          style="flex:1;font-size:14px;padding:9px 10px">
+        <button onclick="openModal(${idx},${mi})"
+          style="flex-shrink:0;padding:9px 12px;border:1.5px solid #7B3300;border-radius:9px;background:#FFF3EE;color:#7B3300;font-size:13px;font-weight:600;cursor:pointer">
+          📋 Tabla
+        </button>
+      </div>
+      <div class="field-3">
+        <div>
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Poder cal. (Mcal/kg)</label>
+          <input type="number" value="${m.pc}" placeholder="Mcal/kg" step="0.1" min="0"
+            oninput="sectores[${idx}].materiales[${mi}].pc=this.value;updateResumen(${idx})"
+            style="padding:8px 9px;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Peso estimado (kg)</label>
+          <input type="number" value="${m.peso}" placeholder="kg" step="0.1" min="0"
+            oninput="sectores[${idx}].materiales[${mi}].peso=this.value;updateResumen(${idx})"
+            style="padding:8px 9px;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Total Mcal</label>
+          <input type="text" value="${mcal}" readonly placeholder="—"
+            id="mcal_${idx}_${mi}"
+            style="padding:8px 9px;font-size:14px;background:#F5F5F5;color:#7B3300;font-weight:700">
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Observación / ubicación del material en el sector</label>
+        <input type="text" value="${esc(m.obs)}"
+          placeholder="Ej: Almacenado en estantería norte, en proceso, en depósito intermedio"
+          oninput="sectores[${idx}].materiales[${mi}].obs=this.value"
+          style="font-size:13px;padding:8px 10px">
+      </div>
+    </div>`;
+  });
+
+  // Salidas
+  let salidasHTML = '';
+  s.salidas.forEach((sal, si) => {
+    salidasHTML += `<div class="salida-row">
+      <input type="text" value="${esc(sal.descripcion)}"
+        placeholder="Descripción — Ej: Puerta principal, Salida lateral"
+        oninput="sectores[${idx}].salidas[${si}].descripcion=this.value">
+      <input type="number" value="${sal.ancho_m}" placeholder="Ancho m" step="0.01" min="0"
+        oninput="sectores[${idx}].salidas[${si}].ancho_m=this.value"
+        style="width:80px;flex-shrink:0">
+      <select onchange="sectores[${idx}].salidas[${si}].tipo=this.value">
+        <option value="puerta" ${sal.tipo==='puerta'?'selected':''}>Puerta</option>
+        <option value="emergencia" ${sal.tipo==='emergencia'?'selected':''}>Emergencia</option>
+        <option value="ventana" ${sal.tipo==='ventana'?'selected':''}>Ventana</option>
+        <option value="porton" ${sal.tipo==='porton'?'selected':''}>Portón</option>
+        <option value="otro" ${sal.tipo==='otro'?'selected':''}>Otro</option>
+      </select>
+      ${s.salidas.length>1?`<button onclick="removeSalida(${idx},${si})">✕</button>`:''}
+    </div>`;
+  });
+
+  return `
+    <div class="sector-header">
+      <div class="sector-name" id="sn_${idx}">Sector ${idx+1}${s.nombre?' — '+s.nombre:''}</div>
+      ${sectores.length>1?`<button class="btn-sm danger" onclick="removeSector(${idx})">✕ Eliminar</button>`:''}
+    </div>
+
+    <div class="field-2">
+      <div>
+        <label class="fl" style="margin-top:0">Nombre / descripción del sector</label>
+        <input type="text" value="${esc(s.nombre)}"
+          placeholder="Ej: Depósito A, Planta baja producción"
+          oninput="sectores[${idx}].nombre=this.value;document.getElementById('sn_${idx}').textContent='Sector ${idx+1}'+(this.value?' — '+this.value:'')">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">Piso / nivel</label>
+        <select onchange="sectores[${idx}].piso=this.value">
+          <option value="SS" ${s.piso==='SS'?'selected':''}>Subsuelo</option>
+          <option value="PB" ${s.piso==='PB'?'selected':''}>Planta baja</option>
+          <option value="1P" ${s.piso==='1P'?'selected':''}>1° piso</option>
+          <option value="2P" ${s.piso==='2P'?'selected':''}>2° piso</option>
+          <option value="3P" ${s.piso==='3P'?'selected':''}>3° piso</option>
+          <option value="Azotea" ${s.piso==='Azotea'?'selected':''}>Azotea / Techo</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="fl">Uso / función del sector</label>
+    <input type="text" value="${esc(s.uso)}"
+      placeholder="Ej: Depósito de materias primas, Producción, Oficinas, Comedor, Vestuario"
+      oninput="sectores[${idx}].uso=this.value">
+
+    <div class="field-3" style="margin-top:10px">
+      <div><label class="fl" style="margin-top:0">Largo (m)</label>
+        <input type="number" value="${s.largo}" placeholder="m" step="0.1" min="0"
+          oninput="sectores[${idx}].largo=this.value;updateResumen(${idx})"></div>
+      <div><label class="fl" style="margin-top:0">Ancho (m)</label>
+        <input type="number" value="${s.ancho}" placeholder="m" step="0.1" min="0"
+          oninput="sectores[${idx}].ancho=this.value;updateResumen(${idx})"></div>
+      <div><label class="fl" style="margin-top:0">Altura (m)</label>
+        <input type="number" value="${s.alto}" placeholder="m" step="0.1" min="0"
+          oninput="sectores[${idx}].alto=this.value"></div>
+    </div>
+
+    <div class="field-2" style="margin-top:10px">
+      <div><label class="fl" style="margin-top:0">N° de ocupantes</label>
+        <input type="number" value="${s.nOcupantes}" placeholder="personas" min="0"
+          oninput="sectores[${idx}].nOcupantes=this.value"></div>
+      <div><label class="fl" style="margin-top:0">Tipo de ocupación</label>
+        <select onchange="sectores[${idx}].tipoOcupacion=this.value">
+          <option value="permanente" ${s.tipoOcupacion==='permanente'?'selected':''}>Permanente</option>
+          <option value="transitoria" ${s.tipoOcupacion==='transitoria'?'selected':''}>Transitoria</option>
+          <option value="deposito" ${s.tipoOcupacion==='deposito'?'selected':''}>Depósito (sin ocupación)</option>
+        </select></div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;color:#7B3300;margin:16px 0 8px">🔥 Materiales combustibles presentes</div>
+    <div class="nota naranja" style="font-size:12px;margin-bottom:8px">
+      Ingresá cada material por separado con su peso estimado en el sector. Usá "Tabla" para seleccionar el poder calorífico del Anexo VII, o ingresalo manualmente.
+    </div>
+    <div id="mats_${idx}">${matsHTML}</div>
+    <button class="btn-add" onclick="addMat(${idx})" style="font-size:13px;padding:8px">+ Agregar material combustible</button>
+
+    <div id="resumen_${idx}"></div>
+
+    <div style="font-size:13px;font-weight:700;color:#7B3300;margin:16px 0 8px">🚪 Salidas y medios de egreso</div>
+    <div class="nota naranja" style="font-size:12px;margin-bottom:8px">
+      Registrá cada salida del sector con descripción, ancho libre y tipo.
+    </div>
+    <div id="salidas_${idx}">${salidasHTML}</div>
+    <button class="btn-add" onclick="addSalida(${idx})" style="font-size:13px;padding:8px">+ Agregar salida</button>
+
+    <label class="fl" style="margin-top:16px">Observaciones del sector</label>
+    <textarea placeholder="Condiciones de almacenamiento, características constructivas del sector, observaciones relevantes para el cálculo"
+      oninput="sectores[${idx}].obs=this.value">${esc(s.obs)}</textarea>
+  `;
+}
+
+// ════════════════════════════════════════════════
+// MATERIALES
+// ════════════════════════════════════════════════
+function addMat(idx) {
+  sectores[idx].materiales.push({nombre:'', pc:'', peso:'', obs:''});
+  renderSectores();
+}
+
+function removeMat(idx, mi) {
+  if (sectores[idx].materiales.length <= 1) return;
+  sectores[idx].materiales.splice(mi, 1);
+  renderSectores();
+}
+
+function updateResumen(idx) {
+  const s = sectores[idx];
+  const resEl = document.getElementById('resumen_' + idx);
+  if (!resEl) return;
+
+  // Actualizar Mcal en cada material
+  s.materiales.forEach((m, mi) => {
+    const el = document.getElementById(`mcal_${idx}_${mi}`);
+    const pc = parseFloat(m.pc), peso = parseFloat(m.peso);
+    if (el) el.value = (pc && peso) ? (pc * peso).toFixed(1) : '';
+  });
+
+  const L = parseFloat(s.largo), A = parseFloat(s.ancho);
+  const sup = (L && A) ? L * A : null;
+  const totalMcal = s.materiales.reduce((acc, m) => {
+    const pc = parseFloat(m.pc), p = parseFloat(m.peso);
+    return acc + (pc && p ? pc * p : 0);
+  }, 0);
+  const qf = (sup && totalMcal > 0) ? totalMcal / sup : null;
+
+  if (!sup && totalMcal === 0) { resEl.innerHTML = ''; return; }
+
+  resEl.innerHTML = `<div class="sector-summary">
+    ${sup ? `Superficie del sector: <strong>${sup.toFixed(1)} m²</strong><br>` : ''}
+    ${totalMcal > 0 ? `Total Mcal del sector: <strong>${totalMcal.toFixed(1)} Mcal</strong><br>` : ''}
+    ${qf ? `Carga de fuego estimada: <strong>${qf.toFixed(1)} Mcal/m²</strong> <span style="font-size:11px;font-weight:400">(estimativo de campo)</span>` : ''}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════
+// SALIDAS
+// ════════════════════════════════════════════════
+function addSalida(idx) {
+  sectores[idx].salidas.push({descripcion:'', ancho_m:'', tipo:'puerta'});
+  renderSectores();
+}
+
+function removeSalida(idx, si) {
+  if (sectores[idx].salidas.length <= 1) return;
+  sectores[idx].salidas.splice(si, 1);
+  renderSectores();
+}
+
+// ════════════════════════════════════════════════
+// MODAL TABLA MATERIALES
+// ════════════════════════════════════════════════
+function renderMatLista(filtro) {
+  const lista = document.getElementById('mat-lista');
+  if (!lista) return;
+  const fil = (filtro||'').toLowerCase();
+  const items = fil
+    ? MATERIALES.filter(m => m.nombre.toLowerCase().includes(fil) || m.cat.toLowerCase().includes(fil))
+    : MATERIALES;
+
+  const grupos = {};
+  items.forEach(m => {
+    if (!grupos[m.cat]) grupos[m.cat] = [];
+    grupos[m.cat].push(m);
+  });
+
+  let html = '';
+  Object.entries(grupos).forEach(([cat, mats]) => {
+    html += `<div class="group-header">${cat}</div>`;
+    mats.forEach(m => {
+      html += `<div class="mat-item" onclick="selectMat('${m.nombre.replace(/'/g,"\\'")}',${m.pc})">
+        <span class="pc-val">${m.pc} Mcal/kg</span>
+        <div>${m.nombre}</div>
+      </div>`;
+    });
+  });
+  lista.innerHTML = html;
+}
+
+function filtrarMateriales() {
+  renderMatLista(document.getElementById('mat-search').value);
+}
+
+function openModal(sIdx, mIdx) {
+  modalTarget = {sIdx, mIdx};
+  document.getElementById('modal-overlay').style.display = 'flex';
+  document.getElementById('mat-search').value = '';
+  renderMatLista();
+  setTimeout(() => document.getElementById('mat-search').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+function selectMat(nombre, pc) {
+  if (!modalTarget) return;
+  const {sIdx, mIdx} = modalTarget;
+  sectores[sIdx].materiales[mIdx].nombre = nombre;
+  sectores[sIdx].materiales[mIdx].pc = pc;
+  closeModal();
+  renderSectores();
+}
+
+// ════════════════════════════════════════════════
+// INFORME
+// ════════════════════════════════════════════════
+function goInforme() {
+  const empresa = document.getElementById('empresa').value || '—';
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  document.getElementById('inf-sub').textContent = empresa + ' · ' + dateStr;
+
+  let body = '';
+  let totalMcalGlobal = 0, totalSupGlobal = 0;
+
+  body += `<div class="inf-section">
+    <h3>Datos del establecimiento</h3>
+    ${ir('Empresa / establecimiento', document.getElementById('empresa').value)}
+    ${ir('Dirección', document.getElementById('direccion').value)}
+    ${ir('Localidad / Provincia', document.getElementById('localidad').value)}
+    ${ir('Actividad / Rubro', document.getElementById('actividad').value)}
+    ${ir('N° de pisos / plantas', document.getElementById('npisos').value)}
+    ${ir('Superficie total cubierta', document.getElementById('sup_total').value ? document.getElementById('sup_total').value+' m²' : '—')}
+    ${ir('Fecha de relevamiento', dateStr)}
+    ${ir('Profesional responsable', document.getElementById('profesional').value)}
+    ${ir('Matrícula / Registro', document.getElementById('matricula').value)}
+  </div>`;
+
+  const obsG = document.getElementById('obs_grales').value;
+  if (obsG) body += `<div class="inf-section"><h3>Observaciones generales del predio</h3><p style="font-size:14px;color:#333;line-height:1.6">${obsG}</p></div>`;
+
+  sectores.forEach((s, idx) => {
+    const L = parseFloat(s.largo), A = parseFloat(s.ancho);
+    const sup = (L && A) ? L * A : null;
+    const totalMcal = s.materiales.reduce((acc, m) => {
+      const pc = parseFloat(m.pc), p = parseFloat(m.peso);
+      return acc + (pc && p ? pc * p : 0);
+    }, 0);
+    const qf = (sup && totalMcal > 0) ? totalMcal / sup : null;
+    if (sup) totalSupGlobal += sup;
+    totalMcalGlobal += totalMcal;
+
+    const anchosNum = s.salidas.map(sal => parseFloat(sal.ancho_m)).filter(v => !isNaN(v));
+    const anchoTotal = anchosNum.reduce((a, b) => a + b, 0);
+
+    body += `<div class="inf-section">
+      <h3>📍 Sector ${idx+1} — ${s.nombre||'Sin nombre'}</h3>
+      ${ir('Piso / nivel', s.piso)}
+      ${ir('Uso / función', s.uso||'—')}
+      ${ir('Dimensiones', `${s.largo||'—'} × ${s.ancho||'—'} × ${s.alto||'—'} m`)}
+      ${ir('Superficie del sector', sup ? sup.toFixed(2)+' m²' : '—')}
+      ${ir('N° de ocupantes', s.nOcupantes||'—')}
+      ${ir('Tipo de ocupación', s.tipoOcupacion)}
+      <div style="margin-top:8px;margin-bottom:4px;font-size:12px;font-weight:700;color:#7B3300;text-transform:uppercase;letter-spacing:.04em">Materiales combustibles</div>`;
+
+    s.materiales.forEach((m, mi) => {
+      const pc = parseFloat(m.pc), p = parseFloat(m.peso);
+      const mcal = (pc && p) ? (pc*p).toFixed(2) : null;
+      body += ir(
+        m.nombre||`Material ${mi+1}`,
+        `${m.pc||'—'} Mcal/kg · ${m.peso||'—'} kg${mcal?' → '+mcal+' Mcal':''}${m.obs?' | '+m.obs:''}`
+      );
+    });
+
+    body += `${ir('Total Mcal del sector', totalMcal>0?totalMcal.toFixed(2)+' Mcal':'—')}
+             ${ir('Carga de fuego estimada', qf?qf.toFixed(2)+' Mcal/m²':'—')}`;
+
+    body += `<div style="margin-top:8px;margin-bottom:4px;font-size:12px;font-weight:700;color:#7B3300;text-transform:uppercase;letter-spacing:.04em">Salidas y medios de egreso</div>`;
+    s.salidas.forEach((sal, si) => {
+      body += ir(
+        `Salida ${si+1} (${sal.tipo})`,
+        `${sal.descripcion||'—'}${sal.ancho_m?' · '+sal.ancho_m+' m':''}`
+      );
+    });
+    if (anchosNum.length > 0) body += ir('Ancho total de salidas', anchoTotal.toFixed(2)+' m');
+
+    if (s.obs) body += `<div style="margin-top:10px;font-size:13px;color:#555;line-height:1.5"><strong>Observaciones:</strong> ${s.obs}</div>`;
+    body += '</div>';
+  });
+
+  const qfGlobal = (totalSupGlobal > 0 && totalMcalGlobal > 0) ? totalMcalGlobal / totalSupGlobal : null;
+  body += `<div class="inf-section">
+    <h3>Resumen del establecimiento</h3>
+    ${ir('Total de sectores relevados', sectores.length)}
+    ${ir('Superficie total de sectores', totalSupGlobal>0?totalSupGlobal.toFixed(1)+' m²':'—')}
+    ${ir('Total Mcal del establecimiento', totalMcalGlobal>0?totalMcalGlobal.toFixed(1)+' Mcal':'—')}
+    ${ir('Carga de fuego promedio global', qfGlobal?qfGlobal.toFixed(1)+' Mcal/m²':'—')}
+    <div class="nota naranja" style="margin-top:10px;margin-bottom:0;font-size:12px">
+      ⚠️ Valores estimativos de campo. El cálculo final, la clasificación del riesgo y la resistencia al fuego requerida se determinan en el Excel con datos completos y verificados.
+    </div>
+  </div>`;
+
+  document.getElementById('informe-body').innerHTML = body;
+  showScreen('s3');
+}
+
+function ir(k, v) {
+  return `<div class="inf-row"><span class="ik">${k}</span><span class="iv">${v||'—'}</span></div>`;
+}
+
+// ════════════════════════════════════════════════
+// COPIAR
+// ════════════════════════════════════════════════
+function copiarInforme() {
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const SEP = '='.repeat(58), sep = '─'.repeat(40);
+
+  let txt = 'RELEVAMIENTO DE CARGA DE FUEGO — DATOS DE CAMPO\n';
+  txt += 'Dec. 351/79 Anexo VII · NFPA 101 · Ley N° 19.587\n';
+  txt += SEP + '\n';
+  txt += `Empresa:                  ${document.getElementById('empresa').value||'—'}\n`;
+  txt += `Dirección:                ${document.getElementById('direccion').value||'—'}\n`;
+  txt += `Localidad / Provincia:    ${document.getElementById('localidad').value||'—'}\n`;
+  txt += `Actividad / Rubro:        ${document.getElementById('actividad').value||'—'}\n`;
+  txt += `N° de pisos / plantas:    ${document.getElementById('npisos').value||'—'}\n`;
+  txt += `Superficie total cubierta:${document.getElementById('sup_total').value||'—'} m²\n`;
+  txt += `Fecha de relevamiento:    ${dateStr}\n`;
+  txt += `Profesional:              ${document.getElementById('profesional').value||'—'}\n`;
+  txt += `Matrícula:                ${document.getElementById('matricula').value||'—'}\n`;
+
+  const obsG = document.getElementById('obs_grales').value;
+  if (obsG) txt += `\nObservaciones generales del predio:\n${obsG}\n`;
+
+  let totalMcalGlobal = 0, totalSupGlobal = 0;
+
+  sectores.forEach((s, idx) => {
+    const L = parseFloat(s.largo), A = parseFloat(s.ancho);
+    const sup = (L && A) ? L * A : null;
+    const totalMcal = s.materiales.reduce((acc, m) => {
+      const pc = parseFloat(m.pc), p = parseFloat(m.peso);
+      return acc + (pc && p ? pc * p : 0);
+    }, 0);
+    const qf = (sup && totalMcal > 0) ? totalMcal / sup : null;
+    if (sup) totalSupGlobal += sup;
+    totalMcalGlobal += totalMcal;
+
+    txt += `\n${SEP}\nSECTOR ${idx+1}: ${(s.nombre||'Sin nombre').toUpperCase()}\n${SEP}\n`;
+    txt += `Piso / nivel:             ${s.piso}\n`;
+    txt += `Uso / función:            ${s.uso||'—'}\n`;
+    txt += `Dimensiones:              ${s.largo||'—'} m × ${s.ancho||'—'} m × ${s.alto||'—'} m\n`;
+    if (sup) txt += `Superficie del sector:    ${sup.toFixed(2)} m²\n`;
+    txt += `N° de ocupantes:          ${s.nOcupantes||'—'}\n`;
+    txt += `Tipo de ocupación:        ${s.tipoOcupacion}\n`;
+
+    txt += `\nMATERIALES COMBUSTIBLES (para volcar al Excel):\n`;
+    s.materiales.forEach((m, mi) => {
+      const pc = parseFloat(m.pc), p = parseFloat(m.peso);
+      const mcal = (pc && p) ? (pc * p).toFixed(3) : null;
+      txt += `\n  Material ${mi+1}: ${m.nombre||'Sin nombre'}\n`;
+      txt += `    Poder calorífico:   ${m.pc||'—'} Mcal/kg  (Anexo VII Dec. 351/79)\n`;
+      txt += `    Peso estimado:      ${m.peso||'—'} kg\n`;
+      if (mcal) txt += `    Total Mcal:         ${mcal} Mcal\n`;
+      if (m.obs) txt += `    Ubicación / obs:    ${m.obs}\n`;
+    });
+
+    if (totalMcal > 0) {
+      txt += `\nTotal Mcal del sector:    ${totalMcal.toFixed(3)} Mcal\n`;
+    }
+    if (qf) {
+      txt += `Carga de fuego estimada:  ${qf.toFixed(2)} Mcal/m²  (estimativo de campo)\n`;
+    }
+
+    txt += `\nSALIDAS Y MEDIOS DE EGRESO:\n`;
+    const anchosNum = s.salidas.map(sal => parseFloat(sal.ancho_m)).filter(v => !isNaN(v));
+    s.salidas.forEach((sal, si) => {
+      txt += `  Salida ${si+1}: ${sal.descripcion||'Sin descripción'} | Tipo: ${sal.tipo} | Ancho libre: ${sal.ancho_m||'—'} m\n`;
+    });
+    if (anchosNum.length > 0) {
+      txt += `  Ancho total salidas:  ${anchosNum.reduce((a,b)=>a+b,0).toFixed(2)} m\n`;
+    }
+
+    if (s.obs) txt += `\nObservaciones del sector:\n${s.obs}\n`;
+  });
+
+  const qfGlobal = (totalSupGlobal > 0 && totalMcalGlobal > 0) ? totalMcalGlobal / totalSupGlobal : null;
+  txt += `\n${SEP}\nRESUMEN DEL ESTABLECIMIENTO\n${SEP}\n`;
+  txt += `Total sectores relevados:    ${sectores.length}\n`;
+  txt += `Superficie total sectores:   ${totalSupGlobal>0?totalSupGlobal.toFixed(2)+' m²':'—'}\n`;
+  txt += `Total Mcal establecimiento:  ${totalMcalGlobal>0?totalMcalGlobal.toFixed(2)+' Mcal':'—'}\n`;
+  txt += `Carga de fuego prom. global: ${qfGlobal?qfGlobal.toFixed(2)+' Mcal/m²':'—'}\n`;
+  txt += `\n⚠️  NOTA: Los valores de carga de fuego son estimativos de campo.\n`;
+  txt += `    El cálculo definitivo, la clasificación del riesgo (Ordinario I-III, Extra I-III)\n`;
+  txt += `    y la resistencia al fuego requerida según Dec. 351/79 Anexo VII deben\n`;
+  txt += `    realizarse en el Excel con los datos completos y verificados.\n`;
+
+  txt += `\n${SEP}\nMARCO NORMATIVO\n${SEP}\n`;
+  txt += '· Ley N° 19.587 de Higiene y Seguridad en el Trabajo\n';
+  txt += '· Decreto N° 351/79 Capítulo 18 Art. 160 a 187 — Protección contra incendios\n';
+  txt += '· Decreto N° 351/79 Anexo VII — Poderes caloríficos y cálculo de carga de fuego\n';
+  txt += '· NFPA 101 Life Safety Code — Medios de egreso, clasificación de ocupancia\n';
+  txt += '· Carga de fuego Q (Mcal/m²) = Σ(Pi × Hi) / A\n';
+  txt += '  Pi = peso del material i (kg) · Hi = poder calorífico i (Mcal/kg) · A = superficie (m²)\n';
+  txt += '\nGenerado con App Relevamiento Carga de Fuego — Dec. 351/79 Anexo VII';
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); showCopied(); }
+  catch(e) { alert('No se pudo copiar automáticamente.'); }
+  document.body.removeChild(ta);
+}
+
+function showCopied() {
+  const btn = document.querySelector('#s3 .btn-copy');
+  const orig = btn.textContent;
+  btn.textContent = '✅ ¡Copiado!';
+  setTimeout(() => btn.textContent = orig, 2500);
+}
+
+function nuevoRelevamiento() {
+  if (!confirm('¿Iniciás un nuevo relevamiento? Se perderán todos los datos actuales.')) return;
+  sectores = [];
+  document.querySelectorAll('input,textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  init();
+  showScreen('s1');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+init();
+</script>
+</body>
+</html>

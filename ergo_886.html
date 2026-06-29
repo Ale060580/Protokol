@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Evaluación Ergonómica 886/15</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:500px;margin:0 auto;padding-bottom:50px}
+.screen.active{display:block}
+.topbar{background:#1a3a5c;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+input[type=text],input[type=date],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input[type=number]{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus,input[type=number]:focus{border-color:#1a3a5c;box-shadow:0 0 0 3px rgba(26,58,92,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#1a3a5c;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#122a44}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#1a3a5c;border:1.5px solid #1a3a5c;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-danger{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-copy{width:100%;padding:15px;background:#1a6b3a;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-calc{width:100%;padding:11px;background:#EBF0F7;color:#1a3a5c;border:1.5px solid #1a3a5c;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px}
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.risk-btn{padding:11px 8px;border:1.5px solid #DDD;border-radius:11px;background:#fff;color:#333;font-size:11px;font-weight:500;cursor:pointer;text-align:center;line-height:1.3;min-height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .12s}
+.risk-btn .ico{font-size:22px}
+.risk-btn.sel{background:#EBF0F7;border-color:#1a3a5c;color:#1a3a5c;font-weight:700}
+.ph{background:#1a3a5c;color:#fff;border-radius:11px;padding:13px 14px;margin-bottom:14px}
+.ph h2{font-size:15px;font-weight:700}
+.ph p{font-size:12px;opacity:.8;margin-top:3px;line-height:1.4}
+.p2h{border-radius:11px;padding:12px 14px;margin-bottom:12px;border:1px solid #DDD}
+.p2h h3{font-size:14px;font-weight:700;color:#1a1a1a}
+.p2h p{font-size:12px;color:#444;margin-top:2px}
+.criterio{background:#fff;border:1px solid #E8E8E8;border-radius:11px;padding:14px;margin-bottom:10px}
+.criterio-label{font-size:14px;color:#1a1a1a;line-height:1.5;margin-bottom:8px;font-weight:500}
+.criterio-sub{font-size:12px;color:#666;margin-bottom:8px;line-height:1.4;margin-top:-4px}
+.yn-btns{display:flex;gap:8px}
+.btn-si,.btn-no{flex:1;padding:11px;border:1.5px solid #DDD;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:#fff;color:#666;transition:all .12s}
+.btn-si.active{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20}
+.btn-no.active{background:#FFEBEE;border-color:#C62828;color:#B71C1C}
+.prog-wrap{margin-bottom:14px}
+.prog-label{font-size:13px;color:#555;margin-bottom:5px;text-align:right}
+.prog-bar{background:#DDD;border-radius:20px;height:5px}
+.prog-fill{background:#1a3a5c;height:5px;border-radius:20px;transition:width .3s}
+.banner{background:#fff;border-radius:11px;padding:12px 14px;margin-bottom:12px;border:1px solid #E8E8E8}
+.banner-name{font-size:15px;font-weight:700;color:#1a3a5c}
+.banner-sub{font-size:13px;color:#666;margin-top:1px}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.res-box{border-radius:11px;padding:12px 8px;text-align:center}
+.res-box .num{font-size:26px;font-weight:700}
+.res-box .lbl{font-size:11px;color:#555;margin-top:2px}
+.res-box.tol{background:#E8F5E9}.res-box.tol .num{color:#1B5E20}
+.res-box.ntol{background:#FFEBEE}.res-box.ntol .num{color:#B71C1C}
+.res-box.nds{background:#F5F5F5}.res-box.nds .num{color:#555}
+.fcard{background:#fff;border-radius:11px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.fcard h3{font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:6px}
+.nbadge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:6px}
+.nb-tol{background:#E8F5E9;color:#1B5E20}
+.nb-ntol{background:#FFEBEE;color:#B71C1C}
+.nb-nd{background:#F5F5F5;color:#666}
+.obs-nc{font-size:13px;color:#B71C1C;margin-top:4px;line-height:1.4}
+.task-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.task-row input{flex:1;padding:9px 11px;font-size:14px}
+.task-row button{padding:9px 12px;border:1.5px solid #EF5350;border-radius:9px;background:#fff;color:#EF5350;font-size:16px;cursor:pointer;font-weight:700;flex-shrink:0}
+.add-btn{width:100%;padding:9px;border:1.5px dashed #1a3a5c;border-radius:9px;background:#EBF0F7;color:#1a3a5c;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.hidden{display:none}
+.copsoq-dim{background:#fff;border:1px solid #E8E8E8;border-radius:11px;padding:14px;margin-bottom:10px}
+.copsoq-dim h4{font-size:14px;font-weight:700;color:#6A1B9A;margin-bottom:10px}
+.likert-row{margin-bottom:12px}
+.likert-q{font-size:13px;color:#1a1a1a;margin-bottom:7px;line-height:1.4;font-weight:500}
+.likert-opts{display:flex;gap:4px}
+.likert-btn{flex:1;padding:8px 3px;border:1.5px solid #DDD;border-radius:8px;background:#fff;font-size:10px;cursor:pointer;text-align:center;color:#444;transition:all .12s;line-height:1.2}
+.likert-btn.active{background:#EDE7F6;border-color:#6A1B9A;color:#4A148C;font-weight:700}
+.calc-section{background:#F4F7FB;border:1.5px solid #1a3a5c;border-radius:13px;padding:16px;margin-top:12px}
+.calc-section h4{font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:12px}
+.field-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.field-row label{font-size:13px;color:#444;flex:1;line-height:1.3}
+.field-row input,.field-row select{width:100px;flex-shrink:0;padding:8px 10px;font-size:14px;border-radius:9px}
+.calc-result{border-radius:10px;padding:13px;margin-top:10px;text-align:center}
+.calc-result.ok{background:#E8F5E9;border:1.5px solid #66BB6A}
+.calc-result.warn{background:#FFF8E1;border:1.5px solid #FFC107}
+.calc-result.bad{background:#FFEBEE;border:1.5px solid #EF5350}
+.calc-result .idx{font-size:26px;font-weight:700}
+.calc-result .idx-label{font-size:13px;margin-top:4px;line-height:1.4}
+.calc-result.ok .idx{color:#1B5E20}
+.calc-result.warn .idx{color:#E65100}
+.calc-result.bad .idx{color:#B71C1C}
+.rula-body{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rula-seg{background:#fff;border:1px solid #DDD;border-radius:10px;padding:10px}
+.rula-seg h5{font-size:12px;font-weight:700;color:#1a3a5c;margin-bottom:6px}
+.rula-seg select{font-size:13px;padding:7px 8px}
+.worker-row{display:flex;gap:8px;margin-bottom:6px}
+.worker-row input{flex:1}
+.met-result-box{font-size:13px;margin-top:8px;background:#EBF0F7;padding:9px 12px;border-radius:9px;color:#1a3a5c;line-height:1.5}
+.factor-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:20px;margin-bottom:10px;transition:all .2s}
+.factor-status.ntol{background:#FFEBEE;color:#B71C1C;border:1.5px solid #EF9A9A}
+.factor-status.tol{background:#E8F5E9;color:#1B5E20;border:1.5px solid #A5D6A7}
+.factor-status.nd{background:#F5F5F5;color:#888;border:1.5px solid #DDD}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Evaluación Ergonómica</h1>
+  <span>Res. 886/15 SRT · Dec. 351/79 · Res. 295/03</span>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PANTALLA 1 — DATOS GENERALES
+═══════════════════════════════════════════ -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos generales</div>
+    <label class="fl">Fecha de evaluación</label>
+    <input type="date" id="fecha">
+    <label class="fl">Empresa / establecimiento</label>
+    <input type="text" id="empresa" placeholder="Razón social">
+    <label class="fl">Dirección</label>
+    <input type="text" id="direccion" placeholder="Dirección completa">
+    <label class="fl">Área / Sector</label>
+    <input type="text" id="sector" placeholder="Ej: Planta, Depósito, Administración">
+    <label class="fl">Puesto de trabajo</label>
+    <input type="text" id="puesto" placeholder="Ej: Operario de línea, Administrativo">
+    <label class="fl">Profesional evaluador</label>
+    <input type="text" id="evaluador" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula / Registro</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+
+  <div class="card">
+    <div class="ct">👷 Trabajador/es evaluado/s</div>
+    <div id="workers-container">
+      <div class="worker-row">
+        <input type="text" placeholder="Nombre y apellido" class="worker-input">
+        <input type="text" placeholder="Antigüedad" style="max-width:100px;flex-shrink:0">
+      </div>
+    </div>
+    <button class="add-btn" onclick="addWorker()" style="margin-top:8px">+ Agregar trabajador</button>
+    <label class="fl">¿Presenta manifestación temprana de TME?</label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn-si" id="tme-si" onclick="setTME('si')">Sí</button>
+      <button class="btn-no" id="tme-no" onclick="setTME('no')">No</button>
+      <button class="btn-no" id="tme-nd" onclick="setTME('nd')" style="flex:.6;font-size:13px">S/D</button>
+    </div>
+    <div id="tme-loc-wrap" class="hidden" style="margin-top:8px">
+      <input type="text" id="tme-loc" placeholder="Ubicación del síntoma (ej: hombro der., lumbar)">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📝 Tareas habituales del puesto</div>
+    <div class="nota">Describí las tareas principales. Podés agregar más si es necesario.</div>
+    <div id="tasks-container">
+      <div class="task-row"><input type="text" placeholder="Tarea 1" class="task-input"><button onclick="removeTask(this)">✕</button></div>
+      <div class="task-row"><input type="text" placeholder="Tarea 2" class="task-input"><button onclick="removeTask(this)">✕</button></div>
+      <div class="task-row"><input type="text" placeholder="Tarea 3" class="task-input"><button onclick="removeTask(this)">✕</button></div>
+    </div>
+    <button class="add-btn" onclick="addTask()">+ Agregar tarea</button>
+  </div>
+
+  <button class="btn-main" onclick="goP1()">Continuar → Planilla 1 ›</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PANTALLA 2 — PLANILLA 1: IDENTIFICACIÓN
+═══════════════════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="ph" style="margin-top:12px">
+    <h2>Planilla N° 1 — Identificación de Factores de Riesgo</h2>
+    <p>Marcá todos los factores presentes en el puesto. Solo los seleccionados habilitarán la evaluación inicial (Planilla 2).</p>
+  </div>
+  <div class="card">
+    <div class="ct">Factores de riesgo ergonómico</div>
+    <div class="risk-grid" id="risk-grid"></div>
+  </div>
+  <div class="card">
+    <div class="ct">Observaciones generales del puesto</div>
+    <textarea id="obs-p1" placeholder="Condiciones generales, equipos utilizados, observaciones relevantes (opcional)"></textarea>
+  </div>
+  <button class="btn-main" onclick="goP2()">Continuar → Planilla 2 (Evaluación inicial) ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver a datos generales</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PANTALLA 3 — PLANILLA 2 + MÉTODOS
+═══════════════════════════════════════════ -->
+<div id="s3" class="screen">
+  <div id="s3-banner" class="banner" style="margin-top:12px"></div>
+  <div class="prog-wrap">
+    <div class="prog-label" id="s3-prog-label">0 de 0 criterios evaluados</div>
+    <div class="prog-bar"><div class="prog-fill" id="s3-prog-fill" style="width:0%"></div></div>
+  </div>
+  <div id="p2-container"></div>
+  <button class="btn-main" onclick="goInforme()">📄 Ver resultado e informe ›</button>
+  <button class="btn-sec" onclick="showScreen('s2')">‹ Volver a Planilla 1</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PANTALLA 4 — INFORME FINAL
+═══════════════════════════════════════════ -->
+<div id="s4" class="screen">
+  <div class="ph" style="margin-top:12px">
+    <h2>Resultado de la evaluación</h2>
+    <p id="s4-sub"></p>
+  </div>
+  <div class="res-grid">
+    <div class="res-box tol"><div class="num" id="tot-tol">0</div><div class="lbl">✅ Tolerable</div></div>
+    <div class="res-box ntol"><div class="num" id="tot-ntol">0</div><div class="lbl">❌ No tolerable</div></div>
+    <div class="res-box nds"><div class="num" id="tot-nd">0</div><div class="lbl">⬜ Sin evaluar</div></div>
+  </div>
+  <div id="informe-body"></div>
+  <div class="card" style="background:#FFFDE7;border-color:#FDD835">
+    <div class="ct">📌 Nota legal — Res. 886/15 SRT</div>
+    <p style="font-size:13px;color:#555;line-height:1.7">Los factores con resultado <strong>No Tolerable</strong> requieren una <strong>Evaluación Ergonómica Específica del puesto</strong>, a cargo del profesional con conocimientos en ergonomía, con el objetivo de identificar, cuantificar y priorizar los riesgos presentes y definir las acciones correctivas necesarias para reducirlos a un nivel tolerable. El resultado deberá volcarse en la Planilla N° 1 con Nivel de Riesgo 2 (Moderado) o 3 (No Tolerable), según el método de evaluación aplicado.</p>
+  </div>
+  <button class="btn-copy" onclick="copiarInforme()">📋 Copiar informe</button>
+  <button class="btn-danger" onclick="nuevaEval()">🔄 Nueva evaluación</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATOS MAESTROS
+// ═══════════════════════════════════════════════════════════
+const RIESGOS = [
+  {id:'lmc',  label:'Levantamiento / descenso de cargas', ico:'📦', planilla:'2.A', hasMet:true,  metodo:'LMC'},
+  {id:'ea',   label:'Empuje y arrastre de cargas',        ico:'🛒', planilla:'2.B', hasMet:true,  metodo:'SC'},
+  {id:'tc',   label:'Transporte manual de cargas',        ico:'🚶', planilla:'2.C', hasMet:false},
+  {id:'bip',  label:'Bipedestación prolongada',           ico:'🦵', planilla:'2.D', hasMet:false},
+  {id:'mr',   label:'Movimientos repetitivos (MMSS)',     ico:'🔄', planilla:'2.E', hasMet:true,  metodo:'NAM'},
+  {id:'pf',   label:'Posturas forzadas',                  ico:'🧍', planilla:'2.F', hasMet:true,  metodo:'RULA'},
+  {id:'vib',  label:'Vibraciones mano-brazo / cuerpo entero', ico:'📳', planilla:'2.G', hasMet:false},
+  {id:'cterm',label:'Confort térmico',                    ico:'🌡️', planilla:'2.H', hasMet:false},
+  {id:'ec',   label:'Estrés de contacto',                 ico:'✋', planilla:'2.I', hasMet:false},
+  {id:'psi',  label:'Factores psicosociales',             ico:'🧠', planilla:'Psico', hasMet:false}
+];
+
+const P2_CRITERIOS = {
+  lmc:[
+    {q:'¿Se levantan o descienden cargas de 3 kg o más?', sub:'Incluye herramientas, materiales u objetos.'},
+    {q:'¿La carga se manipula a más de 25 cm del cuerpo?', sub:'Distancia horizontal desde el punto medio de los tobillos al agarre.'},
+    {q:'¿El levantamiento se realiza con tronco inclinado o girado?', sub:'Tronco no erguido al momento del esfuerzo.'},
+    {q:'¿La frecuencia supera 1 levantamiento cada 5 minutos durante más de 2 hs acumuladas?', sub:''},
+    {q:'¿La carga supera los límites Res. 295/03? (25 kg hombres / 15 kg mujeres en condiciones ideales)', sub:''}
+  ],
+  ea:[
+    {q:'¿Se empujan o arrastran cargas de 20 kg o más (H) / 10 kg o más (M)?', sub:'Con manos, espalda u otra parte del cuerpo como punto de fuerza.'},
+    {q:'¿La fuerza inicial de puesta en movimiento es percibida como elevada?', sub:'Dificultad para iniciar el movimiento.'},
+    {q:'¿La fuerza de mantenimiento es continua y prolongada (más de 2 hs acumuladas)?', sub:''},
+    {q:'¿La distancia de empuje/arrastre supera los 10 metros por ciclo?', sub:''}
+  ],
+  tc:[
+    {q:'¿Se transportan cargas de 3 kg o más a más de 2 metros de distancia?', sub:'Caminando con la carga en manos, brazos u hombros.'},
+    {q:'¿La carga supera 10 kg (M) o 25 kg (H) durante el transporte?', sub:'Límites orientativos Res. 295/03.'},
+    {q:'¿El transporte acumula más de 2 hs por jornada?', sub:'Suma de todos los traslados con carga.'}
+  ],
+  bip:[
+    {q:'¿El trabajador permanece de pie de forma estática más de 2 hs seguidas?', sub:'Sin posibilidad de sentarse o cambiar de postura.'},
+    {q:'¿La bipedestación supera 4 hs acumuladas en la jornada?', sub:'Suma total de tiempo de pie en toda la jornada.'},
+    {q:'¿El piso es duro, irregular o resbaladizo?', sub:'Hormigón, metal, adoquín, etc.'},
+    {q:'¿El trabajador refiere molestias en piernas, pies o zona lumbar?', sub:'Asociado a la permanencia prolongada de pie.'}
+  ],
+  mr:[
+    {q:'¿Los ciclos de trabajo duran menos de 30 segundos?', sub:'Tarea altamente repetitiva por ciclo corto.'},
+    {q:'¿Los MMSS están activos más del 50% del tiempo de ciclo?', sub:'Hombros, codos, muñecas y/o manos en movimiento continuo.'},
+    {q:'¿Se realizan más de 4 movimientos técnicos por minuto con el mismo grupo muscular?', sub:'Criterio NAM — Miembro Superior.'},
+    {q:'¿La tarea repetitiva supera 4 hs acumuladas en la jornada?', sub:''},
+    {q:'¿No hay rotación de tareas ni pausas suficientes?', sub:'Sin alternancia con tareas que no impliquen MMSS.'}
+  ],
+  pf:[
+    {q:'¿El tronco se flexiona más de 20° durante más del 25% del tiempo?', sub:'Inclinación sostenida hacia adelante.'},
+    {q:'¿Los brazos se elevan sobre el nivel del hombro más del 10% del tiempo?', sub:'Trabajo en altura o sobre la cabeza.'},
+    {q:'¿Se adoptan posturas en cuclillas, arrodillado o reptando de forma habitual?', sub:''},
+    {q:'¿La cabeza/cuello se inclina o gira más de 30° de forma sostenida?', sub:'Sin posibilidad de corrección postural.'},
+    {q:'¿Las muñecas trabajan en desviación (flexo-extensión o cubital/radial) de forma repetida?', sub:''}
+  ],
+  vib:[
+    {q:'¿El trabajador opera herramientas o maquinaria vibrátil (mano-brazo)?', sub:'Amoladora, taladro, martillo neumático, motosierra, etc.'},
+    {q:'¿El tiempo de exposición a vibraciones mano-brazo supera 2 hs/día?', sub:''},
+    {q:'¿El trabajador conduce o está expuesto a vibraciones de cuerpo entero?', sub:'Montacargas, tractores, camiones, plataformas vibratorias.'},
+    {q:'¿Se superan los valores de referencia Dec. 351/79 Anexo V?', sub:'Límites: 5 m/s² mano-brazo / 0.5 m/s² cuerpo entero.'}
+  ],
+  cterm:[
+    {q:'¿Se perciben temperaturas no confortables para la realización de la tarea?', sub:'Calor o frío excesivo en el puesto de trabajo.'},
+    {q:'¿Existe exposición a corrientes de aire frío o caliente?', sub:'Desde equipos, aberturas o procesos industriales.'},
+    {q:'¿Las condiciones de temperatura superan los límites del Dec. 351/79?', sub:''},
+    {q:'¿El trabajador refiere disconfort térmico sostenido durante la jornada?', sub:''}
+  ],
+  ec:[
+    {q:'¿Existen bordes, aristas o superficies duras que presionen partes del cuerpo?', sub:'Mesas, herramientas, contenedores con filos o esquinas.'},
+    {q:'¿Se usa la palma de la mano o rodillas como herramienta de golpe?', sub:'Por ausencia de herramienta adecuada.'},
+    {q:'¿Existe compresión mecánica en tendones, nervios o vasos sanguíneos?', sub:'Guantes inadecuados, bordes de herramientas, superficies de apoyo.'},
+    {q:'¿La exposición al estrés de contacto supera 1 hs acumulada por jornada?', sub:''}
+  ]
+};
+
+const COPSOQ = [
+  {dim:'Exigencias psicológicas', items:[
+    'Las tareas requieren trabajar muy rápido o bajo presión de tiempo',
+    'Se trabaja con un nivel alto de concentración sostenida',
+    'El trabajo implica situaciones emocionalmente exigentes (conflictos, público, urgencias)'
+  ]},
+  {dim:'Control sobre el trabajo', items:[
+    'El trabajador puede decidir cómo hacer su tarea o en qué orden',
+    'El trabajo es variado y no siempre igual',
+    'El trabajador participa en decisiones que afectan su puesto'
+  ]},
+  {dim:'Apoyo social y liderazgo', items:[
+    'El trabajador recibe apoyo de sus superiores ante dificultades',
+    'Existe buena relación y colaboración entre compañeros',
+    'La comunicación con los superiores es clara y fluida'
+  ]},
+  {dim:'Inseguridad y estima', items:[
+    'Existe incertidumbre sobre la continuidad laboral o cambios en las condiciones',
+    'El esfuerzo realizado es reconocido por superiores y/o la empresa',
+    'El salario/compensación es percibido como justo en relación al trabajo realizado'
+  ]},
+  {dim:'Doble presencia', items:[
+    'Las exigencias del trabajo interfieren con las responsabilidades familiares',
+    'Se trabaja en horarios que dificultan la vida personal (nocturnos, rotativos, horas extra)',
+    'Existe flexibilidad para atender necesidades personales o familiares urgentes'
+  ]}
+];
+
+const LIKERT = ['Siempre','A menudo','A veces','Nunca'];
+
+const SC_TABLE = {
+  low:  [23, 10, 14, 7],
+  med:  [18, 9,  11, 6],
+  high: [14, 7,  9,  5]
+};
+
+const COLORS_P2 = {
+  lmc:'#FFF3E0', ea:'#F3E5F5', tc:'#E8F5E9', bip:'#E0F7FA',
+  mr:'#FBE9E7',  pf:'#E3F2FD', vib:'#FCE4EC', cterm:'#FFFDE7',
+  ec:'#EFEBE9',  psi:'#EDE7F6'
+};
+
+// ═══════════════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════════════
+let selectedRisks = [];
+let p2State = {};
+let calcResults = {};
+let tmeVal = null;
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+function init() {
+  const grid = document.getElementById('risk-grid');
+  RIESGOS.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'risk-btn';
+    btn.dataset.id = r.id;
+    btn.innerHTML = `<span class="ico">${r.ico}</span><span>${r.label}</span>`;
+    btn.onclick = () => toggleRisk(r.id, btn);
+    grid.appendChild(btn);
+  });
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+}
+
+function toggleRisk(id, btn) {
+  const idx = selectedRisks.indexOf(id);
+  if (idx === -1) { selectedRisks.push(id); btn.classList.add('sel'); }
+  else { selectedRisks.splice(idx, 1); btn.classList.remove('sel'); }
+}
+
+function setTME(v) {
+  tmeVal = v;
+  ['si','no','nd'].forEach(x => document.getElementById('tme-'+x).classList.remove('active'));
+  document.getElementById('tme-'+v).classList.add('active');
+  document.getElementById('tme-loc-wrap').classList.toggle('hidden', v !== 'si');
+}
+
+function addTask() {
+  const n = document.querySelectorAll('#tasks-container .task-row').length + 1;
+  const d = document.createElement('div'); d.className = 'task-row';
+  d.innerHTML = `<input type="text" placeholder="Tarea ${n}" class="task-input"><button onclick="removeTask(this)">✕</button>`;
+  document.getElementById('tasks-container').appendChild(d);
+}
+function removeTask(btn) {
+  if (document.querySelectorAll('#tasks-container .task-row').length > 1)
+    btn.parentElement.remove();
+}
+function addWorker() {
+  const d = document.createElement('div'); d.className = 'worker-row'; d.style.marginTop = '6px';
+  d.innerHTML = `<input type="text" placeholder="Nombre y apellido" class="worker-input"><input type="text" placeholder="Antigüedad" style="max-width:100px;flex-shrink:0">`;
+  document.getElementById('workers-container').appendChild(d);
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════════════════════════
+function goP1() {
+  if (!document.getElementById('empresa').value.trim() ||
+      !document.getElementById('puesto').value.trim() ||
+      !document.getElementById('evaluador').value.trim()) {
+    alert('Completá al menos empresa, puesto y evaluador antes de continuar.');
+    return;
+  }
+  showScreen('s2');
+}
+
+function goP2() {
+  if (selectedRisks.length === 0) {
+    alert('Seleccioná al menos un factor de riesgo presente en el puesto.');
+    return;
+  }
+  buildP2();
+  const puesto = document.getElementById('puesto').value;
+  document.getElementById('s3-banner').innerHTML =
+    `<div class="banner-name">📊 Planilla 2 — Evaluación inicial de factores</div>
+     <div class="banner-sub">${puesto} · ${selectedRisks.length} factor${selectedRisks.length>1?'es':''} identificado${selectedRisks.length>1?'s':''}</div>`;
+  showScreen('s3');
+  updateP2Prog();
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUILD PLANILLA 2
+// ═══════════════════════════════════════════════════════════
+function buildP2() {
+  const cont = document.getElementById('p2-container');
+  cont.innerHTML = '';
+  p2State = {};
+
+  selectedRisks.forEach(id => {
+    const r = RIESGOS.find(x => x.id === id);
+    const wrap = document.createElement('div');
+    wrap.style.marginBottom = '18px';
+
+    if (id === 'psi') {
+      p2State['psi'] = {};
+      COPSOQ.forEach((d, di) => {
+        p2State['psi'][di] = {};
+        d.items.forEach((_, ii) => p2State['psi'][di][ii] = null);
+      });
+      let html = `<div class="p2h" style="background:${COLORS_P2.psi}"><h3>🧠 Factores psicosociales</h3><p>Cuestionario COPSOQ-ARG simplificado — 5 dimensiones</p></div>`;
+      COPSOQ.forEach((dim, di) => {
+        html += `<div class="copsoq-dim"><h4>${dim.dim}</h4>`;
+        dim.items.forEach((item, ii) => {
+          html += `<div class="likert-row">
+            <div class="likert-q">${item}</div>
+            <div class="likert-opts">
+              ${LIKERT.map((l, li) => `<button class="likert-btn" id="lk_${di}_${ii}_${li}" onclick="setLikert(${di},${ii},${li})">${l}</button>`).join('')}
+            </div>
+          </div>`;
+        });
+        html += `</div>`;
+      });
+      wrap.innerHTML = html;
+    } else {
+      const criterios = P2_CRITERIOS[id] || [];
+      p2State[id] = {};
+      criterios.forEach((_, i) => p2State[id][i] = null);
+
+      let html = `<div class="p2h" style="background:${COLORS_P2[id]||'#F5F5F5'}">
+        <h3>${r.ico} ${r.label}</h3>
+        <p>Planilla ${r.planilla} — criterios de evaluación inicial pasa / no pasa</p>
+        <div class="factor-status nd" id="fstatus_${id}">⬜ Sin evaluar</div>
+      </div>`;
+
+      criterios.forEach((c, i) => {
+        const sid = id + '_' + i;
+        html += `<div class="criterio" id="cr_${sid}">
+          <div class="criterio-label">${c.q}</div>
+          ${c.sub ? `<div class="criterio-sub">${c.sub}</div>` : ''}
+          <div class="yn-btns">
+            <button class="btn-si" id="si_${sid}" onclick="setCrit('${id}',${i},'si','${sid}')">✅ Sí</button>
+            <button class="btn-no" id="no_${sid}" onclick="setCrit('${id}',${i},'no','${sid}')">❌ No</button>
+          </div>
+        </div>`;
+      });
+
+      if (r.hasMet) {
+        html += `<button class="btn-calc hidden" id="mbtn_${id}" onclick="toggleMet('${id}')">
+          🔬 Aplicar método ${r.metodo} (opcional)
+        </button>
+        <div class="hidden" id="met_${id}">${buildMetodo(id, r.metodo)}</div>`;
+      }
+      wrap.innerHTML = html;
+    }
+    cont.appendChild(wrap);
+  });
+}
+
+function setCrit(rid, idx, val, sid) {
+  if (!p2State[rid]) return;
+  p2State[rid][idx] = val;
+  document.getElementById('si_' + sid)?.classList.toggle('active', val === 'si');
+  document.getElementById('no_' + sid)?.classList.toggle('active', val === 'no');
+  const r = RIESGOS.find(x => x.id === rid);
+  // Actualizar badge de estado en tiempo real
+  const vals = Object.values(p2State[rid]);
+  const allDone = vals.every(v => v !== null);
+  const hasNtol = vals.some(v => v === 'si');
+  const statusEl = document.getElementById('fstatus_' + rid);
+  if (statusEl) {
+    if (!allDone) {
+      statusEl.className = 'factor-status nd';
+      statusEl.textContent = '⬜ Sin evaluar';
+    } else if (hasNtol) {
+      statusEl.className = 'factor-status ntol';
+      statusEl.textContent = '❌ No tolerable';
+    } else {
+      statusEl.className = 'factor-status tol';
+      statusEl.textContent = '✅ Tolerable';
+    }
+  }
+  // Mostrar botón método si hay criterios No Tolerables
+  if (r?.hasMet) {
+    const mbtn = document.getElementById('mbtn_' + rid);
+    if (mbtn) mbtn.classList.toggle('hidden', !hasNtol);
+  }
+  updateP2Prog();
+}
+
+function setLikert(di, ii, val) {
+  if (!p2State['psi']) return;
+  p2State['psi'][di][ii] = val;
+  LIKERT.forEach((_, li) => {
+    document.getElementById(`lk_${di}_${ii}_${li}`)?.classList.toggle('active', li === val);
+  });
+  updateP2Prog();
+}
+
+function updateP2Prog() {
+  let total = 0, done = 0;
+  selectedRisks.forEach(id => {
+    if (id === 'psi') {
+      COPSOQ.forEach((d, di) => d.items.forEach((_, ii) => {
+        total++;
+        if (p2State['psi']?.[di]?.[ii] !== null && p2State['psi']?.[di]?.[ii] !== undefined) done++;
+      }));
+    } else {
+      Object.values(p2State[id] || {}).forEach(v => { total++; if (v !== null) done++; });
+    }
+  });
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('s3-prog-fill').style.width = pct + '%';
+  document.getElementById('s3-prog-label').textContent = `${done} de ${total} criterios evaluados (${pct}%)`;
+}
+
+function toggleMet(id) {
+  const div = document.getElementById('met_' + id);
+  const btn = document.getElementById('mbtn_' + id);
+  if (!div || !btn) return;
+  const vis = div.classList.contains('hidden');
+  div.classList.toggle('hidden', !vis);
+  const r = RIESGOS.find(x => x.id === id);
+  btn.textContent = vis ? `🔼 Ocultar método ${r.metodo}` : `🔬 Aplicar método ${r.metodo} (opcional)`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// MÉTODOS CUANTITATIVOS
+// ═══════════════════════════════════════════════════════════
+function buildMetodo(id, met) {
+  if (met === 'LMC')  return buildLMC();
+  if (met === 'SC')   return buildSC();
+  if (met === 'NAM')  return buildNAM();
+  if (met === 'RULA') return buildRULA();
+  return '';
+}
+
+// — LMC / NIOSH —
+function buildLMC() {
+  return `<div class="calc-section">
+    <h4>📦 Índice LMC — NIOSH (Res. 295/03)</h4>
+    <div class="nota">Completá los datos del levantamiento más representativo de la tarea.</div>
+    <div class="field-row"><label>Peso real de la carga (kg)</label><input type="number" id="lmc_peso" min="0" max="100" placeholder="kg" oninput="calcLMC()"></div>
+    <div class="field-row"><label>Distancia horizontal manos-cuerpo (cm)</label><input type="number" id="lmc_h" min="15" max="80" placeholder="cm" oninput="calcLMC()"></div>
+    <div class="field-row"><label>Altura de origen (cm desde el suelo)</label><input type="number" id="lmc_vo" min="0" max="175" placeholder="cm" oninput="calcLMC()"></div>
+    <div class="field-row"><label>Altura de destino (cm desde el suelo)</label><input type="number" id="lmc_vd" min="0" max="175" placeholder="cm" oninput="calcLMC()"></div>
+    <div class="field-row"><label>Desplazamiento vertical (calculado automáticamente)</label><input type="number" id="lmc_dv" placeholder="cm" readonly style="background:#F0F0F0"></div>
+    <div class="field-row"><label>Ángulo de asimetría (giro de tronco)</label>
+      <select id="lmc_a" onchange="calcLMC()">
+        <option value="1">0° — Sin giro</option>
+        <option value="0.9">30°</option>
+        <option value="0.81">60°</option>
+        <option value="0.71">90° o más</option>
+      </select>
+    </div>
+    <div class="field-row"><label>Calidad del agarre</label>
+      <select id="lmc_c" onchange="calcLMC()">
+        <option value="1">Bueno</option>
+        <option value="0.95">Regular</option>
+        <option value="0.9">Malo</option>
+      </select>
+    </div>
+    <div class="field-row"><label>Frecuencia (levantamientos / minuto)</label><input type="number" id="lmc_f" min="0.1" max="15" step="0.1" placeholder="lev/min" oninput="calcLMC()"></div>
+    <div class="field-row"><label>Duración de la tarea de levantamiento</label>
+      <select id="lmc_dur" onchange="calcLMC()">
+        <option value="1">≤ 1 hora</option>
+        <option value="0.95">1 – 2 horas</option>
+        <option value="0.88">2 – 8 horas</option>
+      </select>
+    </div>
+    <div id="lmc_result"></div>
+  </div>`;
+}
+
+function calcLMC() {
+  const peso = parseFloat(document.getElementById('lmc_peso')?.value) || 0;
+  const H    = parseFloat(document.getElementById('lmc_h')?.value) || 0;
+  const vo   = parseFloat(document.getElementById('lmc_vo')?.value);
+  const vd   = parseFloat(document.getElementById('lmc_vd')?.value);
+  if (!isNaN(vo) && !isNaN(vd)) {
+    document.getElementById('lmc_dv').value = Math.abs(vd - vo);
+  }
+  const DV  = parseFloat(document.getElementById('lmc_dv')?.value) || 25;
+  const A   = parseFloat(document.getElementById('lmc_a')?.value) || 1;
+  const C   = parseFloat(document.getElementById('lmc_c')?.value) || 1;
+  const F   = parseFloat(document.getElementById('lmc_f')?.value) || 0;
+  const DUR = parseFloat(document.getElementById('lmc_dur')?.value) || 1;
+  if (!peso || !H || !F) return;
+  const HM  = Math.min(25 / H, 1);
+  const V   = isNaN(vo) ? 75 : vo;
+  const VM  = Math.max(0, 1 - (0.003 * Math.abs(V - 75)));
+  const DM  = 0.82 + (4.5 / Math.max(DV, 1));
+  const fTab = [0.2,0.5,1,2,3,4,5,6,9,12,15];
+  const fMul = [0.85,0.81,0.75,0.65,0.55,0.45,0.35,0.27,0.22,0.18,0.15];
+  let FM = 0.15;
+  for (let i = 0; i < fTab.length; i++) { if (F <= fTab[i]) { FM = fMul[i]; break; } }
+  FM *= DUR;
+  const LPR = 23 * HM * VM * DM * FM * A * C;
+  const IL  = peso / LPR;
+  let cls = 'ok', lbl = 'TOLERABLE — Riesgo aceptable';
+  if (IL > 1 && IL <= 3) { cls = 'warn'; lbl = 'RIESGO MODERADO — Requiere mejoras ergonómicas'; }
+  if (IL > 3)             { cls = 'bad';  lbl = 'RIESGO ELEVADO — Intervención urgente necesaria'; }
+  calcResults['lmc'] = { il: IL.toFixed(2), lpr: LPR.toFixed(1), lbl };
+  document.getElementById('lmc_result').innerHTML = `<div class="calc-result ${cls}">
+    <div class="idx">IL = ${IL.toFixed(2)}</div>
+    <div class="idx-label">LPR = ${LPR.toFixed(1)} kg &nbsp;·&nbsp; ${lbl}</div>
+    <div style="font-size:12px;margin-top:6px;color:#666">IL &lt;1 Tolerable · 1–3 Moderado · &gt;3 Elevado</div>
+  </div>`;
+}
+
+// — Snook & Ciriello —
+function buildSC() {
+  return `<div class="calc-section">
+    <h4>🛒 Snook &amp; Ciriello — Empuje / Arrastre (Res. 295/03)</h4>
+    <div class="nota">Comparación con tablas de referencia internacionales incorporadas a la normativa.</div>
+    <div class="field-row"><label>Fuerza inicial medida / estimada (kg)</label><input type="number" id="sc_fi" min="0" max="200" placeholder="kg" oninput="calcSC()"></div>
+    <div class="field-row"><label>Fuerza de mantenimiento medida / estimada (kg)</label><input type="number" id="sc_fm" min="0" max="200" placeholder="kg" oninput="calcSC()"></div>
+    <div class="field-row"><label>Género predominante del puesto</label>
+      <select id="sc_gen" onchange="calcSC()">
+        <option value="H">Masculino</option>
+        <option value="M">Femenino</option>
+      </select>
+    </div>
+    <div class="field-row"><label>Frecuencia de la tarea</label>
+      <select id="sc_freq" onchange="calcSC()">
+        <option value="low">Ocasional (&lt;1/min)</option>
+        <option value="med">Moderada (1–6/min)</option>
+        <option value="high">Alta (&gt;6/min)</option>
+      </select>
+    </div>
+    <div id="sc_result"></div>
+  </div>`;
+}
+
+function calcSC() {
+  const fi   = parseFloat(document.getElementById('sc_fi')?.value);
+  const fm   = parseFloat(document.getElementById('sc_fm')?.value);
+  const gen  = document.getElementById('sc_gen')?.value || 'H';
+  const freq = document.getElementById('sc_freq')?.value || 'low';
+  if (isNaN(fi) || isNaN(fm)) return;
+  const row  = SC_TABLE[freq];
+  const limI = gen === 'H' ? row[0] : row[2];
+  const limM = gen === 'H' ? row[1] : row[3];
+  const excI = fi > limI, excM = fm > limM;
+  const cls  = (excI || excM) ? 'bad' : 'ok';
+  const lbl  = (excI || excM) ? 'SUPERA LÍMITES — No Tolerable' : 'Dentro de límites — Tolerable';
+  calcResults['ea'] = { fi, fm, limI, limM, lbl };
+  document.getElementById('sc_result').innerHTML = `<div class="calc-result ${cls}">
+    <div class="idx" style="font-size:17px">${lbl}</div>
+    <div class="idx-label" style="margin-top:10px;text-align:left">
+      Fuerza inicial: <strong>${fi} kg</strong> — límite ${limI} kg ${excI ? '⚠️ SUPERA' : '✅'}<br>
+      Fuerza mantenim.: <strong>${fm} kg</strong> — límite ${limM} kg ${excM ? '⚠️ SUPERA' : '✅'}
+    </div>
+  </div>`;
+}
+
+// — NAM —
+function buildNAM() {
+  return `<div class="calc-section">
+    <h4>🔄 Método NAM — Miembro Superior (Res. 295/03)</h4>
+    <div class="nota">Evaluación de movimientos repetitivos de miembros superiores según normativa.</div>
+    <div class="field-row"><label>Acciones técnicas por minuto (ATM)</label><input type="number" id="nam_atm" min="0" max="200" placeholder="ATM" oninput="calcNAM()"></div>
+    <div class="field-row"><label>Duración neta de tarea repetitiva (hs/día)</label><input type="number" id="nam_dur" min="0" max="8" step="0.5" placeholder="hs" oninput="calcNAM()"></div>
+    <div class="field-row"><label>Fuerza requerida</label>
+      <select id="nam_f" onchange="calcNAM()">
+        <option value="0">Sin esfuerzo notable</option>
+        <option value="2">Esfuerzo moderado ocasional</option>
+        <option value="4">Esfuerzo moderado frecuente</option>
+        <option value="8">Esfuerzo intenso o muy intenso</option>
+      </select>
+    </div>
+    <div class="field-row"><label>Postura de hombro</label>
+      <select id="nam_ph" onchange="calcNAM()">
+        <option value="0">Sin elevación significativa</option>
+        <option value="2">Elevación ocasional &lt;60°</option>
+        <option value="4">Elevación frecuente o &gt;60°</option>
+      </select>
+    </div>
+    <div class="field-row"><label>Postura de muñeca / mano</label>
+      <select id="nam_pm" onchange="calcNAM()">
+        <option value="0">Posición neutra</option>
+        <option value="2">Desviación ocasional</option>
+        <option value="4">Desviación frecuente o extrema</option>
+      </select>
+    </div>
+    <div class="field-row"><label>Pausas y recuperación</label>
+      <select id="nam_pau" onchange="calcNAM()">
+        <option value="0">Pausas suficientes y adecuadas</option>
+        <option value="2">Pausas parciales o insuficientes</option>
+        <option value="4">Sin pausas de recuperación</option>
+      </select>
+    </div>
+    <div id="nam_result"></div>
+  </div>`;
+}
+
+function calcNAM() {
+  const atm = parseFloat(document.getElementById('nam_atm')?.value) || 0;
+  const dur = parseFloat(document.getElementById('nam_dur')?.value) || 0;
+  const f   = parseInt(document.getElementById('nam_f')?.value) || 0;
+  const ph  = parseInt(document.getElementById('nam_ph')?.value) || 0;
+  const pm  = parseInt(document.getElementById('nam_pm')?.value) || 0;
+  const pau = parseInt(document.getElementById('nam_pau')?.value) || 0;
+  if (!atm || !dur) return;
+  let pBase = 0;
+  if (atm < 40) pBase = 0; else if (atm < 60) pBase = 2; else if (atm < 80) pBase = 4; else pBase = 8;
+  let pDur = 0;
+  if (dur <= 2) pDur = 0; else if (dur <= 4) pDur = 2; else pDur = 4;
+  const total = pBase + pDur + f + ph + pm + pau;
+  let cls, lbl;
+  if (total <= 5)       { cls = 'ok';   lbl = 'TOLERABLE — Riesgo aceptable'; }
+  else if (total <= 10) { cls = 'warn'; lbl = 'MODERADO — Requiere mejoras ergonómicas'; }
+  else                  { cls = 'bad';  lbl = 'ELEVADO — Intervención necesaria'; }
+  calcResults['mr'] = { score: total, lbl };
+  document.getElementById('nam_result').innerHTML = `<div class="calc-result ${cls}">
+    <div class="idx">Puntaje NAM: ${total}</div>
+    <div class="idx-label">${lbl}</div>
+    <div style="font-size:12px;margin-top:6px;color:#666">0–5 Tolerable · 6–10 Moderado · &gt;10 Elevado</div>
+  </div>`;
+}
+
+// — RULA simplificado —
+function buildRULA() {
+  const segs = [
+    {id:'brazo',     label:'Brazo',     opts:['1 — Neutro (0°–20°)','2 — Flexión 20°–45°','3 — Flexión 45°–90°','4 — Flexión >90° o extensión']},
+    {id:'antebrazo', label:'Antebrazo', opts:['1 — Flexión 60°–100°','2 — Flexión <60° o >100°']},
+    {id:'muneca',    label:'Muñeca',    opts:['1 — Neutra','2 — Desviación hasta 15°','3 — Desviación >15°']},
+    {id:'cuello',    label:'Cuello',    opts:['1 — Flexión 0°–10°','2 — Flexión 10°–20°','3 — Flexión >20°','4 — En extensión']},
+    {id:'tronco',    label:'Tronco',    opts:['1 — Erguido','2 — Flexión 0°–20°','3 — Flexión 20°–60°','4 — Flexión >60°']},
+    {id:'piernas',   label:'Piernas',   opts:['1 — Soporte bilateral o sentado','2 — Soporte unilateral o inestable']}
+  ];
+  let html = `<div class="calc-section"><h4>🧍 RULA simplificado — Posturas forzadas (Res. 295/03)</h4>
+    <div class="nota">Seleccioná la postura más representativa observada para cada segmento corporal.</div>
+    <div class="rula-body">`;
+  segs.forEach(s => {
+    html += `<div class="rula-seg"><h5>${s.label}</h5>
+      <select id="rula_${s.id}" onchange="calcRULA()">
+        <option value="">— Selec. —</option>
+        ${s.opts.map((o, i) => `<option value="${i+1}">${o}</option>`).join('')}
+      </select></div>`;
+  });
+  html += `</div><div id="rula_result" style="margin-top:12px"></div></div>`;
+  return html;
+}
+
+function calcRULA() {
+  const ids = ['brazo','antebrazo','muneca','cuello','tronco','piernas'];
+  const vals = {};
+  for (let id of ids) {
+    const el = document.getElementById('rula_' + id);
+    if (!el || !el.value) return;
+    vals[id] = parseInt(el.value);
+  }
+  const grupoA = vals.brazo + vals.antebrazo + vals.muneca;
+  const grupoB = vals.cuello + vals.tronco + vals.piernas;
+  const puntaje = Math.max(grupoA, grupoB);
+  let nivel, cls, lbl;
+  if      (puntaje <= 3) { nivel = 1; cls = 'ok';   lbl = 'Nivel 1 — Postura aceptable'; }
+  else if (puntaje <= 5) { nivel = 2; cls = 'warn'; lbl = 'Nivel 2 — Requiere investigación y posibles cambios'; }
+  else if (puntaje <= 7) { nivel = 3; cls = 'bad';  lbl = 'Nivel 3 — Requiere cambios a corto plazo'; }
+  else                   { nivel = 4; cls = 'bad';  lbl = 'Nivel 4 — Cambios inmediatos necesarios'; }
+  calcResults['pf'] = { nivel, puntaje, lbl };
+  document.getElementById('rula_result').innerHTML = `<div class="calc-result ${cls}">
+    <div class="idx">Nivel ${nivel} · ${puntaje} pts</div>
+    <div class="idx-label">${lbl}</div>
+    <div style="font-size:12px;margin-top:6px;color:#666">Grupo A (MMSS): ${grupoA} pts &nbsp;·&nbsp; Grupo B (tronco/cuello): ${grupoB} pts</div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CALCULAR RESULTADO POR FACTOR
+// ═══════════════════════════════════════════════════════════
+function calcResultado(id) {
+  if (id === 'psi') {
+    let total = 0, resp = 0, alto = 0;
+    COPSOQ.forEach((d, di) => d.items.forEach((_, ii) => {
+      total++;
+      const v = p2State['psi']?.[di]?.[ii];
+      if (v !== null && v !== undefined) {
+        resp++;
+        if (v === 0 || v === 1) alto++; // Siempre / A menudo = exposición alta
+      }
+    }));
+    if (resp < total) return 'nd';
+    return alto > 4 ? 'no-tolerable' : 'tolerable';
+  }
+  const vals = Object.values(p2State[id] || {});
+  if (vals.some(v => v === null)) return 'nd';
+  return vals.some(v => v === 'si') ? 'no-tolerable' : 'tolerable';
+}
+
+// ═══════════════════════════════════════════════════════════
+// INFORME
+// ═══════════════════════════════════════════════════════════
+function goInforme() {
+  const puesto  = document.getElementById('puesto').value;
+  const empresa = document.getElementById('empresa').value;
+  const fecha   = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha + 'T12:00:00').toLocaleDateString('es-AR', {day:'2-digit',month:'long',year:'numeric'}) : '';
+  document.getElementById('s4-sub').textContent = `${puesto} · ${empresa} · ${dateStr}`;
+
+  let tol = 0, ntol = 0, nd = 0, body = '';
+
+  selectedRisks.forEach(id => {
+    const r   = RIESGOS.find(x => x.id === id);
+    const res = calcResultado(id);
+    if (res === 'tolerable') tol++; else if (res === 'no-tolerable') ntol++; else nd++;
+
+    const nlbl = res === 'tolerable' ? '✅ TOLERABLE' : res === 'no-tolerable' ? '❌ NO TOLERABLE' : '⬜ Sin evaluar';
+    const ncls = res === 'tolerable' ? 'nb-tol' : res === 'no-tolerable' ? 'nb-ntol' : 'nb-nd';
+
+    let detalle = '';
+    if (id === 'psi') {
+      COPSOQ.forEach((dim, di) => {
+        const highs = dim.items.filter((_, ii) => { const v = p2State['psi']?.[di]?.[ii]; return v === 0 || v === 1; });
+        if (highs.length > 0)
+          detalle += `<div class="obs-nc">⚠️ ${dim.dim}: ${highs.length} ítem${highs.length>1?'s':''} con exposición alta o muy alta</div>`;
+      });
+    } else {
+      (P2_CRITERIOS[id] || []).forEach((c, i) => {
+        if (p2State[id]?.[i] === 'si')
+          detalle += `<div class="obs-nc">⚠️ ${c.q}</div>`;
+      });
+    }
+
+    let metRes = '';
+    if (calcResults[id]) {
+      const cr = calcResults[id];
+      if (id === 'lmc') metRes = `<div class="met-result-box">🔬 <strong>LMC/NIOSH</strong> — IL: ${cr.il} · LPR: ${cr.lpr} kg · ${cr.lbl}</div>`;
+      if (id === 'ea')  metRes = `<div class="met-result-box">🔬 <strong>Snook &amp; Ciriello</strong> — ${cr.lbl} (Fi: ${cr.fi} kg lím.${cr.limI} · Fm: ${cr.fm} kg lím.${cr.limM})</div>`;
+      if (id === 'mr')  metRes = `<div class="met-result-box">🔬 <strong>NAM</strong> — Puntaje: ${cr.score} · ${cr.lbl}</div>`;
+      if (id === 'pf')  metRes = `<div class="met-result-box">🔬 <strong>RULA</strong> — Nivel ${cr.nivel} (${cr.puntaje} pts) · ${cr.lbl}</div>`;
+    }
+
+    body += `<div class="fcard">
+      <h3>${r.ico} ${r.label} <small style="font-size:11px;color:#888;font-weight:400">(${r.planilla})</small></h3>
+      <span class="nbadge ${ncls}">${nlbl}</span>
+      ${res === 'tolerable' ? '<div style="font-size:13px;color:#1B5E20;margin-top:2px">Ningún criterio de riesgo superado.</div>' : detalle}
+      ${metRes}
+    </div>`;
+  });
+
+  document.getElementById('tot-tol').textContent  = tol;
+  document.getElementById('tot-ntol').textContent = ntol;
+  document.getElementById('tot-nd').textContent   = nd;
+  document.getElementById('informe-body').innerHTML = body;
+  showScreen('s4');
+}
+
+// ═══════════════════════════════════════════════════════════
+// COPIAR INFORME
+// ═══════════════════════════════════════════════════════════
+function copiarInforme() {
+  const puesto    = document.getElementById('puesto').value;
+  const empresa   = document.getElementById('empresa').value;
+  const sector    = document.getElementById('sector').value;
+  const direccion = document.getElementById('direccion').value;
+  const evaluador = document.getElementById('evaluador').value;
+  const matricula = document.getElementById('matricula').value;
+  const fecha     = document.getElementById('fecha').value;
+  const dateStr   = fecha ? new Date(fecha + 'T12:00:00').toLocaleDateString('es-AR', {day:'2-digit',month:'long',year:'numeric'}) : '';
+  const tmeloc    = document.getElementById('tme-loc').value;
+
+  let txt = 'EVALUACIÓN ERGONÓMICA DE PUESTO DE TRABAJO\n';
+  txt += 'Res. 886/15 SRT · Dec. 351/79 · Res. 295/03\n' + '='.repeat(48) + '\n';
+  txt += `Empresa:      ${empresa}\n`;
+  txt += `Dirección:    ${direccion}\n`;
+  txt += `Sector:       ${sector}\n`;
+  txt += `Puesto:       ${puesto}\n`;
+  txt += `Fecha:        ${dateStr}\n`;
+  txt += `Evaluador:    ${evaluador}\n`;
+  txt += `Matrícula:    ${matricula}\n`;
+
+  const wnames = [...document.querySelectorAll('.worker-input')].map(i => i.value).filter(Boolean);
+  if (wnames.length) txt += `Trabajador/es: ${wnames.join(', ')}\n`;
+
+  const tme = tmeVal === 'si' ? `Sí${tmeloc ? ' — ' + tmeloc : ''}` : tmeVal === 'no' ? 'No' : 'Sin datos';
+  txt += `TME temprana: ${tme}\n`;
+
+  const tasks = [...document.querySelectorAll('.task-input')].map(i => i.value).filter(Boolean);
+  if (tasks.length) { txt += '\nTAREAS HABITUALES DEL PUESTO\n'; tasks.forEach((t, i) => txt += `  ${i+1}. ${t}\n`); }
+
+  const obsP1 = document.getElementById('obs-p1').value;
+  if (obsP1) txt += `\nObservaciones generales: ${obsP1}\n`;
+
+  txt += '\n' + '─'.repeat(48) + '\nIDENTIFICACIÓN DE FACTORES DE RIESGO — PLANILLA 1\n' + '─'.repeat(48) + '\n';
+  selectedRisks.forEach(id => {
+    const r = RIESGOS.find(x => x.id === id);
+    txt += `  ▸ ${r.label} (Planilla ${r.planilla})\n`;
+  });
+
+  txt += '\n' + '─'.repeat(48) + '\nEVALUACIÓN INICIAL DE FACTORES — PLANILLA 2\n' + '─'.repeat(48) + '\n';
+  selectedRisks.forEach(id => {
+    const r   = RIESGOS.find(x => x.id === id);
+    const res = calcResultado(id);
+    const rl  = res === 'tolerable' ? 'TOLERABLE' : res === 'no-tolerable' ? 'NO TOLERABLE — Requiere evaluación por profesional con conocimientos en ergonomía' : 'Sin evaluar';
+    txt += `\n${r.ico} ${r.label.toUpperCase()} (${r.planilla})\nResultado: ${rl}\n`;
+
+    if (id === 'psi') {
+      COPSOQ.forEach((dim, di) => {
+        txt += `  ${dim.dim}:\n`;
+        dim.items.forEach((item, ii) => {
+          const v = p2State['psi']?.[di]?.[ii];
+          txt += `    ${v !== null && v !== undefined ? LIKERT[v] : 'Sin evaluar'} | ${item}\n`;
+        });
+      });
+    } else {
+      (P2_CRITERIOS[id] || []).forEach((c, i) => {
+        const v = p2State[id]?.[i];
+        txt += `  ${v === 'si' ? 'Sí' : v === 'no' ? 'No' : 'Sin evaluar'} | ${c.q}\n`;
+      });
+    }
+
+    if (calcResults[id]) {
+      const cr = calcResults[id];
+      if (id === 'lmc') txt += `  → LMC/NIOSH: IL = ${cr.il} · LPR = ${cr.lpr} kg · ${cr.lbl}\n`;
+      if (id === 'ea')  txt += `  → Snook & Ciriello: ${cr.lbl} (Fi: ${cr.fi} kg lím.${cr.limI} / Fm: ${cr.fm} kg lím.${cr.limM})\n`;
+      if (id === 'mr')  txt += `  → NAM: Puntaje = ${cr.score} · ${cr.lbl}\n`;
+      if (id === 'pf')  txt += `  → RULA: Nivel ${cr.nivel} (${cr.puntaje} pts) · ${cr.lbl}\n`;
+    }
+  });
+
+  const tol  = selectedRisks.filter(id => calcResultado(id) === 'tolerable').length;
+  const ntol = selectedRisks.filter(id => calcResultado(id) === 'no-tolerable').length;
+  txt += '\n' + '='.repeat(48) + '\nRESUMEN FINAL\n';
+  txt += `✅ Factores tolerables:     ${tol}\n`;
+  txt += `❌ Factores no tolerables:  ${ntol}\n`;
+  if (ntol > 0) txt += '\n⚠️  Los factores No Tolerables requieren una Evaluación Ergonómica Específica del puesto, a cargo del profesional con conocimientos en ergonomía, con el objetivo de identificar, cuantificar y priorizar los riesgos presentes y definir las acciones correctivas necesarias para reducirlos a un nivel tolerable. Resultado a volcar en Planilla N° 1 con Nivel de Riesgo 2 (Moderado) o 3 (No Tolerable) según el método aplicado (Res. 886/15 SRT, Anexo III).\n';
+  txt += '\nGenerado con App Evaluación Ergonómica 886/15';
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); showCopied(); } catch(e) { alert('No se pudo copiar automáticamente.'); }
+  document.body.removeChild(ta);
+}
+
+function showCopied() {
+  const btn = document.querySelector('#s4 .btn-copy');
+  const orig = btn.textContent;
+  btn.textContent = '✅ ¡Copiado al portapapeles!';
+  setTimeout(() => btn.textContent = orig, 2500);
+}
+
+function nuevaEval() {
+  if (!confirm('¿Iniciás una nueva evaluación? Se perderán todos los datos actuales.')) return;
+  document.querySelectorAll('input[type=text], input[type=date], textarea').forEach(el => el.value = '');
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  selectedRisks = []; p2State = {}; calcResults = {}; tmeVal = null;
+  document.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('sel'));
+  ['si','no','nd'].forEach(v => document.getElementById('tme-' + v).classList.remove('active'));
+  document.getElementById('tme-loc-wrap').classList.add('hidden');
+  document.getElementById('tasks-container').innerHTML = [1,2,3].map(n =>
+    `<div class="task-row"><input type="text" placeholder="Tarea ${n}" class="task-input"><button onclick="removeTask(this)">✕</button></div>`
+  ).join('');
+  document.getElementById('workers-container').innerHTML =
+    `<div class="worker-row"><input type="text" placeholder="Nombre y apellido" class="worker-input"><input type="text" placeholder="Antigüedad" style="max-width:100px;flex-shrink:0"></div>`;
+  showScreen('s1');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Medición de Iluminación — Res. 84/12</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:50px}
+.screen.active{display:block}
+.topbar{background:#1B4D2E;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#1B4D2E;box-shadow:0 0 0 3px rgba(27,77,46,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#1B4D2E;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#143d23}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#1B4D2E;border:1.5px solid #1B4D2E;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-danger{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-copy{width:100%;padding:15px;background:#1B4D2E;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-add{width:100%;padding:10px;border:1.5px dashed #1B4D2E;border-radius:10px;background:#EDF3EE;color:#1B4D2E;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-sm{padding:8px 14px;border:1.5px solid #DDD;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.btn-sm.danger{border-color:#EF5350;color:#EF5350}
+.sector-card{background:#fff;border-radius:13px;padding:16px;margin-bottom:10px;border:1.5px solid #DDD}
+.sector-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sector-name{font-size:15px;font-weight:700;color:#1B4D2E}
+.kbadge{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.kbox{background:#EDF3EE;border-radius:9px;padding:8px 12px;font-size:13px;color:#1B4D2E;font-weight:600}
+.kbox span{font-weight:400;color:#555;font-size:12px;display:block;margin-top:1px}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.verde{background:#EDF3EE;border-color:#81C784;color:#1B4D2E}
+.grilla-wrap{overflow-x:auto;margin-top:10px;padding-bottom:6px}
+.grilla{display:grid;gap:6px;width:max-content}
+.celda{display:flex;flex-direction:column;align-items:center}
+.celda input{width:74px;padding:10px 6px;border:1.5px solid #DDD;border-radius:9px;font-size:15px;font-weight:600;text-align:center;background:#fff;color:#1a1a1a;outline:none}
+.celda input:focus{border-color:#1B4D2E}
+.celda input.ok{background:#E8F5E9;border-color:#66BB6A;color:#1B5E20}
+.celda input.fail{background:#FFEBEE;border-color:#EF5350;color:#B71C1C}
+.celda-label{font-size:10px;color:#888;text-align:center;margin-top:3px}
+.res-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.res-chip{flex:1;min-width:90px;border-radius:10px;padding:10px 8px;text-align:center}
+.res-chip .val{font-size:19px;font-weight:700}
+.res-chip .lbl{font-size:11px;color:#555;margin-top:2px;line-height:1.3}
+.res-chip.ok{background:#E8F5E9}.res-chip.ok .val{color:#1B5E20}
+.res-chip.fail{background:#FFEBEE}.res-chip.fail .val{color:#B71C1C}
+.res-chip.neutral{background:#F5F5F5}.res-chip.neutral .val{color:#333}
+.cumple-badge{display:inline-block;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;margin-top:8px}
+.cumple-badge.ok{background:#E8F5E9;color:#1B5E20}
+.cumple-badge.fail{background:#FFEBEE;color:#B71C1C}
+.cumple-badge.nd{background:#F5F5F5;color:#888}
+.tabla-item{padding:11px 12px;border-bottom:1px solid #F0F0F0;cursor:pointer;font-size:13px;line-height:1.4}
+.tabla-item:last-child{border-bottom:none}
+.tabla-item:active{background:#EDF3EE}
+.tabla-item .lux-val{font-weight:700;color:#1B4D2E;float:right;margin-left:8px}
+.tabla-item .tipo-cat{color:#888;font-size:11px}
+.tabla-item .tipo-desc{color:#1a1a1a;margin-top:1px}
+.inf-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.inf-section h3{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #F0F0F0;padding-bottom:8px;margin-bottom:10px}
+.inf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none;padding-bottom:0}
+.inf-row .ik{color:#555;flex:1;padding-right:8px}
+.inf-row .iv{font-weight:600;color:#1a1a1a;text-align:right}
+.sector-result-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.sector-result-card h3{font-size:15px;font-weight:700;color:#1B4D2E;margin-bottom:12px}
+.vals-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.val-chip{background:#F5F5F5;border-radius:7px;padding:5px 10px;font-size:13px;font-weight:600;color:#333}
+.val-chip.ok{background:#E8F5E9;color:#1B5E20}
+.val-chip.fail{background:#FFEBEE;color:#B71C1C}
+.hidden{display:none}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.tab{padding:8px 16px;border:1.5px solid #DDD;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;background:#fff;color:#444;flex-shrink:0}
+.tab.active{background:#1B4D2E;color:#fff;border-color:#1B4D2E}
+/* Modal */
+#modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end}
+#modal-inner{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:82vh;overflow-y:auto}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Medición de Iluminación</h1>
+  <span>Res. SRT 84/12 · Dec. 351/79 Anexo IV</span>
+</div>
+
+<!-- ══════════════════════════════════════
+     S1 — DATOS GENERALES
+══════════════════════════════════════ -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos de la medición</div>
+    <label class="fl">Fecha de medición</label>
+    <input type="date" id="fecha">
+    <label class="fl">Empresa / establecimiento</label>
+    <input type="text" id="empresa" placeholder="Razón social">
+    <label class="fl">Dirección</label>
+    <input type="text" id="direccion" placeholder="Dirección completa">
+    <label class="fl">Turno de medición</label>
+    <select id="turno">
+      <option value="">— Seleccionar —</option>
+      <option>Mañana</option>
+      <option>Tarde</option>
+      <option>Noche</option>
+      <option>Único turno</option>
+      <option>Múltiples turnos</option>
+    </select>
+    <label class="fl">Condiciones atmosféricas</label>
+    <input type="text" id="condatm" placeholder="Ej: Despejado, 22°C, sin viento">
+    <label class="fl">¿Iluminación natural presente durante la medición?</label>
+    <select id="ilnat">
+      <option value="">— Seleccionar —</option>
+      <option>No — solo iluminación artificial</option>
+      <option>Sí — se anuló para la medición</option>
+      <option>Sí — se midió con luz natural presente</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <div class="ct">🔧 Equipo de medición</div>
+    <label class="fl">Instrumento</label>
+    <input type="text" id="instrumento" placeholder="Ej: Luxómetro">
+    <label class="fl">Marca y modelo</label>
+    <input type="text" id="equipo_marca" placeholder="Ej: Testo 540">
+    <div class="field-2" style="margin-top:10px">
+      <div>
+        <label class="fl" style="margin-top:0">N° de serie</label>
+        <input type="text" id="equipo_serie" placeholder="N° de serie">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">Fecha calibración</label>
+        <input type="date" id="equipo_cal">
+      </div>
+    </div>
+    <label class="fl">Laboratorio de calibración</label>
+    <input type="text" id="equipo_lab" placeholder="Nombre del laboratorio">
+  </div>
+
+  <div class="card">
+    <div class="ct">👷 Profesional responsable</div>
+    <label class="fl">Nombre y apellido</label>
+    <input type="text" id="profesional" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula / Registro</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+
+  <div class="card">
+    <div class="ct">📝 Observaciones generales</div>
+    <textarea id="obs_grales" placeholder="Condiciones generales, observaciones relevantes de la visita (opcional)"></textarea>
+  </div>
+
+  <button class="btn-main" onclick="showScreen('s2')">Continuar → Sectores ›</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     S2 — SECTORES
+══════════════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="nota verde" style="margin-top:12px">
+    Agregá cada sector o punto de muestreo. La app calcula el índice de local (k) y la cantidad mínima de puntos automáticamente.
+  </div>
+  <div id="sectores-container"></div>
+  <button class="btn-add" onclick="addSector()">+ Agregar sector / punto de muestreo</button>
+  <button class="btn-main" onclick="goMediciones()" style="margin-top:16px">Continuar → Mediciones ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver a datos generales</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     S3 — MEDICIONES
+══════════════════════════════════════ -->
+<div id="s3" class="screen">
+  <div class="nota verde" style="margin-top:12px">
+    Ingresá los valores del luxómetro en cada punto de la grilla. Los resultados se calculan en tiempo real.
+  </div>
+  <div class="tabs" id="sector-tabs"></div>
+  <div id="mediciones-container"></div>
+  <button class="btn-main" onclick="goInforme()">📄 Ver resultado e informe ›</button>
+  <button class="btn-sec" onclick="showScreen('s2')">‹ Volver a sectores</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     S4 — INFORME
+══════════════════════════════════════ -->
+<div id="s4" class="screen">
+  <div style="background:#1B4D2E;color:#fff;border-radius:13px;padding:15px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Protocolo de Medición — Iluminación Laboral</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px">Res. SRT N° 84/12 · Dec. 351/79 Anexo IV</div>
+    <div style="font-size:13px;margin-top:6px;opacity:.9" id="inf-subtitulo"></div>
+  </div>
+  <div id="informe-body"></div>
+  <div class="nota" style="margin-top:4px">
+    <strong>Nota:</strong> Los datos copiados están estructurados para volcar al Formulario oficial de la Res. SRT 84/12.
+  </div>
+  <button class="btn-copy" onclick="copiarInforme()">📋 Copiar datos para protocolo</button>
+  <button class="btn-danger" onclick="nuevaMedicion()">🔄 Nueva medición</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL — TABLA DEC. 351/79
+══════════════════════════════════════ -->
+<div id="modal-overlay" onclick="closeTabla()">
+  <div id="modal-inner" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div>
+        <div style="font-size:16px;font-weight:700">Dec. 351/79 — Anexo IV Tabla 2</div>
+        <div style="font-size:12px;color:#666;margin-top:2px">Tocá para seleccionar y cargar el valor mínimo</div>
+      </div>
+      <button onclick="closeTabla()" style="border:none;background:#F0F0F0;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;color:#444;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <input type="text" id="tabla-search" placeholder="🔍 Buscar tipo de local o tarea..." oninput="filtrarTabla()" style="margin-bottom:10px">
+    <div id="tabla-lista"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// TABLA DEC. 351/79 ANEXO IV
+// ══════════════════════════════════════════════════════════
+const TABLA_REF = [
+  // Tabla 1 — Clases de tarea visual
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Visión ocasional solamente',lux:100},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tareas simples, intermitentes y mecánicas (depósito general, stock, maquinaria pesada)',lux:100},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tareas simples a moderadas (conteo de partes, colocación de maquinaria)',lux:200},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tarea moderada y prolongada con detalles medianos (mecánica general, oficina, lectura y escritura)',lux:300},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tarea moderada a severa (inspección, montaje, trabajos manuales medianos)',lux:500},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tareas severas y prolongadas, poco contraste (pintura fina, costura ropa oscura, sopleteado)',lux:750},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tareas muy severas con detalles minuciosos (montaje mecanismos delicados, calibrador, matrices)',lux:1500},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Trabajo fino de relojería y reparación',lux:3000},
+  {tipo:'Tabla 1 — Tarea visual',subtipo:'Tareas excepcionales, difíciles o importantes (quirófano, etc.)',lux:10000},
+  // Vivienda
+  {tipo:'Vivienda',subtipo:'Baño — iluminación general',lux:100},
+  {tipo:'Vivienda',subtipo:'Baño — iluminación localizada sobre espejos',lux:200},
+  {tipo:'Vivienda',subtipo:'Dormitorio — iluminación general',lux:200},
+  {tipo:'Vivienda',subtipo:'Cocina — zona de trabajo (cocina, pileta, mesada)',lux:200},
+  // Centros comerciales
+  {tipo:'Centros comerciales de gran importancia',subtipo:'Iluminación general',lux:1000},
+  {tipo:'Centros comerciales de gran importancia',subtipo:'Depósito de mercaderías',lux:300},
+  {tipo:'Centros comerciales de mediana importancia',subtipo:'Iluminación general',lux:500},
+  // Hoteles
+  {tipo:'Hoteles',subtipo:'Pasillos, palier y ascensor',lux:100},
+  {tipo:'Hoteles',subtipo:'Hall de entrada',lux:300},
+  {tipo:'Hoteles',subtipo:'Escalera',lux:100},
+  {tipo:'Hoteles',subtipo:'Costura',lux:400},
+  {tipo:'Hoteles',subtipo:'Lavandería',lux:100},
+  {tipo:'Hoteles',subtipo:'Vestuarios',lux:100},
+  {tipo:'Hoteles',subtipo:'Sótano y bodegas',lux:70},
+  {tipo:'Hoteles',subtipo:'Depósitos',lux:100},
+  // Garajes
+  {tipo:'Garajes y estaciones de servicio',subtipo:'Iluminación general',lux:100},
+  {tipo:'Garajes y estaciones de servicio',subtipo:'Gomería',lux:200},
+  // Oficinas
+  {tipo:'Oficinas',subtipo:'Hall para el público — circulación',lux:200},
+  {tipo:'Oficinas',subtipo:'Trabajo general de oficina — lectura, escritura, archivo, distribución de correspondencia',lux:300},
+  {tipo:'Oficinas',subtipo:'Contaduría, tabulaciones, teneduría de libros, operaciones bursátiles, lectura de reproducciones',lux:500},
+  {tipo:'Oficinas',subtipo:'Trabajos especiales de computación y sistemas',lux:750},
+  {tipo:'Oficinas',subtipo:'Sala de conferencias',lux:300},
+  // Bancos
+  {tipo:'Bancos',subtipo:'Iluminación general',lux:500},
+  {tipo:'Bancos',subtipo:'Zonas de escritura y cajas',lux:750},
+  {tipo:'Bancos',subtipo:'Sala de caudales',lux:500},
+  // Industrias alimenticias
+  {tipo:'Industrias alimenticias',subtipo:'Mataderos — zona de trabajo general',lux:200},
+  {tipo:'Industrias alimenticias',subtipo:'Molinos harineros — depósito de granos',lux:100},
+  {tipo:'Industrias alimenticias',subtipo:'Molinos harineros — molienda y tamizado',lux:200},
+  {tipo:'Industrias alimenticias',subtipo:'Panaderías — depósito de harinas',lux:100},
+  {tipo:'Industrias alimenticias',subtipo:'Panaderías — cocción, iluminación general',lux:200},
+  {tipo:'Industrias alimenticias',subtipo:'Envasado y empaque',lux:300},
+  {tipo:'Industrias alimenticias',subtipo:'Control de calidad / inspección de productos',lux:500},
+  // Metalúrgica
+  {tipo:'Metalúrgica',subtipo:'Fundición — circulación general',lux:100},
+  {tipo:'Metalúrgica',subtipo:'Fundición — zona de colado y limpieza',lux:200},
+  {tipo:'Metalúrgica',subtipo:'Laminación y forja — iluminación general',lux:200},
+  {tipo:'Metalúrgica',subtipo:'Mecánica — trabajos en banco, tornos, fresas (general)',lux:300},
+  {tipo:'Metalúrgica',subtipo:'Mecánica — trabajos de precisión, calibración, ajuste',lux:1000},
+  {tipo:'Metalúrgica',subtipo:'Soldadura — iluminación general',lux:300},
+  {tipo:'Metalúrgica',subtipo:'Pintura — preparación y aplicación',lux:500},
+  {tipo:'Metalúrgica',subtipo:'Control de calidad e inspección',lux:1000},
+  // Maderera
+  {tipo:'Maderera',subtipo:'Aserraderos — iluminación general',lux:100},
+  {tipo:'Maderera',subtipo:'Carpintería — iluminación general',lux:100},
+  {tipo:'Maderera',subtipo:'Carpintería — bancos y máquinas',lux:300},
+  {tipo:'Maderera',subtipo:'Manufactura de muebles — armado y terminación',lux:400},
+  {tipo:'Maderera',subtipo:'Manufactura de muebles — trabajos minuciosos',lux:700},
+  // Química
+  {tipo:'Industria química',subtipo:'Planta de procesamiento — circulación general',lux:100},
+  {tipo:'Industria química',subtipo:'Planta de procesamiento — zona de trabajo',lux:200},
+  {tipo:'Industria química',subtipo:'Mezcla de pinturas',lux:300},
+  {tipo:'Industria química',subtipo:'Control de laboratorio',lux:500},
+  // Vidrio
+  {tipo:'Industria del vidrio',subtipo:'Sala de mezclado — iluminación general',lux:100},
+  {tipo:'Industria del vidrio',subtipo:'Soplado y conformado — iluminación general',lux:200},
+  {tipo:'Industria del vidrio',subtipo:'Terminación general',lux:300},
+  // Textil
+  {tipo:'Industria textil',subtipo:'Apertura y mezcla de fibras',lux:200},
+  {tipo:'Industria textil',subtipo:'Cardado y peinado',lux:300},
+  {tipo:'Industria textil',subtipo:'Hilado y tejido — iluminación general',lux:500},
+  {tipo:'Industria textil',subtipo:'Costura — iluminación general',lux:500},
+  {tipo:'Industria textil',subtipo:'Inspección y control de telas',lux:1000},
+  // Imprenta
+  {tipo:'Imprenta y artes gráficas',subtipo:'Encuadernación — iluminación general',lux:200},
+  {tipo:'Imprenta y artes gráficas',subtipo:'Composición tipográfica',lux:500},
+  {tipo:'Imprenta y artes gráficas',subtipo:'Fotograbado y litografía',lux:500},
+  {tipo:'Imprenta y artes gráficas',subtipo:'Corrección de pruebas',lux:700},
+  // Depósitos y logística
+  {tipo:'Depósitos y logística',subtipo:'Depósito de materiales voluminosos — circulación',lux:100},
+  {tipo:'Depósitos y logística',subtipo:'Depósito con identificación de etiquetas o lotes',lux:200},
+  {tipo:'Depósitos y logística',subtipo:'Carga y descarga — zona de maniobra',lux:100},
+  {tipo:'Depósitos y logística',subtipo:'Zona de picking / preparación de pedidos',lux:300},
+  // Circulación y tránsito
+  {tipo:'Circulación y tránsito',subtipo:'Pasillos de circulación general',lux:100},
+  {tipo:'Circulación y tránsito',subtipo:'Escaleras internas',lux:100},
+  {tipo:'Circulación y tránsito',subtipo:'Vestuarios y sanitarios',lux:100},
+  {tipo:'Circulación y tránsito',subtipo:'Sala de calderas — circulación',lux:100},
+  {tipo:'Circulación y tránsito',subtipo:'Comedor / sala de descanso',lux:200},
+  // Salud
+  {tipo:'Salud / hospitales',subtipo:'Circulación general',lux:100},
+  {tipo:'Salud / hospitales',subtipo:'Sala de espera',lux:200},
+  {tipo:'Salud / hospitales',subtipo:'Consultorios — iluminación general',lux:500},
+  {tipo:'Salud / hospitales',subtipo:'Quirófano — campo operatorio',lux:10000},
+  // Educación
+  {tipo:'Educación',subtipo:'Aulas — iluminación general',lux:300},
+  {tipo:'Educación',subtipo:'Talleres escolares',lux:500},
+  {tipo:'Educación',subtipo:'Laboratorios',lux:500},
+  // Construcción
+  {tipo:'Construcción',subtipo:'Trabajo general en obra',lux:100},
+  {tipo:'Construcción',subtipo:'Trabajos de terminación (pintura, yeso, revestimientos)',lux:300},
+];
+
+// ══════════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════════
+let sectores = [];
+let activeSectorTab = 0;
+let tablaTargetSector = null;
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+function init() {
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  renderTablaLista();
+  addSector();
+}
+
+// ══════════════════════════════════════════════════════════
+// SECTORES
+// ══════════════════════════════════════════════════════════
+function addSector() {
+  sectores.push({ nombre:'', largo:'', ancho:'', altLum:'', tipoLocal:'', luxRef:'', mediciones:[], obs:'' });
+  renderSectores();
+}
+
+function removeSector(idx) {
+  if (sectores.length <= 1) { alert('Debe haber al menos un sector.'); return; }
+  if (!confirm('¿Eliminar este sector?')) return;
+  sectores.splice(idx, 1);
+  renderSectores();
+}
+
+function renderSectores() {
+  const cont = document.getElementById('sectores-container');
+  cont.innerHTML = '';
+  sectores.forEach((s, idx) => {
+    const k = calcK(s);
+    const nPuntos = calcNPuntos(k);
+    const div = document.createElement('div');
+    div.className = 'sector-card';
+    div.innerHTML = `
+      <div class="sector-header">
+        <div class="sector-name" id="sh_${idx}">Sector ${idx+1}${s.nombre?' — '+s.nombre:''}</div>
+        <button class="btn-sm danger" onclick="removeSector(${idx})">✕ Eliminar</button>
+      </div>
+      <label class="fl" style="margin-top:0">Nombre / descripción del sector</label>
+      <input type="text" value="${esc(s.nombre)}" placeholder="Ej: Producción, Depósito, Oficina Administración"
+        oninput="sectores[${idx}].nombre=this.value;document.getElementById('sh_${idx}').textContent='Sector ${idx+1}'+(this.value?' — '+this.value:'')">
+      <div class="field-2" style="margin-top:10px">
+        <div>
+          <label class="fl" style="margin-top:0">Largo (m)</label>
+          <input type="number" value="${s.largo}" placeholder="m" step="0.1" min="0"
+            oninput="sectores[${idx}].largo=this.value;recalcSector(${idx})">
+        </div>
+        <div>
+          <label class="fl" style="margin-top:0">Ancho (m)</label>
+          <input type="number" value="${s.ancho}" placeholder="m" step="0.1" min="0"
+            oninput="sectores[${idx}].ancho=this.value;recalcSector(${idx})">
+        </div>
+      </div>
+      <label class="fl">Altura de montaje de luminarias (m)</label>
+      <input type="number" value="${s.altLum}" placeholder="metros desde el piso" step="0.1" min="0"
+        oninput="sectores[${idx}].altLum=this.value;recalcSector(${idx})">
+      <label class="fl">Tipo de local / tarea visual (Dec. 351/79 Anexo IV)</label>
+      <div style="display:flex;gap:8px;align-items:stretch">
+        <input type="text" id="tipo_${idx}" value="${esc(s.tipoLocal)}" placeholder="Seleccioná de la tabla..." readonly
+          style="flex:1;cursor:pointer;background:#FAFAFA;font-size:13px" onclick="openTabla(${idx})">
+        <button class="btn-sm" onclick="openTabla(${idx})" style="flex-shrink:0;padding:10px 12px">📋</button>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+        <label style="font-size:13px;color:#444;font-weight:500;white-space:nowrap">Valor mínimo (lux):</label>
+        <input type="number" id="luxref_${idx}" value="${s.luxRef}" placeholder="lux" min="0"
+          oninput="sectores[${idx}].luxRef=this.value" style="width:100px">
+      </div>
+      <div class="kbadge" id="kbadge_${idx}">
+        ${renderKBadge(k, nPuntos)}
+      </div>
+      <label class="fl">Observaciones del sector</label>
+      <textarea placeholder="Observaciones, tipo de luminarias, condiciones especiales (opcional)"
+        oninput="sectores[${idx}].obs=this.value">${esc(s.obs)}</textarea>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function renderKBadge(k, nPuntos) {
+  if (k === null) return '<div class="kbox" style="background:#F5F5F5;color:#888">Completá largo, ancho y altura para calcular</div>';
+  return `<div class="kbox">k = ${k.toFixed(3)}<span>Índice de local</span></div>
+          <div class="kbox">Mín. ${nPuntos} puntos<span>de medición requeridos</span></div>`;
+}
+
+function recalcSector(idx) {
+  const k = calcK(sectores[idx]);
+  const nPuntos = calcNPuntos(k);
+  const el = document.getElementById('kbadge_' + idx);
+  if (el) el.innerHTML = renderKBadge(k, nPuntos);
+}
+
+function calcK(s) {
+  const L = parseFloat(s.largo), A = parseFloat(s.ancho), H = parseFloat(s.altLum);
+  if (!L || !A || !H || H === 0) return null;
+  return (L * A) / (H * (L + A));
+}
+
+function calcNPuntos(k) {
+  if (k === null) return null;
+  return Math.ceil(Math.pow(k + 2, 2));
+}
+
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// ══════════════════════════════════════════════════════════
+// TABLA REFERENCIA
+// ══════════════════════════════════════════════════════════
+function renderTablaLista(filtro) {
+  const lista = document.getElementById('tabla-lista');
+  if (!lista) return;
+  const fil = (filtro||'').toLowerCase();
+  const items = fil
+    ? TABLA_REF.filter(i => i.tipo.toLowerCase().includes(fil) || i.subtipo.toLowerCase().includes(fil))
+    : TABLA_REF;
+  lista.innerHTML = items.map(i => `
+    <div class="tabla-item" onclick="selectTabla('${i.subtipo.replace(/'/g,"\\'")}',${i.lux})">
+      <span class="lux-val">${i.lux} lux</span>
+      <div class="tipo-cat">${i.tipo}</div>
+      <div class="tipo-desc">${i.subtipo}</div>
+    </div>
+  `).join('');
+}
+
+function filtrarTabla() {
+  renderTablaLista(document.getElementById('tabla-search').value);
+}
+
+function openTabla(idx) {
+  tablaTargetSector = idx;
+  document.getElementById('modal-overlay').style.display = 'flex';
+  document.getElementById('tabla-search').value = '';
+  renderTablaLista();
+  document.getElementById('tabla-search').focus();
+}
+
+function closeTabla() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+function selectTabla(subtipo, lux) {
+  const idx = tablaTargetSector;
+  sectores[idx].tipoLocal = subtipo;
+  sectores[idx].luxRef = lux;
+  const tipoEl = document.getElementById('tipo_' + idx);
+  const luxEl  = document.getElementById('luxref_' + idx);
+  if (tipoEl) tipoEl.value = subtipo;
+  if (luxEl)  luxEl.value  = lux;
+  closeTabla();
+}
+
+// ══════════════════════════════════════════════════════════
+// MEDICIONES
+// ══════════════════════════════════════════════════════════
+function goMediciones() {
+  if (sectores.length === 0) { alert('Agregá al menos un sector.'); return; }
+  sectores.forEach(s => {
+    const k = calcK(s);
+    const n = calcNPuntos(k) || 4;
+    if (!s.mediciones || s.mediciones.length !== n) {
+      s.mediciones = Array(n).fill('');
+    }
+  });
+  activeSectorTab = 0;
+  buildMediciones();
+  showScreen('s3');
+}
+
+function buildMediciones() {
+  const tabsEl = document.getElementById('sector-tabs');
+  const cont   = document.getElementById('mediciones-container');
+  tabsEl.innerHTML = '';
+  cont.innerHTML   = '';
+  sectores.forEach((s, idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (idx === activeSectorTab ? ' active' : '');
+    tab.textContent = s.nombre || ('Sector ' + (idx+1));
+    tab.onclick = () => switchTab(idx);
+    tabsEl.appendChild(tab);
+    const div = document.createElement('div');
+    div.id = 'med_blk_' + idx;
+    div.className = idx === activeSectorTab ? '' : 'hidden';
+    div.innerHTML  = buildMedicionSector(s, idx);
+    cont.appendChild(div);
+    setTimeout(() => calcResultadoSector(idx), 80);
+  });
+}
+
+function buildMedicionSector(s, idx) {
+  const k      = calcK(s);
+  const n      = calcNPuntos(k) || 4;
+  const cols   = Math.ceil(Math.sqrt(n));
+  let html = `<div class="nota verde" style="margin-bottom:12px">
+    <strong>${esc(s.nombre) || 'Sector '+(idx+1)}</strong> &nbsp;·&nbsp;
+    ${k ? 'k = '+k.toFixed(3)+' &nbsp;·&nbsp; ' : ''}
+    ${n} puntos mínimos &nbsp;·&nbsp; Plano de trabajo: 0,80 m s.n.s.
+  </div>
+  <div class="grilla-wrap">
+    <div class="grilla" style="grid-template-columns:repeat(${cols},80px)" id="grilla_${idx}">`;
+  for (let i = 0; i < n; i++) {
+    html += `<div class="celda">
+      <input type="number" id="mp_${idx}_${i}" value="${s.mediciones[i]||''}"
+        placeholder="lux" min="0"
+        oninput="sectores[${idx}].mediciones[${i}]=this.value;calcResultadoSector(${idx})">
+      <div class="celda-label">P${i+1}</div>
+    </div>`;
+  }
+  html += `</div></div>
+  <div class="res-row" id="resrow_${idx}"></div>
+  <div id="resdet_${idx}" style="margin-top:8px"></div>`;
+  return html;
+}
+
+function switchTab(idx) {
+  activeSectorTab = idx;
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  sectores.forEach((_,i) => {
+    const el = document.getElementById('med_blk_'+i);
+    if (el) el.classList.toggle('hidden', i!==idx);
+  });
+}
+
+function calcResultadoSector(sIdx) {
+  const s    = sectores[sIdx];
+  const vals = s.mediciones.map(v => parseFloat(v)).filter(v => !isNaN(v) && v >= 0);
+  const resrow = document.getElementById('resrow_'+sIdx);
+  const resdet = document.getElementById('resdet_'+sIdx);
+  if (!resrow) return;
+  if (vals.length === 0) { resrow.innerHTML=''; resdet.innerHTML=''; return; }
+
+  const eMedia     = vals.reduce((a,b)=>a+b,0) / vals.length;
+  const eMin       = Math.min(...vals);
+  const uniformidad = eMin / eMedia;
+  const luxRef     = parseFloat(s.luxRef);
+  const cumpleMedia = !isNaN(luxRef) ? eMedia >= luxRef : null;
+  const cumpleUnif  = uniformidad >= 0.5;
+  const cumpleTotal = cumpleUnif && (cumpleMedia !== false);
+
+  // Colorear celdas
+  s.mediciones.forEach((v,i) => {
+    const el = document.getElementById(`mp_${sIdx}_${i}`);
+    if (!el) return;
+    const val = parseFloat(v);
+    el.classList.remove('ok','fail');
+    if (!isNaN(val) && !isNaN(luxRef)) {
+      el.classList.add(val >= luxRef ? 'ok' : 'fail');
+    }
+  });
+
+  resrow.innerHTML = `
+    <div class="res-chip neutral"><div class="val">${eMedia.toFixed(0)}</div><div class="lbl">E Media<br>(lux)</div></div>
+    <div class="res-chip neutral"><div class="val">${eMin.toFixed(0)}</div><div class="lbl">E Mínima<br>(lux)</div></div>
+    <div class="res-chip ${cumpleUnif?'ok':'fail'}"><div class="val">${uniformidad.toFixed(2)}</div><div class="lbl">Uniformidad<br>(≥ 0,5)</div></div>
+    ${!isNaN(luxRef)?`<div class="res-chip ${cumpleMedia?'ok':'fail'}"><div class="val">${luxRef}</div><div class="lbl">Mín. normat.<br>(lux)</div></div>`:''}
+  `;
+  resdet.innerHTML = `
+    <span class="cumple-badge ${cumpleTotal?'ok':'fail'}">${cumpleTotal?'✅ CUMPLE':'❌ NO CUMPLE'}</span>
+    ${!isNaN(luxRef)&&!cumpleMedia?'<div style="font-size:13px;color:#B71C1C;margin-top:6px">⚠️ E Media inferior al mínimo normativo</div>':''}
+    ${!cumpleUnif?'<div style="font-size:13px;color:#B71C1C;margin-top:4px">⚠️ Uniformidad insuficiente (E mín/E media &lt; 0,5)</div>':''}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════
+// INFORME
+// ══════════════════════════════════════════════════════════
+function goInforme() {
+  const empresa = document.getElementById('empresa').value || '—';
+  const fecha   = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  document.getElementById('inf-subtitulo').textContent = empresa + ' · ' + dateStr;
+
+  let body = '';
+
+  body += `<div class="inf-section">
+    <h3>Datos de la medición</h3>
+    ${irow('Empresa / establecimiento', document.getElementById('empresa').value)}
+    ${irow('Dirección', document.getElementById('direccion').value)}
+    ${irow('Fecha', dateStr)}
+    ${irow('Turno', document.getElementById('turno').value)}
+    ${irow('Condiciones atmosféricas', document.getElementById('condatm').value)}
+    ${irow('Iluminación natural', document.getElementById('ilnat').value)}
+  </div>`;
+
+  body += `<div class="inf-section">
+    <h3>Equipo de medición</h3>
+    ${irow('Instrumento', document.getElementById('instrumento').value)}
+    ${irow('Marca / Modelo', document.getElementById('equipo_marca').value)}
+    ${irow('N° de serie', document.getElementById('equipo_serie').value)}
+    ${irow('Fecha de calibración', document.getElementById('equipo_cal').value)}
+    ${irow('Laboratorio de calibración', document.getElementById('equipo_lab').value)}
+  </div>`;
+
+  body += `<div class="inf-section">
+    <h3>Profesional responsable</h3>
+    ${irow('Nombre y apellido', document.getElementById('profesional').value)}
+    ${irow('Matrícula / Registro', document.getElementById('matricula').value)}
+  </div>`;
+
+  const obsG = document.getElementById('obs_grales').value;
+  if (obsG) body += `<div class="inf-section"><h3>Observaciones generales</h3><p style="font-size:14px;color:#333;line-height:1.6">${obsG}</p></div>`;
+
+  sectores.forEach((s, idx) => {
+    const k          = calcK(s);
+    const nPuntos    = calcNPuntos(k);
+    const vals       = s.mediciones.map(v => parseFloat(v)).filter(v => !isNaN(v) && v >= 0);
+    const eMedia     = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+    const eMin       = vals.length ? Math.min(...vals) : null;
+    const uniformidad = (eMedia && eMin!==null) ? eMin/eMedia : null;
+    const luxRef     = parseFloat(s.luxRef);
+    const cumpleMedia = eMedia!==null && !isNaN(luxRef) ? eMedia>=luxRef : null;
+    const cumpleUnif  = uniformidad!==null ? uniformidad>=0.5 : null;
+    const cumpleTotal = cumpleUnif && cumpleMedia!==false;
+
+    body += `<div class="sector-result-card">
+      <h3>📍 ${s.nombre||'Sector '+(idx+1)}</h3>
+      ${irow('Dimensiones del local', (s.largo||'—')+' m × '+(s.ancho||'—')+' m')}
+      ${irow('Altura de montaje luminarias', s.altLum ? s.altLum+' m' : '—')}
+      ${irow('Índice de local (k)', k ? k.toFixed(3) : '—')}
+      ${irow('Fórmula k', 'k = (L × A) / (H × (L + A))')}
+      ${irow('N° mínimo de puntos', nPuntos ? nPuntos+' puntos  [(k+2)²]' : '—')}
+      ${irow('N° de puntos medidos', vals.length || '—')}
+      ${irow('Altura plano de trabajo', '0,80 m sobre nivel del suelo')}
+      ${irow('Tipo de local / tarea visual', s.tipoLocal || '—')}
+      ${irow('Valor mínimo normativo (Dec. 351/79 Anexo IV)', !isNaN(luxRef) ? luxRef+' lux' : '—')}
+      <div style="height:6px"></div>
+      ${irow('E Media', eMedia!==null ? eMedia.toFixed(2)+' lux' : '—')}
+      ${irow('E Mínima', eMin!==null ? eMin.toFixed(2)+' lux' : '—')}
+      ${irow('Uniformidad (E mín / E media)', uniformidad!==null ? uniformidad.toFixed(4)+(uniformidad>=0.5?' ✅ Cumple (≥ 0,5)':' ❌ No cumple (< 0,5)') : '—')}
+      ${irow('Cumple E Media vs normativa', cumpleMedia===null?'—':cumpleMedia?'✅ Cumple ('+eMedia?.toFixed(1)+' lux ≥ '+luxRef+' lux)':'❌ No cumple ('+eMedia?.toFixed(1)+' lux < '+luxRef+' lux)')}
+      <div style="margin-top:10px">
+        <span class="cumple-badge ${vals.length===0?'nd':cumpleTotal?'ok':'fail'}">${vals.length===0?'Sin mediciones ingresadas':cumpleTotal?'✅ CUMPLE':'❌ NO CUMPLE'}</span>
+      </div>
+      <div style="margin-top:12px">
+        <div style="font-size:12px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Valores medidos (lux)</div>
+        <div class="vals-grid">
+          ${s.mediciones.map((v,i) => {
+            const val = parseFloat(v);
+            const cls = !isNaN(val) && !isNaN(luxRef) ? (val>=luxRef?'ok':'fail') : '';
+            return `<div class="val-chip ${cls}">P${i+1}: ${v||'—'}</div>`;
+          }).join('')}
+        </div>
+      </div>
+      ${s.obs?`<div style="margin-top:10px;font-size:13px;color:#555;line-height:1.5"><strong>Observaciones:</strong> ${s.obs}</div>`:''}
+    </div>`;
+  });
+
+  document.getElementById('informe-body').innerHTML = body;
+  showScreen('s4');
+}
+
+function irow(k,v) {
+  return `<div class="inf-row"><span class="ik">${k}</span><span class="iv">${v||'—'}</span></div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// COPIAR
+// ══════════════════════════════════════════════════════════
+function copiarInforme() {
+  const fecha   = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const SEP     = '='.repeat(58);
+  const sep     = '─'.repeat(40);
+
+  let txt = 'PROTOCOLO DE MEDICIÓN DE ILUMINACIÓN EN EL AMBIENTE LABORAL\n';
+  txt += 'Resolución SRT N° 84/12  ·  Decreto 351/79 Anexo IV\n';
+  txt += SEP + '\n';
+  txt += `Empresa / establecimiento: ${document.getElementById('empresa').value||'—'}\n`;
+  txt += `Dirección:                 ${document.getElementById('direccion').value||'—'}\n`;
+  txt += `Fecha de medición:         ${dateStr}\n`;
+  txt += `Turno:                     ${document.getElementById('turno').value||'—'}\n`;
+  txt += `Condiciones atmosféricas:  ${document.getElementById('condatm').value||'—'}\n`;
+  txt += `Iluminación natural:       ${document.getElementById('ilnat').value||'—'}\n`;
+
+  txt += '\nEQUIPO DE MEDICIÓN\n' + sep + '\n';
+  txt += `Instrumento:               ${document.getElementById('instrumento').value||'—'}\n`;
+  txt += `Marca / Modelo:            ${document.getElementById('equipo_marca').value||'—'}\n`;
+  txt += `N° de serie:               ${document.getElementById('equipo_serie').value||'—'}\n`;
+  txt += `Fecha de calibración:      ${document.getElementById('equipo_cal').value||'—'}\n`;
+  txt += `Laboratorio calibración:   ${document.getElementById('equipo_lab').value||'—'}\n`;
+
+  txt += '\nPROFESIONAL RESPONSABLE\n' + sep + '\n';
+  txt += `Nombre y apellido:         ${document.getElementById('profesional').value||'—'}\n`;
+  txt += `Matrícula / Registro:      ${document.getElementById('matricula').value||'—'}\n`;
+
+  const obsG = document.getElementById('obs_grales').value;
+  if (obsG) txt += `\nObservaciones generales:\n${obsG}\n`;
+
+  sectores.forEach((s, idx) => {
+    const k          = calcK(s);
+    const nPuntos    = calcNPuntos(k);
+    const vals       = s.mediciones.map(v => parseFloat(v)).filter(v => !isNaN(v) && v >= 0);
+    const eMedia     = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+    const eMin       = vals.length ? Math.min(...vals) : null;
+    const uniformidad = (eMedia && eMin!==null) ? eMin/eMedia : null;
+    const luxRef     = parseFloat(s.luxRef);
+    const cumpleMedia = eMedia!==null && !isNaN(luxRef) ? eMedia>=luxRef : null;
+    const cumpleUnif  = uniformidad!==null ? uniformidad>=0.5 : null;
+    const cumpleTotal = cumpleUnif && cumpleMedia!==false;
+
+    txt += '\n' + SEP + '\n';
+    txt += `SECTOR ${idx+1}: ${(s.nombre||'Sin nombre').toUpperCase()}\n`;
+    txt += SEP + '\n';
+    txt += `Dimensiones del local:         ${s.largo||'—'} m × ${s.ancho||'—'} m\n`;
+    txt += `Altura de montaje luminarias:  ${s.altLum||'—'} m\n`;
+    txt += `Índice de local (k):           ${k?k.toFixed(4):'—'}\n`;
+    txt += `  Fórmula: k = (L × A) / (H × (L + A))\n`;
+    txt += `N° mínimo de puntos medición:  ${nPuntos||'—'}  [fórmula: (k+2)²]\n`;
+    txt += `N° de puntos efectivamente medidos: ${vals.length}\n`;
+    txt += `Altura del plano de trabajo:   0,80 m sobre nivel del suelo\n`;
+    txt += `Tipo de local / tarea visual:  ${s.tipoLocal||'—'}\n`;
+    txt += `Valor mínimo normativo:        ${!isNaN(luxRef)?luxRef+' lux':'—'}  (Dec. 351/79 Anexo IV Tabla 2)\n`;
+
+    txt += '\nVALORES MEDIDOS (lux):\n';
+    // Presentar en filas simulando la grilla
+    const cols = Math.ceil(Math.sqrt(s.mediciones.length));
+    s.mediciones.forEach((v, i) => {
+      txt += `  Punto ${String(i+1).padStart(2,'0')}: ${v?String(v).padStart(6):' ——  '} lux`;
+      if ((i+1) % cols === 0) txt += '\n'; else txt += '   ';
+    });
+    txt += '\n';
+
+    txt += '\nRESULTADOS DE CÁLCULO:\n';
+    txt += `  E Media (promedio):          ${eMedia!==null?eMedia.toFixed(2)+' lux':'Sin datos'}\n`;
+    txt += `  E Mínima (valor más bajo):   ${eMin!==null?eMin.toFixed(2)+' lux':'Sin datos'}\n`;
+    txt += `  Uniformidad (E mín/E media): ${uniformidad!==null?uniformidad.toFixed(4):'—'}`;
+    if (uniformidad!==null) txt += uniformidad>=0.5?'  ✅ CUMPLE (≥ 0,5)':'  ❌ NO CUMPLE (< 0,5)';
+    txt += '\n';
+    if (cumpleMedia!==null) {
+      txt += `  E Media vs valor normativo:  ${cumpleMedia?'✅ CUMPLE':'❌ NO CUMPLE'}`;
+      txt += ` (${eMedia?.toFixed(1)} lux ${cumpleMedia?'≥':'<'} ${luxRef} lux)\n`;
+    }
+    txt += `\n  RESULTADO DEL SECTOR:  ${vals.length===0?'SIN MEDICIONES INGRESADAS':cumpleTotal?'✅ CUMPLE con la normativa vigente':'❌ NO CUMPLE con la normativa vigente'}\n`;
+    if (s.obs) txt += `\n  Observaciones del sector:\n  ${s.obs}\n`;
+  });
+
+  txt += '\n' + SEP + '\n';
+  txt += 'MARCO NORMATIVO APLICABLE\n' + SEP + '\n';
+  txt += '· Res. SRT N° 84/12 — Protocolo para la Medición de la Iluminación en el Ambiente Laboral\n';
+  txt += '· Ley N° 19.587 de Higiene y Seguridad en el Trabajo\n';
+  txt += '· Decreto 351/79 Anexo IV — Capítulo 12 Iluminación y Color (Art. 71 a 84)\n';
+  txt += '· Uniformidad: E mínima / E media ≥ 0,5  (Dec. 351/79 Art. 1.3)\n';
+  txt += '· Mediciones realizadas a 0,80 m sobre el nivel del suelo (plano de trabajo)\n';
+  txt += '· Método de cuadrícula / grilla — Guía Práctica SRT Res. 84/12\n';
+  txt += '· N° mínimo de puntos de medición: (k+2)²  donde k = índice de local\n';
+  txt += '\nGenerado con App Medición de Iluminación Res. SRT 84/12';
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); showCopied(); }
+  catch(e) { alert('No se pudo copiar automáticamente.'); }
+  document.body.removeChild(ta);
+}
+
+function showCopied() {
+  const btn = document.querySelector('#s4 .btn-copy');
+  const orig = btn.textContent;
+  btn.textContent = '✅ ¡Copiado!';
+  setTimeout(() => btn.textContent = orig, 2500);
+}
+
+function nuevaMedicion() {
+  if (!confirm('¿Iniciás una nueva medición? Se perderán todos los datos actuales.')) return;
+  sectores = [];
+  document.querySelectorAll('input,textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  addSector();
+  showScreen('s1');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+init();
+</script>
+</body>
+</html>
