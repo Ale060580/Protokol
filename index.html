@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0F0F0F">
+<title>Protokol</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0F0F0F}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#F5F5F5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0 0 40px}
+.container{width:100%;max-width:420px;padding:0 20px}
+/* HEADER */
+.header{text-align:center;padding:52px 0 32px}
+.header-deco{width:48px;height:3px;background:#2A2A2A;border-radius:2px;margin:0 auto 24px}
+.brand-row{display:flex;align-items:center;justify-content:center;gap:11px;margin-bottom:8px}
+.brand-flag{border-radius:3px;flex-shrink:0}
+.brand-name{font-size:34px;font-weight:700;color:#F5F5F5;letter-spacing:-0.5px}
+.brand-tag{font-size:13px;color:#888;letter-spacing:0.2px}
+/* GRID */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.app-card{background:#1A1A1A;border-radius:18px;padding:16px 14px;border:1px solid #2A2A2A;text-decoration:none;display:block;transition:transform .12s,background .12s;cursor:pointer}
+.app-card:active{transform:scale(.97);background:#222}
+.app-card.wide{grid-column:span 2;display:flex;align-items:center;gap:14px}
+.app-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;flex-shrink:0}
+.app-card.wide .app-icon{margin-bottom:0}
+.app-name{font-size:14px;font-weight:600;color:#E5E5E5;line-height:1.3}
+.app-norm{font-size:11px;color:#555;margin-top:3px}
+/* FOOTER */
+.footer{text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid #1E1E1E;width:100%}
+.footer-by{font-size:11px;color:#3A3A3A}
+.footer-name{font-size:14px;font-weight:600;color:#555;margin-top:3px;letter-spacing:0.3px}
+/* Iconos SVG inline */
+svg.icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-deco"></div>
+    <div class="brand-row">
+      <!-- Bandera Argentina -->
+      <svg class="brand-flag" width="34" height="23" viewBox="0 0 34 23" aria-label="Bandera Argentina">
+        <rect width="34" height="23" fill="#74ACDF" rx="2"/>
+        <rect y="7.66" width="34" height="7.66" fill="#fff"/>
+        <circle cx="17" cy="11.5" r="2.5" fill="#F6B40E"/>
+        <g stroke="#F6B40E" stroke-width="0.9">
+          <line x1="17" y1="6.8" x2="17" y2="8.7"/>
+          <line x1="17" y1="14.3" x2="17" y2="16.2"/>
+          <line x1="12.2" y1="11.5" x2="14.1" y2="11.5"/>
+          <line x1="19.9" y1="11.5" x2="21.8" y2="11.5"/>
+          <line x1="13.5" y1="8.2" x2="14.9" y2="9.6"/>
+          <line x1="19.1" y1="13.4" x2="20.5" y2="14.8"/>
+          <line x1="20.5" y1="8.2" x2="19.1" y2="9.6"/>
+          <line x1="14.9" y1="13.4" x2="13.5" y2="14.8"/>
+        </g>
+      </svg>
+      <span class="brand-name">Protokol</span>
+    </div>
+    <div class="brand-tag">Herramientas de campo para profesionales H&amp;S</div>
+  </div>
+
+  <!-- APPS -->
+  <div class="grid">
+
+    <a class="app-card" href="https://ale060580.github.io/control-hs" target="_blank">
+      <div class="app-icon" style="background:#0c2240">
+        <svg class="icon" style="color:#60A5FA" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      </div>
+      <div class="app-name">Control mensual</div>
+      <div class="app-norm">Clientes</div>
+    </a>
+
+    <a class="app-card" href="https://ale060580.github.io/ergo-886" target="_blank">
+      <div class="app-icon" style="background:#200a30">
+        <svg class="icon" style="color:#C084FC" viewBox="0 0 24 24"><path d="M12 2a5 5 0 100 10A5 5 0 0012 2z"/><path d="M12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z"/></svg>
+      </div>
+      <div class="app-name">Ergonomía</div>
+      <div class="app-norm">Res. 886/15</div>
+    </a>
+
+    <a class="app-card" href="https://ale060580.github.io/iluminacion" target="_blank">
+      <div class="app-icon" style="background:#0a200a">
+        <svg class="icon" style="color:#86EFAC" viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/><circle cx="12" cy="12" r="4"/></svg>
+      </div>
+      <div class="app-name">Iluminación</div>
+      <div class="app-norm">Res. 84/12</div>
+    </a>
+
+    <a class="app-card" href="https://ale060580.github.io/ruido" target="_blank">
+      <div class="app-icon" style="background:#300a0a">
+        <svg class="icon" style="color:#FCA5A5" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/></svg>
+      </div>
+      <div class="app-name">Ruido</div>
+      <div class="app-norm">Res. 85/12</div>
+    </a>
+
+    <a class="app-card" href="https://ale060580.github.io/PAT" target="_blank">
+      <div class="app-icon" style="background:#1a1a0a">
+        <svg class="icon" style="color:#FCD34D" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="app-name">Puesta a tierra</div>
+      <div class="app-norm">Res. 900/15</div>
+    </a>
+
+    <a class="app-card" href="https://ale060580.github.io/Ventilacion" target="_blank">
+      <div class="app-icon" style="background:#0a1a0f">
+        <svg class="icon" style="color:#6EE7B7" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>
+      </div>
+      <div class="app-name">Ventilación</div>
+      <div class="app-norm">Dec. 351/79</div>
+    </a>
+
+    <a class="app-card wide" href="https://ale060580.github.io/Cargafuego" target="_blank">
+      <div class="app-icon" style="background:#1a0c04">
+        <svg class="icon" style="color:#FB923C" viewBox="0 0 24 24"><path d="M12 12c0-4-3-7-3-7s-.5 3.5-2 5c-1.5 1.5-3 2-3 4a8 8 0 0016 0c0-4-5-7-8-2z"/></svg>
+      </div>
+      <div>
+        <div class="app-name">Carga de fuego</div>
+        <div class="app-norm">Dec. 351/79 Anexo VII</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-by">Desarrollada por</div>
+    <div class="footer-name">SyE Consultores</div>
+  </div>
+
+</div>
+</body>
+</html>
