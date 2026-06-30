@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Visita a Obra H&S</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:60px}
+.screen.active{display:block}
+.topbar{background:#1A3A5C;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+label.fl .req{color:#E24B4A;margin-left:2px}
+input[type=text],input[type=date],input[type=number],input[type=time],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#1A3A5C;box-shadow:0 0 0 3px rgba(26,58,92,.1)}
+textarea{min-height:70px;resize:none}
+.btn-main{width:100%;padding:15px;background:#1A3A5C;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#122a44}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#1A3A5C;border:1.5px solid #1A3A5C;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-pdf{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-add{width:100%;padding:9px;border:1.5px dashed #1A3A5C;border-radius:9px;background:#EBF0F7;color:#1A3A5C;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-sm{padding:7px 12px;border:1.5px solid #DDD;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.btn-sm.danger{border-color:#EF5350;color:#EF5350}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.azul{background:#EBF0F7;border-color:#90CAF9;color:#1A3A5C}
+.hidden{display:none}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* TIPO TRABAJO */
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tipo-btn{padding:12px 8px;border:1.5px solid #DDD;border-radius:12px;background:#fff;color:#333;font-size:12px;font-weight:500;cursor:pointer;text-align:center;line-height:1.3;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .12s}
+.tipo-btn .ico{font-size:20px}
+.tipo-btn.sel{background:#EBF0F7;border-color:#1A3A5C;color:#1A3A5C;font-weight:700}
+.tipo-btn.always{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20;pointer-events:none}
+
+/* CHECKLIST */
+.check-section{margin-bottom:14px}
+.check-section-header{background:#1A3A5C;color:#fff;border-radius:11px;padding:11px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.check-section-header h3{font-size:14px;font-weight:700}
+.check-section-header p{font-size:11px;opacity:.75;margin-top:2px}
+.check-item{background:#fff;border:1px solid #E8E8E8;border-radius:11px;padding:13px;margin-bottom:8px}
+.check-item-label{font-size:14px;color:#1a1a1a;margin-bottom:4px;line-height:1.4;font-weight:500}
+.check-item-norm{font-size:11px;color:#888;margin-bottom:8px}
+.yn-btns{display:flex;gap:8px}
+.btn-si,.btn-no,.btn-na{flex:1;padding:10px;border:1.5px solid #DDD;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#666;transition:all .12s;text-align:center}
+.btn-si.active{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20}
+.btn-no.active{background:#FFEBEE;border-color:#C62828;color:#B71C1C}
+.btn-na.active{background:#F5F5F5;border-color:#888;color:#444}
+.obs-field{margin-top:8px}
+.obs-field textarea{font-size:13px;min-height:50px;border-color:#EF5350;background:#FFFAFA}
+
+/* RECOMENDACIONES */
+.rec-item{background:#FFF8E1;border-left:3px solid #F57F17;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:8px}
+.rec-item .rec-sec{font-size:11px;color:#F57F17;font-weight:700;margin-bottom:3px}
+.rec-item .rec-txt{font-size:13px;color:#333;line-height:1.5}
+
+/* FIRMA */
+.firma-wrap{background:#F8F9FA;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E0E0E0}
+.firma-label{font-size:13px;font-weight:600;color:#1A3A5C;margin-bottom:8px}
+.firma-canvas-wrap{position:relative;background:#fff;border:1.5px dashed #CCC;border-radius:10px;overflow:hidden}
+.firma-canvas-wrap canvas{display:block;touch-action:none}
+.firma-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#CCC;pointer-events:none;text-align:center}
+.firma-tools{display:flex;gap:8px;margin-top:6px}
+.firma-tools button{flex:1;padding:8px;border:1px solid #DDD;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.firma-done-badge{background:#E8F5E9;border:1px solid #66BB6A;border-radius:8px;padding:6px 10px;font-size:12px;color:#1B5E20;text-align:center;margin-top:4px}
+
+/* PROG BAR */
+.prog-wrap{margin-bottom:14px}
+.prog-label{font-size:13px;color:#555;margin-bottom:5px;text-align:right}
+.prog-bar{background:#DDD;border-radius:20px;height:5px}
+.prog-fill{background:#1A3A5C;height:5px;border-radius:20px;transition:width .3s}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.tab{padding:8px 14px;border:1.5px solid #DDD;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;background:#fff;color:#444;flex-shrink:0}
+.tab.active{background:#1A3A5C;color:#fff;border-color:#1A3A5C}
+
+.inf-row{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none}
+.inf-row .ik{color:#555;flex:1}
+.inf-row .iv{font-weight:600;color:#1a1a1a}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Visita a Obra — H&S</h1>
+  <span id="topbar-sub">Dec. 911/96 · Res. 61/23 · Res. 550/11</span>
+</div>
+
+<!-- ═══ S1: DATOS DE OBRA ═══ -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos de la obra</div>
+    <label class="fl">Empresa / razón social <span class="req">*</span></label>
+    <input type="text" id="empresa" placeholder="Razón social de la empresa contratista">
+    <label class="fl">CUIT</label>
+    <input type="text" id="cuit" placeholder="XX-XXXXXXXX-X">
+    <label class="fl">Denominación de la obra</label>
+    <input type="text" id="denominacion" placeholder="Ej: Edificio Mitre 1250 — Torre A">
+    <label class="fl">Domicilio de la obra <span class="req">*</span></label>
+    <input type="text" id="domicilio" placeholder="Dirección completa">
+    <div style="margin-top:8px">
+      <label style="font-size:13px;color:#555;display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="es_caba" style="width:auto;padding:0;margin:0"> 
+        <span>La obra está en CABA (aplican requerimientos específicos)</span>
+      </label>
+    </div>
+    <label class="fl">Fecha de visita <span class="req">*</span></label>
+    <input type="date" id="fecha">
+    <div class="field-2" style="margin-top:10px">
+      <div><label class="fl" style="margin-top:0">Hora inicio</label><input type="time" id="hora_ini"></div>
+      <div><label class="fl" style="margin-top:0">Hora fin</label><input type="time" id="hora_fin"></div>
+    </div>
+    <label class="fl">Cantidad de trabajadores en obra</label>
+    <input type="number" id="n_trabajadores" placeholder="N° de trabajadores" min="1">
+  </div>
+  <div class="card">
+    <div class="ct">👷 Responsables</div>
+    <label class="fl">Técnico / Lic. H&S responsable de la visita</label>
+    <input type="text" id="tecnico" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+    <label class="fl">Responsable / Capataz de obra</label>
+    <input type="text" id="resp_obra" placeholder="Nombre y apellido">
+  </div>
+  <div class="card">
+    <div class="ct">📝 Observaciones generales de la obra</div>
+    <textarea id="obs_grales" placeholder="Etapa actual de obra, empresa subcontratista presente, condiciones generales al inicio de la visita (opcional)"></textarea>
+  </div>
+  <button class="btn-main" onclick="goS2()">Continuar → Tipo de trabajos ›</button>
+</div>
+
+<!-- ═══ S2: TIPO DE TRABAJOS ═══ -->
+<div id="s2" class="screen">
+  <div class="nota azul" style="margin-top:12px">
+    Las <strong>condiciones generales</strong> siempre se controlan. Seleccioná los trabajos específicos presentes hoy en la obra.
+  </div>
+  <div class="card">
+    <div class="ct">Trabajos presentes en obra hoy</div>
+    <div class="tipo-grid" id="tipo-grid"></div>
+  </div>
+  <button class="btn-main" onclick="goS3()">Continuar → Checklists ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver</button>
+</div>
+
+<!-- ═══ S3: CHECKLISTS ═══ -->
+<div id="s3" class="screen">
+  <div style="margin-top:12px" id="s3-banner" class="nota azul"></div>
+  <div class="prog-wrap">
+    <div class="prog-label" id="prog-label">0 de 0 ítems evaluados</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="tabs" id="section-tabs"></div>
+  <div id="checklists-container"></div>
+  <button class="btn-main" onclick="goS4()">Continuar → Recomendaciones y firmas ›</button>
+  <button class="btn-sec" onclick="showScreen('s2')">‹ Volver a tipo de trabajos</button>
+</div>
+
+<!-- ═══ S4: RECOMENDACIONES + FIRMAS ═══ -->
+<div id="s4" class="screen">
+  <div style="background:#1A3A5C;color:#fff;border-radius:13px;padding:14px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Finalizar visita</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px" id="s4-sub"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">⚠️ Recomendaciones por incumplimientos</div>
+    <div id="recs-auto"></div>
+    <div style="font-size:13px;font-weight:600;color:#1A3A5C;margin-top:10px;margin-bottom:6px">Agregar recomendación libre</div>
+    <div id="recs-libres"></div>
+    <button class="btn-add" onclick="addRecLibre()">+ Agregar recomendación</button>
+  </div>
+
+  <div class="card">
+    <div class="ct">✍️ Firma — Técnico H&S</div>
+    <div class="firma-wrap">
+      <div class="firma-label" id="firma1-label">Firma del Técnico H&S</div>
+      <div class="firma-canvas-wrap">
+        <canvas id="firma1-canvas" width="400" height="120"></canvas>
+        <div class="firma-hint" id="firma1-hint">Firmar aquí con el dedo</div>
+      </div>
+      <div class="firma-tools">
+        <button onclick="clearFirma(1)">🗑️ Borrar</button>
+        <button onclick="confirmFirma(1)" style="background:#1A3A5C;color:#fff;border-color:#1A3A5C">✅ Confirmar firma</button>
+      </div>
+      <div class="firma-done-badge hidden" id="firma1-done">✅ Firma confirmada</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">✍️ Firma — Responsable de obra</div>
+    <div class="firma-wrap">
+      <div class="firma-label" id="firma2-label">Firma del Responsable de obra</div>
+      <div class="firma-canvas-wrap">
+        <canvas id="firma2-canvas" width="400" height="120"></canvas>
+        <div class="firma-hint" id="firma2-hint">Firmar aquí con el dedo</div>
+      </div>
+      <div class="firma-tools">
+        <button onclick="clearFirma(2)">🗑️ Borrar</button>
+        <button onclick="confirmFirma(2)" style="background:#1A3A5C;color:#fff;border-color:#1A3A5C">✅ Confirmar firma</button>
+      </div>
+      <div class="firma-done-badge hidden" id="firma2-done">✅ Firma confirmada</div>
+    </div>
+  </div>
+
+  <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF — Constancia de visita</button>
+  <button class="btn-sec" onclick="showScreen('s3')" style="margin-top:8px">‹ Volver a checklists</button>
+  <button style="width:100%;padding:13px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevaVisita()">🔄 Nueva visita</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATOS MAESTROS
+// ═══════════════════════════════════════════════════════
+const TIPOS = [
+  {id:'general',   label:'Condiciones generales', ico:'📋', always:true},
+  {id:'altura',    label:'Trabajo en altura',      ico:'🏗️'},
+  {id:'excav',     label:'Excavaciones y zanjas',  ico:'⛏️'},
+  {id:'electrico', label:'Instalaciones eléctricas',ico:'⚡'},
+  {id:'demolic',   label:'Demoliciones',           ico:'🔨'},
+  {id:'albanil',   label:'Albañilería',             ico:'🧱'},
+  {id:'izaje',     label:'Izaje y equipos',         ico:'🏗️'},
+  {id:'confinado', label:'Espacios confinados',     ico:'🕳️'},
+  {id:'vial',      label:'Equipos viales',          ico:'🚛'},
+];
+
+const CHECKS = {
+  general:{
+    titulo:'Condiciones generales',
+    ico:'📋',
+    norma:'Dec. 911/96 · Res. 231/96',
+    items:[
+      {q:'Legajo Técnico disponible en obra',                              n:'D.911/96 · R.231/96 · R.051/97'},
+      {q:'Afiche SRT exhibido en lugar visible',                           n:'Res. SRT 70/97'},
+      {q:'Almacenamiento de materiales — orden y limpieza',               n:'D.911/96 · R.231/96'},
+      {q:'Normas higiénico-ambientales en obrador',                        n:'D.911/96'},
+      {q:'Señalización y demarcación perimetral',                          n:'D.911/96'},
+      {q:'Protección contra incendio — extintores vigentes',              n:'D.911/96'},
+      {q:'EPP completo en uso con registros de entrega',                  n:'D.911/96 · R.231/96'},
+      {q:'Programa de capacitación y registros de capacitación',          n:'R.231/96'},
+      {q:'Programa de seguridad aprobado con copia en obra',              n:'R.051/97 · R.035/98 · R.319/99'},
+      {q:'Iluminación adecuada en sectores de trabajo',                   n:'D.911/96'},
+    ]
+  },
+  altura:{
+    titulo:'Trabajo en altura',
+    ico:'🏗️',
+    norma:'Res. SRT 61/23 · D.911/96 Cap. 9',
+    items:[
+      {q:'Permiso de trabajo en altura firmado y vigente',                n:'Res. 61/23'},
+      {q:'Checklist de arneses y sistemas de arresto de caída completado',n:'Res. 61/23'},
+      {q:'Responsable en altura designado y presente',                    n:'Res. 61/23'},
+      {q:'Capacitación de 5 minutos realizada y registrada',             n:'Res. 61/23'},
+      {q:'Andamios con barandas (1m), travesaños intermedios y rodapiés', n:'D.911/96 Art.188'},
+      {q:'Andamios fijos/móviles en buen estado y debidamente anclados', n:'D.911/96 Art.194'},
+      {q:'Puntos de anclaje calculados y aprobados por profesional',      n:'Res. 61/23'},
+      {q:'Redes de seguridad instaladas donde corresponde',              n:'D.911/96 Art.62'},
+      {q:'Aberturas y bordes con protección perimetral',                  n:'D.911/96 Art.54/55'},
+    ]
+  },
+  excav:{
+    titulo:'Excavaciones y zanjas',
+    ico:'⛏️',
+    norma:'Res. SRT 550/11 · D.911/96 Cap. 6',
+    items:[
+      {q:'Vallado perimetral de excavación con señalización',             n:'D.911/96 · Res. 550/11'},
+      {q:'Entibado o tablestacado en excavaciones mayores a 1,50m',       n:'Res. 550/11'},
+      {q:'Permiso de trabajo seguro (PTS) confeccionado y firmado',       n:'Res. 550/11'},
+      {q:'Charla de 5 minutos realizada antes del inicio',               n:'Res. 550/11'},
+      {q:'Arnés con línea de vida en excavaciones mayores a 1,80m',      n:'Res. 550/11'},
+      {q:'Personal de apoyo/vigía presente en cada frente activo',        n:'Res. 550/11'},
+      {q:'Análisis de trabajo seguro (ATS) para tareas extraordinarias',  n:'Res. 550/11'},
+      {q:'Sistema de achique operativo si hay presencia de agua',         n:'D.911/96'},
+    ]
+  },
+  electrico:{
+    titulo:'Instalaciones eléctricas',
+    ico:'⚡',
+    norma:'D.911/96 Cap. 6 Art. 75-87',
+    items:[
+      {q:'Tablero eléctrico provisorio con disyuntor y diferencial',      n:'D.911/96'},
+      {q:'Cables sin empalmes expuestos — tendidos a ≥2,40m o subterráneos',n:'D.911/96 Art.86'},
+      {q:'Puesta a tierra verificada en tablero y equipos',               n:'D.911/96 Art.85'},
+      {q:'Trabajos en tensión con bloqueo/etiquetado (LOTO)',             n:'D.911/96 Art.85'},
+      {q:'EPP eléctrico disponible (guantes dieléctricos, calzado)',      n:'D.911/96'},
+      {q:'Interruptores diferenciales operativos',                        n:'D.911/96'},
+      {q:'Tablero con tapa, identificado y con extintor próximo',         n:'D.911/96'},
+      {q:'Personal habilitado para tareas eléctricas',                    n:'D.911/96 Art.85'},
+    ]
+  },
+  demolic:{
+    titulo:'Demoliciones',
+    ico:'🔨',
+    norma:'D.911/96 Cap. 6 Art. 96-104',
+    items:[
+      {q:'Plan de demolición aprobado con secuencia técnica definida',    n:'D.911/96 Art.96'},
+      {q:'Apuntalamientos previos ejecutados donde corresponde',           n:'D.911/96 Art.99'},
+      {q:'Zona de demolición acordonada y señalizada',                    n:'D.911/96 Art.98'},
+      {q:'Corte previo de servicios (gas, electricidad, agua) verificado',n:'D.911/96 Art.97'},
+      {q:'EPP específico: casco, antiparras, protección auditiva, barbijo',n:'D.911/96'},
+      {q:'Control de polvo con humectación en tarea',                     n:'D.911/96 Art.103'},
+      {q:'Acopio y retiro de escombros sin sobrecarga de losa',          n:'D.911/96 Art.101'},
+      {q:'Verificación de ausencia de amianto u otros materiales peligrosos',n:'D.911/96'},
+    ]
+  },
+  albanil:{
+    titulo:'Albañilería / Mampostería',
+    ico:'🧱',
+    norma:'D.911/96 general',
+    items:[
+      {q:'EPP básico en uso: casco, calzado de seguridad, guantes',       n:'D.911/96'},
+      {q:'Superficies de trabajo y accesos en buen estado y despejados',  n:'D.911/96'},
+      {q:'Herramientas manuales en buen estado y almacenadas correctamente',n:'D.911/96'},
+      {q:'Mezcladoras con guarda de protección en polea/correa',          n:'D.911/96'},
+      {q:'Andamios de apoyo con tablones en buen estado (≥2, sin nudos)', n:'D.911/96'},
+      {q:'Materiales estibados correctamente sin riesgo de vuelco',       n:'D.911/96'},
+      {q:'Protección contra proyección de partículas en trabajos con amoladora',n:'D.911/96'},
+      {q:'Iluminación adecuada en sectores cerrados o sin luz natural',   n:'D.911/96'},
+    ]
+  },
+  izaje:{
+    titulo:'Izaje y equipos elevadores',
+    ico:'🏗️',
+    norma:'D.911/96 Cap. 9 Art. 270-330',
+    items:[
+      {q:'Operador habilitado con certificación vigente',                  n:'D.911/96 Art.270'},
+      {q:'Registro de mantenimiento del equipo actualizado',              n:'D.911/96 Art.275'},
+      {q:'Cargas debidamente eslingadas y con peso identificado',         n:'D.911/96 Art.290'},
+      {q:'Zona de maniobra acordonada — prohibición de paso bajo cargas', n:'D.911/96 Art.280'},
+      {q:'Señalero/eslinguero con chaleco y comunicación con operador',   n:'D.911/96'},
+      {q:'Capacidad máxima del equipo verificada — carga no supera límite',n:'D.911/96 Art.285'},
+      {q:'Ganchos con pestillo de seguridad operativo',                   n:'D.911/96 Art.295'},
+      {q:'Verificación visual de cables, eslingas y cadenas antes del uso',n:'D.911/96 Art.289'},
+    ]
+  },
+  confinado:{
+    titulo:'Espacios confinados',
+    ico:'🕳️',
+    norma:'D.911/96 Art. 84 · Res. SRT 415/02',
+    items:[
+      {q:'Permiso de entrada a espacio confinado firmado',                n:'Res. 415/02'},
+      {q:'Medición de atmósfera previa al ingreso (O₂, gases, LEL)',      n:'Res. 415/02'},
+      {q:'Vigía externo permanente durante toda la tarea',                n:'Res. 415/02'},
+      {q:'Arnés con línea de vida y trípode de rescate disponible',      n:'Res. 415/02'},
+      {q:'Ventilación forzada activa durante la tarea',                   n:'D.911/96 Art.84'},
+      {q:'Equipos de comunicación operativos vigía/trabajador',           n:'Res. 415/02'},
+      {q:'Plan de rescate definido y comunicado antes del ingreso',       n:'Res. 415/02'},
+      {q:'EPP específico: protección respiratoria, casco, calzado',      n:'Res. 415/02'},
+    ]
+  },
+  vial:{
+    titulo:'Equipos viales y maquinaria pesada',
+    ico:'🚛',
+    norma:'D.911/96 Cap. 10',
+    items:[
+      {q:'Operador con licencia habilitante vigente para el equipo',      n:'D.911/96'},
+      {q:'VTV y documentación del equipo al día',                        n:'D.911/96 Art.140'},
+      {q:'Zona de trabajo señalizada — vallas y conos perimetrales',     n:'D.911/96'},
+      {q:'Señalero con chaleco reflectivo y banderín en maniobras',      n:'D.911/96'},
+      {q:'ROPS (estructura anti-vuelco) operativa donde corresponde',    n:'D.911/96'},
+      {q:'Extintor de 5kg ABC en cabina del operador',                   n:'D.911/96'},
+      {q:'Revisión pre-operacional diaria registrada',                    n:'D.911/96 Art.142'},
+      {q:'Prohibición de personal a menos de 5m durante maniobras',      n:'D.911/96'},
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════════
+let selectedTipos = ['general'];
+let checkState = {};
+let activeTab = 'general';
+let firma1Confirmed = false, firma2Confirmed = false;
+let firma1Data = null, firma2Data = null;
+let recLibres = [];
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function init() {
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  buildTipoGrid();
+  initFirma(1);
+  initFirma(2);
+}
+
+function esc(s){ return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════════════
+// S1 → S2
+// ═══════════════════════════════════════════════════════
+function goS2() {
+  const empresa = document.getElementById('empresa').value.trim();
+  const domicilio = document.getElementById('domicilio').value.trim();
+  const fecha = document.getElementById('fecha').value;
+  if (!empresa || !domicilio || !fecha) {
+    alert('Completá los campos obligatorios: Empresa, Domicilio y Fecha.');
+    return;
+  }
+  showScreen('s2');
+}
+
+// ═══════════════════════════════════════════════════════
+// TIPO DE TRABAJOS
+// ═══════════════════════════════════════════════════════
+function buildTipoGrid() {
+  const grid = document.getElementById('tipo-grid');
+  grid.innerHTML = '';
+  TIPOS.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tipo-btn' + (t.always ? ' always' : (selectedTipos.includes(t.id) ? ' sel' : ''));
+    btn.innerHTML = `<span class="ico">${t.ico}</span><span>${t.label}</span>`;
+    if (!t.always) btn.onclick = () => toggleTipo(t.id, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleTipo(id, btn) {
+  const idx = selectedTipos.indexOf(id);
+  if (idx === -1) { selectedTipos.push(id); btn.classList.add('sel'); }
+  else { selectedTipos.splice(idx, 1); btn.classList.remove('sel'); }
+}
+
+// ═══════════════════════════════════════════════════════
+// S2 → S3
+// ═══════════════════════════════════════════════════════
+function goS3() {
+  if (selectedTipos.length === 0) { alert('Seleccioná al menos un tipo de trabajo.'); return; }
+  // Inicializar estado
+  checkState = {};
+  selectedTipos.forEach(id => {
+    checkState[id] = {};
+    CHECKS[id].items.forEach((_, i) => checkState[id][i] = {val: null, obs: ''});
+  });
+  buildChecklists();
+  const empresa = document.getElementById('empresa').value;
+  document.getElementById('s3-banner').textContent =
+    empresa + ' · ' + selectedTipos.length + ' sección' + (selectedTipos.length > 1 ? 'es' : '') + ' activa' + (selectedTipos.length > 1 ? 's' : '');
+  activeTab = selectedTipos[0];
+  showScreen('s3');
+  updateProg();
+}
+
+function buildChecklists() {
+  // Tabs
+  const tabsEl = document.getElementById('section-tabs');
+  tabsEl.innerHTML = '';
+  selectedTipos.forEach(id => {
+    const t = TIPOS.find(x => x.id === id);
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (id === activeTab ? ' active' : '');
+    tab.textContent = t.ico + ' ' + (t.always ? 'General' : t.label.split(' ')[0]);
+    tab.onclick = () => switchTab(id);
+    tabsEl.appendChild(tab);
+  });
+  // Contenido
+  const cont = document.getElementById('checklists-container');
+  cont.innerHTML = '';
+  selectedTipos.forEach(id => {
+    const sec = CHECKS[id];
+    const div = document.createElement('div');
+    div.id = 'sec_' + id;
+    div.className = id === activeTab ? '' : 'hidden';
+    let html = `<div class="check-section-header"><div>
+      <h3>${sec.ico} ${sec.titulo}</h3>
+      <p>${sec.norma}</p>
+    </div></div>`;
+    sec.items.forEach((item, i) => {
+      const st = checkState[id][i];
+      html += `<div class="check-item" id="ci_${id}_${i}">
+        <div class="check-item-label">${item.q}</div>
+        <div class="check-item-norm">${item.n}</div>
+        <div class="yn-btns">
+          <button class="btn-si ${st.val==='si'?'active':''}" onclick="setCheck('${id}',${i},'si')">✅ Sí</button>
+          <button class="btn-no ${st.val==='no'?'active':''}" onclick="setCheck('${id}',${i},'no')">❌ No</button>
+          <button class="btn-na ${st.val==='na'?'active':''}" onclick="setCheck('${id}',${i},'na')">— N/A</button>
+        </div>
+        <div class="obs-field ${st.val==='no'?'':'hidden'}" id="obs_${id}_${i}">
+          <textarea placeholder="Describir el incumplimiento y la recomendación..." 
+            oninput="checkState['${id}'][${i}].obs=this.value">${esc(st.obs)}</textarea>
+        </div>
+      </div>`;
+    });
+    div.innerHTML = html;
+    cont.appendChild(div);
+  });
+}
+
+function setCheck(id, idx, val) {
+  checkState[id][idx].val = val;
+  // Update buttons
+  const ci = document.getElementById(`ci_${id}_${idx}`);
+  ci.querySelectorAll('.btn-si,.btn-no,.btn-na').forEach(b => b.classList.remove('active'));
+  ci.querySelector('.btn-' + val).classList.add('active');
+  const obsDiv = document.getElementById(`obs_${id}_${idx}`);
+  obsDiv.classList.toggle('hidden', val !== 'no');
+  updateProg();
+}
+
+function switchTab(id) {
+  activeTab = id;
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', selectedTipos[i] === id));
+  selectedTipos.forEach(sid => {
+    const el = document.getElementById('sec_' + sid);
+    if (el) el.classList.toggle('hidden', sid !== id);
+  });
+}
+
+function updateProg() {
+  let total = 0, done = 0;
+  selectedTipos.forEach(id => {
+    Object.values(checkState[id] || {}).forEach(v => { total++; if (v.val) done++; });
+  });
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${done} de ${total} ítems evaluados (${pct}%)`;
+}
+
+// ═══════════════════════════════════════════════════════
+// S3 → S4
+// ═══════════════════════════════════════════════════════
+function goS4() {
+  const empresa = document.getElementById('empresa').value;
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  document.getElementById('s4-sub').textContent = empresa + ' · ' + dateStr;
+  const tecnico = document.getElementById('tecnico').value;
+  const respObra = document.getElementById('resp_obra').value;
+  document.getElementById('firma1-label').textContent = 'Firma del Técnico H&S' + (tecnico ? ' — ' + tecnico : '');
+  document.getElementById('firma2-label').textContent = 'Firma del Responsable de obra' + (respObra ? ' — ' + respObra : '');
+  buildRecsAuto();
+  showScreen('s4');
+}
+
+function buildRecsAuto() {
+  const cont = document.getElementById('recs-auto');
+  cont.innerHTML = '';
+  let count = 0;
+  selectedTipos.forEach(id => {
+    const sec = CHECKS[id];
+    sec.items.forEach((item, i) => {
+      const st = checkState[id][i];
+      if (st.val === 'no') {
+        count++;
+        const div = document.createElement('div');
+        div.className = 'rec-item';
+        div.innerHTML = `<div class="rec-sec">${sec.titulo}</div>
+          <div class="rec-txt">${count}. ${item.q}${st.obs ? ' — ' + st.obs : ''}</div>`;
+        cont.appendChild(div);
+      }
+    });
+  });
+  if (count === 0) {
+    cont.innerHTML = '<div style="font-size:14px;color:#1B5E20;padding:8px 0">✅ Sin incumplimientos detectados en esta visita.</div>';
+  }
+}
+
+function addRecLibre() {
+  recLibres.push('');
+  const cont = document.getElementById('recs-libres');
+  const idx = recLibres.length - 1;
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;margin-bottom:8px';
+  div.innerHTML = `<textarea placeholder="Recomendación libre..." style="flex:1;min-height:50px;font-size:13px;padding:8px 10px;border-radius:9px;border:1.5px solid #DDD;outline:none;font-family:inherit;resize:none"
+    oninput="recLibres[${idx}]=this.value"></textarea>
+    <button onclick="this.parentElement.remove();recLibres.splice(${idx},1)" 
+      style="padding:8px 12px;border:1.5px solid #EF5350;border-radius:9px;background:#fff;color:#EF5350;cursor:pointer;flex-shrink:0;align-self:flex-start;margin-top:4px">✕</button>`;
+  cont.appendChild(div);
+}
+
+// ═══════════════════════════════════════════════════════
+// FIRMA DIGITAL
+// ═══════════════════════════════════════════════════════
+function initFirma(n) {
+  const canvas = document.getElementById(`firma${n}-canvas`);
+  const hint = document.getElementById(`firma${n}-hint`);
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1A3A5C';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false, lastX = 0, lastY = 0;
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches) {
+      return [(e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY];
+    }
+    return [(e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY];
+  }
+
+  function start(e) { e.preventDefault(); drawing = true; [lastX, lastY] = getPos(e); hint.style.display = 'none'; }
+  function draw(e) {
+    if (!drawing) return; e.preventDefault();
+    const [x, y] = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    [lastX, lastY] = [x, y];
+  }
+  function stop() { drawing = false; }
+
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', draw, {passive:false});
+  canvas.addEventListener('touchend', stop);
+}
+
+function clearFirma(n) {
+  const canvas = document.getElementById(`firma${n}-canvas`);
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById(`firma${n}-hint`).style.display = 'block';
+  document.getElementById(`firma${n}-done`).classList.add('hidden');
+  if (n === 1) { firma1Confirmed = false; firma1Data = null; }
+  else { firma2Confirmed = false; firma2Data = null; }
+}
+
+function confirmFirma(n) {
+  const canvas = document.getElementById(`firma${n}-canvas`);
+  if (n === 1) { firma1Data = canvas.toDataURL('image/png'); firma1Confirmed = true; }
+  else { firma2Data = canvas.toDataURL('image/png'); firma2Confirmed = true; }
+  document.getElementById(`firma${n}-done`).classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════
+// GENERAR PDF
+// ═══════════════════════════════════════════════════════
+function generarPDF() {
+  const { jsPDF } = window.jspdf;
+  if (!jsPDF) { alert('Error al cargar el generador de PDF. Verificá tu conexión.'); return; }
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const W = 210, M = 15;
+  let y = 15;
+
+  // Colores
+  const azul = [26, 58, 92];
+  const grisClaro = [245, 247, 250];
+  const negro = [30, 30, 30];
+  const verde = [46, 125, 50];
+  const rojo = [198, 40, 40];
+  const gris = [120, 120, 120];
+
+  function setFont(style, size, color) {
+    doc.setFont('helvetica', style);
+    doc.setFontSize(size);
+    doc.setTextColor(...(color || negro));
+  }
+
+  // ── ENCABEZADO ──
+  doc.setFillColor(...azul);
+  doc.rect(0, 0, W, 22, 'F');
+  setFont('bold', 13, [255,255,255]);
+  doc.text('CONSTANCIA DE VISITA A OBRA — SEGURIDAD E HIGIENE', M, 10);
+  setFont('normal', 8, [180,200,220]);
+  doc.text('S&E Consultores · syeconsultores.com.ar · Dec. 911/96 · Res. 61/23', M, 16);
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  doc.text('Generado: ' + dateStr, W - M, 16, {align:'right'});
+  y = 28;
+
+  // ── DATOS DE OBRA ──
+  doc.setFillColor(...grisClaro);
+  doc.roundedRect(M, y, W - M*2, 40, 2, 2, 'F');
+  setFont('bold', 9, azul);
+  doc.text('DATOS DE LA OBRA', M+4, y+6);
+  setFont('normal', 8.5, negro);
+  const empresa = document.getElementById('empresa').value || '—';
+  const cuit = document.getElementById('cuit').value || '—';
+  const denom = document.getElementById('denominacion').value || '—';
+  const domicilio = document.getElementById('domicilio').value || '—';
+  const esCaba = document.getElementById('es_caba').checked;
+  const horaIni = document.getElementById('hora_ini').value || '—';
+  const horaFin = document.getElementById('hora_fin').value || '—';
+  const nTrab = document.getElementById('n_trabajadores').value || '—';
+  const tecnico = document.getElementById('tecnico').value || '—';
+  const mat = document.getElementById('matricula').value || '—';
+  const respObra = document.getElementById('resp_obra').value || '—';
+  const col1 = M+4, col2 = M+4+60;
+  doc.text('Razón Social:', col1, y+13); setFont('bold',8.5,negro); doc.text(empresa, col1+28, y+13); setFont('normal',8.5,negro);
+  doc.text('CUIT:', col2, y+13); doc.text(cuit, col2+12, y+13);
+  doc.text('Denominación:', col1, y+19); setFont('bold',8.5,negro); doc.text(denom, col1+28, y+19); setFont('normal',8.5,negro);
+  doc.text('Domicilio:', col1, y+25); doc.text(domicilio + (esCaba?' (CABA)':''), col1+20, y+25);
+  doc.text('Fecha:', col1, y+31); doc.text(dateStr, col1+14, y+31);
+  doc.text('Hora: ' + horaIni + ' – ' + horaFin, col2, y+31);
+  doc.text('Trabajadores: ' + nTrab, col2+40, y+31);
+  doc.text('Técnico H&S: ' + tecnico + (mat !== '—' ? ' (Mat. '+mat+')' : ''), col1, y+37);
+  doc.text('Resp. Obra: ' + respObra, col2, y+37);
+  y += 46;
+
+  // ── TABLA DE ÍTEMS ──
+  // Header
+  doc.setFillColor(...azul);
+  doc.rect(M, y, W-M*2, 7, 'F');
+  setFont('bold', 8, [255,255,255]);
+  doc.text('N°', M+3, y+5);
+  doc.text('DESCRIPCIÓN', M+12, y+5);
+  doc.text('SI', W-M-18, y+5, {align:'center'});
+  doc.text('NO', W-M-11, y+5, {align:'center'});
+  doc.text('N/A', W-M-4, y+5, {align:'center'});
+  y += 8;
+
+  let rowNum = 0;
+  let noItems = [];
+
+  selectedTipos.forEach(id => {
+    const sec = CHECKS[id];
+    // Sección header
+    if (y > 255) { doc.addPage(); y = 15; }
+    doc.setFillColor(235, 240, 247);
+    doc.rect(M, y, W-M*2, 6, 'F');
+    setFont('bold', 8, azul);
+    doc.text(sec.ico + ' ' + sec.titulo.toUpperCase() + '  |  ' + sec.norma, M+3, y+4.5);
+    y += 7;
+
+    sec.items.forEach((item, i) => {
+      if (y > 262) { doc.addPage(); y = 15; }
+      rowNum++;
+      const st = checkState[id] ? checkState[id][i] : {val:null,obs:''};
+      const bg = rowNum % 2 === 0 ? [250,251,253] : [255,255,255];
+      doc.setFillColor(...bg);
+      const rowH = st.val === 'no' && st.obs ? 10 : 7;
+      doc.rect(M, y, W-M*2, rowH, 'F');
+      doc.setDrawColor(220,220,220);
+      doc.line(M, y+rowH, W-M, y+rowH);
+      setFont('normal', 7.5, negro);
+      doc.text(String(rowNum), M+3, y+5);
+      const txt = doc.splitTextToSize(item.q, 118);
+      doc.text(txt[0], M+12, y+5);
+      // Badges SI/NO/NA
+      const bx = W-M-18, by2 = W-M-11, bna = W-M-4;
+      if (st.val === 'si') { doc.setFillColor(...verde); doc.roundedRect(bx-4,y+1.5,8,4,1,1,'F'); setFont('bold',6,[255,255,255]); doc.text('SI',bx,y+4.8,{align:'center'}); }
+      else { setFont('normal',7.5,[200,200,200]); doc.text('SI',bx,y+5,{align:'center'}); }
+      if (st.val === 'no') { doc.setFillColor(...rojo); doc.roundedRect(by2-4,y+1.5,8,4,1,1,'F'); setFont('bold',6,[255,255,255]); doc.text('NO',by2,y+4.8,{align:'center'}); noItems.push({sec:sec.titulo, item:item.q, obs:st.obs}); }
+      else { setFont('normal',7.5,[200,200,200]); doc.text('NO',by2,y+5,{align:'center'}); }
+      if (st.val === 'na') { doc.setFillColor(150,150,150); doc.roundedRect(bna-5,y+1.5,9,4,1,1,'F'); setFont('bold',6,[255,255,255]); doc.text('N/A',bna,y+4.8,{align:'center'}); }
+      else { setFont('normal',7.5,[200,200,200]); doc.text('N/A',bna,y+5,{align:'center'}); }
+      y += rowH;
+    });
+  });
+  y += 5;
+
+  // ── RECOMENDACIONES ──
+  if (y > 230) { doc.addPage(); y = 15; }
+  doc.setFillColor(...azul);
+  doc.rect(M, y, W-M*2, 7, 'F');
+  setFont('bold', 8, [255,255,255]);
+  doc.text('RECOMENDACIONES', M+3, y+5);
+  y += 8;
+
+  let recNum = 0;
+  noItems.forEach(r => {
+    if (y > 262) { doc.addPage(); y = 15; }
+    recNum++;
+    doc.setFillColor(255,248,225);
+    const lines = doc.splitTextToSize(`${recNum}. [${r.sec}] ${r.item}${r.obs?' — '+r.obs:''}`, W-M*2-8);
+    const h = lines.length * 4.5 + 4;
+    doc.rect(M, y, W-M*2, h, 'F');
+    doc.setFillColor(245,127,23);
+    doc.rect(M, y, 2, h, 'F');
+    setFont('normal', 7.5, negro);
+    doc.text(lines, M+5, y+4);
+    y += h + 2;
+  });
+  recLibres.filter(Boolean).forEach(r => {
+    if (y > 262) { doc.addPage(); y = 15; }
+    recNum++;
+    doc.setFillColor(255,248,225);
+    const lines = doc.splitTextToSize(`${recNum}. ${r}`, W-M*2-8);
+    const h = lines.length * 4.5 + 4;
+    doc.rect(M, y, W-M*2, h, 'F');
+    doc.setFillColor(245,127,23);
+    doc.rect(M, y, 2, h, 'F');
+    setFont('normal', 7.5, negro);
+    doc.text(lines, M+5, y+4);
+    y += h + 2;
+  });
+  if (recNum === 0) {
+    doc.setFillColor(232,245,233);
+    doc.rect(M, y, W-M*2, 8, 'F');
+    setFont('normal', 8, verde);
+    doc.text('Sin incumplimientos detectados en esta visita.', M+5, y+5.5);
+    y += 10;
+  }
+  y += 6;
+
+  // ── FIRMAS ──
+  if (y > 230) { doc.addPage(); y = 15; }
+  const fw = (W-M*2-10)/2;
+  // Box firma 1
+  doc.setDrawColor(...azul); doc.setLineWidth(0.3);
+  doc.rect(M, y, fw, 30);
+  setFont('normal', 7, gris);
+  doc.text('Firma del Técnico de Higiene y Seguridad', M+fw/2, y+26, {align:'center'});
+  doc.text(tecnico !== '—' ? tecnico : '', M+fw/2, y+29, {align:'center'});
+  if (firma1Data) { try { doc.addImage(firma1Data,'PNG',M+2,y+2,fw-4,20); } catch(e){} }
+
+  // Box firma 2
+  doc.rect(M+fw+10, y, fw, 30);
+  doc.text('Firma del Responsable de Obra', M+fw+10+fw/2, y+26, {align:'center'});
+  doc.text(respObra !== '—' ? respObra : '', M+fw+10+fw/2, y+29, {align:'center'});
+  if (firma2Data) { try { doc.addImage(firma2Data,'PNG',M+fw+12,y+2,fw-4,20); } catch(e){} }
+  y += 36;
+
+  // ── PIE ──
+  setFont('normal', 7, gris);
+  doc.text('Las recomendaciones deben ser cumplimentadas en forma inmediata · S&E Consultores · syeconsultores.com.ar', W/2, y+4, {align:'center'});
+
+  // Guardar
+  const nombreArchivo = `Visita_Obra_${(document.getElementById('empresa').value||'obra').replace(/\s+/g,'_')}_${fecha||'sin_fecha'}.pdf`;
+  doc.save(nombreArchivo);
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function nuevaVisita() {
+  if (!confirm('¿Iniciás una nueva visita? Se perderán todos los datos actuales.')) return;
+  document.querySelectorAll('input[type=text],input[type=date],input[type=number],input[type=time],textarea').forEach(el=>el.value='');
+  document.getElementById('es_caba').checked = false;
+  selectedTipos = ['general'];
+  checkState = {};
+  firma1Confirmed = false; firma2Confirmed = false;
+  firma1Data = null; firma2Data = null;
+  recLibres = [];
+  clearFirma(1); clearFirma(2);
+  buildTipoGrid();
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  showScreen('s1');
+}
+
+init();
+</script>
+</body>
+</html>
