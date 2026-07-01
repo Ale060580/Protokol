@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Ventilación Laboral — Dec. 351/79</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:50px}
+.screen.active{display:block}
+.topbar{background:#2E5902;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#2E5902;box-shadow:0 0 0 3px rgba(46,89,2,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#2E5902;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#1e3d01}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#2E5902;border:1.5px solid #2E5902;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-danger{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-copy{width:100%;padding:15px;background:#1a6b3a;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-add{width:100%;padding:10px;border:1.5px dashed #2E5902;border-radius:10px;background:#EEF5E8;color:#2E5902;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-sm{padding:8px 12px;border:1.5px solid #DDD;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.btn-sm.danger{border-color:#EF5350;color:#EF5350}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.verde{background:#EEF5E8;border-color:#8BC34A;color:#2E5902}
+.nota.roja{background:#FFEBEE;border-color:#EF9A9A;color:#B71C1C}
+.nota.azul{background:#E3F2FD;border-color:#90CAF9;color:#0D47A1}
+.hidden{display:none}
+.sector-card{background:#fff;border-radius:13px;padding:16px;margin-bottom:12px;border:1.5px solid #DDD}
+.sector-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sector-name{font-size:15px;font-weight:700;color:#2E5902}
+.res-inline{border-radius:10px;padding:12px;margin-top:8px}
+.res-inline.ok{background:#EEF5E8;border:1px solid #8BC34A}
+.res-inline.fail{background:#FFEBEE;border:1px solid #EF5350}
+.res-inline.nd{background:#F5F5F5;border:1px solid #DDD}
+.res-inline .val{font-size:16px;font-weight:700}
+.res-inline.ok .val{color:#2E5902}
+.res-inline.fail .val{color:#B71C1C}
+.res-inline.nd .val{color:#555}
+.res-inline .sub{font-size:12px;color:#555;margin-top:3px;line-height:1.4}
+.ext-card{background:#F8F5FF;border:1.5px solid #B39DDB;border-radius:12px;padding:14px;margin-top:10px}
+.ext-title{font-size:13px;font-weight:700;color:#4527A0;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.vc-sugerida{background:#EDE7F6;border-radius:8px;padding:9px 11px;font-size:13px;color:#4527A0;margin-top:6px;margin-bottom:8px;line-height:1.5}
+.inf-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.inf-section h3{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F0F0F0;padding-bottom:8px;margin-bottom:10px}
+.inf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none}
+.inf-row .ik{color:#555;flex:1;padding-right:8px;line-height:1.4}
+.inf-row .iv{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+.cumple-badge{display:inline-block;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;margin-top:8px}
+.cumple-badge.ok{background:#EEF5E8;color:#2E5902}
+.cumple-badge.fail{background:#FFEBEE;color:#B71C1C}
+.cumple-badge.nd{background:#F5F5F5;color:#888}
+.med-block{background:#F8FAF5;border:1px solid #C5E1A5;border-radius:10px;padding:11px;margin-bottom:8px}
+.med-label{font-size:12px;font-weight:600;color:#2E5902;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Medición de Ventilación</h1>
+  <span>Dec. 351/79 Cap. 11 · Res. 295/03 · ACGIH</span>
+</div>
+
+<!-- ════════════════════════════
+     S1 — DATOS GENERALES
+════════════════════════════ -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos de la medición</div>
+    <label class="fl">Fecha de medición</label>
+    <input type="date" id="fecha">
+    <label class="fl">Empresa / establecimiento</label>
+    <input type="text" id="empresa" placeholder="Razón social">
+    <label class="fl">Dirección</label>
+    <input type="text" id="direccion" placeholder="Dirección completa">
+    <label class="fl">Actividad / Rubro principal</label>
+    <input type="text" id="actividad" placeholder="Ej: Metalúrgica, Carpintería, Oficinas, Industria química">
+  </div>
+
+  <div class="card">
+    <div class="ct">🔧 Equipo de medición</div>
+    <label class="fl">Anemómetro — Marca y modelo</label>
+    <input type="text" id="ane_marca" placeholder="Ej: Testo 405i, Kimo VT100, Fluke 925">
+    <div class="field-2" style="margin-top:10px">
+      <div>
+        <label class="fl" style="margin-top:0">N° de serie</label>
+        <input type="text" id="ane_serie" placeholder="N° de serie">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">Fecha calibración</label>
+        <input type="date" id="ane_cal">
+      </div>
+    </div>
+    <label class="fl">Laboratorio de calibración</label>
+    <input type="text" id="ane_lab" placeholder="Nombre del laboratorio acreditado">
+  </div>
+
+  <div class="card">
+    <div class="ct">👷 Profesional responsable</div>
+    <label class="fl">Nombre y apellido</label>
+    <input type="text" id="profesional" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula / Registro</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+
+  <button class="btn-main" onclick="showScreen('s2')">Continuar → Sectores ›</button>
+</div>
+
+<!-- ════════════════════════════
+     S2 — SECTORES
+════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="nota verde" style="margin-top:12px">
+    Agregá cada sector o local evaluado. La app calcula el caudal mínimo requerido según Art. 66 Dec. 351/79 y lo compara con el caudal medido con anemómetro. Podés agregar puntos de extracción localizada por sector.
+  </div>
+  <div id="sectores-container"></div>
+  <button class="btn-add" onclick="addSector()">+ Agregar sector / local</button>
+  <button class="btn-main" onclick="goInforme()" style="margin-top:16px">📄 Ver resultado e informe ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver a datos generales</button>
+</div>
+
+<!-- ════════════════════════════
+     S3 — INFORME
+════════════════════════════ -->
+<div id="s3" class="screen">
+  <div style="background:#2E5902;color:#fff;border-radius:13px;padding:15px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Informe de Medición — Ventilación Laboral</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px">Dec. 351/79 Cap. 11 · Res. 295/03 · ACGIH</div>
+    <div style="font-size:13px;margin-top:6px;opacity:.9" id="inf-sub"></div>
+  </div>
+  <div id="informe-body"></div>
+  <div class="nota">Datos para volcar al informe técnico de ventilación laboral.</div>
+  <button class="btn-copy" onclick="copiarInforme()">📋 Copiar datos para informe</button>
+  <button class="btn-danger" onclick="nuevaMedicion()">🔄 Nueva medición</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// TABLA ART. 66 DEC. 351/79
+// [cubaje_max, caudal_sedentaria, caudal_moderada]
+// ════════════════════════════════════════════════
+const TABLA_VENT = [
+  [3,  43, 65],
+  [6,  29, 43],
+  [9,  21, 31],
+  [12, 15, 23],
+  [15, 12, 17],
+];
+
+function getCaudalMin(cubaje, actividad) {
+  // Usar el valor más restrictivo si está entre filas
+  const c = cubaje;
+  for (let i = 0; i < TABLA_VENT.length; i++) {
+    const [max, sed, mod] = TABLA_VENT[i];
+    if (c <= max) return actividad === 'sedentaria' ? sed : mod;
+  }
+  // Cubaje > 15 m³/persona → usar el valor de 15 (mínimo de la tabla)
+  return actividad === 'sedentaria' ? 12 : 17;
+}
+
+// ════════════════════════════════════════════════
+// CONTAMINANTES Y Vc MÍNIMA (ACGIH / Res. 295/03)
+// ════════════════════════════════════════════════
+const CONTAMINANTES = [
+  {grupo:'Vapores y gases', items:[
+    {label:'Vapores de solventes, gases poco tóxicos (acetona, alcohol, diluyentes)',   vc_min:0.25, vc_max:0.5},
+    {label:'Humos de soldadura (MIG/TIG/electrodo revestido)',                          vc_min:0.5,  vc_max:1.0},
+    {label:'Humos de pintura, barnices, lacas, resinas',                                vc_min:0.5,  vc_max:1.0},
+    {label:'Vapores de ácidos y sustancias moderadamente tóxicas',                      vc_min:0.5,  vc_max:1.0},
+    {label:'Gases muy tóxicos o irritantes (ClH, HF, NH3, etc.)',                      vc_min:1.0,  vc_max:2.5},
+    {label:'Gases o vapores con riesgo de explosión / inflamables',                    vc_min:0.5,  vc_max:1.0},
+  ]},
+  {grupo:'Polvos y partículas', items:[
+    {label:'Polvo de madera, serrín, fibra vegetal, papel',                            vc_min:0.5,  vc_max:1.0},
+    {label:'Polvo de yeso, cemento, cal, arena',                                       vc_min:0.5,  vc_max:1.0},
+    {label:'Polvo metálico (limado, taladrado, rectificado)',                          vc_min:1.0,  vc_max:2.5},
+    {label:'Esmerilado, rebarbado, granallado, chorreado',                             vc_min:1.0,  vc_max:2.5},
+    {label:'Polvo de sílice cristalina, amianto, fibras cancerígenas',                vc_min:2.5,  vc_max:10},
+    {label:'Polvo con riesgo de explosión (madera fina, aluminio, magnesio)',         vc_min:1.0,  vc_max:2.5},
+  ]},
+  {grupo:'Calor y vapor de agua', items:[
+    {label:'Vapor de agua, humedad excesiva, vapor de cocción',                        vc_min:0.25, vc_max:0.5},
+    {label:'Humos de cocción, frituras, grasa',                                        vc_min:0.25, vc_max:0.5},
+    {label:'Calor radiante intenso (hornos, fundición, forja)',                        vc_min:0.5,  vc_max:1.0},
+  ]},
+];
+
+const CAMPANAS = [
+  {id:'receptora',  label:'Campana receptora (sobre la fuente — el contaminante sube naturalmente)'},
+  {id:'envolvente', label:'Campana envolvente / cabina (rodea total o parcialmente la fuente)'},
+  {id:'exterior',   label:'Campana exterior lateral (al costado o debajo de la fuente)'},
+  {id:'ranura',     label:'Ranura / slot lateral de extracción'},
+  {id:'ducto',      label:'Ducto / boca de aspiración general'},
+];
+
+// ════════════════════════════════════════════════
+// ESTADO
+// ════════════════════════════════════════════════
+let sectores = [];
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+function init() {
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  addSector();
+}
+
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ════════════════════════════════════════════════
+// SECTORES
+// ════════════════════════════════════════════════
+function addSector() {
+  sectores.push({
+    nombre:'', largo:'', ancho:'', alto:'', nPersonas:'',
+    actividad:'sedentaria', tipoVent:'forzada',
+    mediciones:[{velocidad:'', area:'', caudal_directo:''}],
+    tieneEL:false,
+    extLocales:[],
+    obs:''
+  });
+  renderSectores();
+}
+
+function removeSector(idx) {
+  if (sectores.length <= 1) { alert('Debe haber al menos un sector.'); return; }
+  if (!confirm('¿Eliminar este sector?')) return;
+  sectores.splice(idx, 1);
+  renderSectores();
+}
+
+function renderSectores() {
+  const cont = document.getElementById('sectores-container');
+  cont.innerHTML = '';
+  sectores.forEach((s, idx) => {
+    const div = document.createElement('div');
+    div.className = 'sector-card';
+    div.innerHTML = buildSectorHTML(s, idx);
+    cont.appendChild(div);
+    setTimeout(() => calcSector(idx), 60);
+  });
+}
+
+function buildSectorHTML(s, idx) {
+  let html = `
+    <div class="sector-header">
+      <div class="sector-name" id="sn_${idx}">Sector ${idx+1}${s.nombre?' — '+s.nombre:''}</div>
+      ${sectores.length>1?`<button class="btn-sm danger" onclick="removeSector(${idx})">✕ Eliminar</button>`:''}
+    </div>
+    <label class="fl" style="margin-top:0">Nombre del sector / local</label>
+    <input type="text" value="${esc(s.nombre)}" placeholder="Ej: Taller de producción, Oficina administración, Cabina de pintura"
+      oninput="sectores[${idx}].nombre=this.value;document.getElementById('sn_${idx}').textContent='Sector ${idx+1}'+(this.value?' — '+this.value:'')">
+
+    <div class="field-3" style="margin-top:10px">
+      <div><label class="fl" style="margin-top:0">Largo (m)</label>
+        <input type="number" value="${s.largo}" placeholder="m" step="0.1" min="0"
+          oninput="sectores[${idx}].largo=this.value;calcSector(${idx})"></div>
+      <div><label class="fl" style="margin-top:0">Ancho (m)</label>
+        <input type="number" value="${s.ancho}" placeholder="m" step="0.1" min="0"
+          oninput="sectores[${idx}].ancho=this.value;calcSector(${idx})"></div>
+      <div><label class="fl" style="margin-top:0">Altura (m)</label>
+        <input type="number" value="${s.alto}" placeholder="m" step="0.1" min="0"
+          oninput="sectores[${idx}].alto=this.value;calcSector(${idx})"></div>
+    </div>
+
+    <div class="field-2" style="margin-top:10px">
+      <div><label class="fl" style="margin-top:0">N° de ocupantes</label>
+        <input type="number" value="${s.nPersonas}" placeholder="personas" min="1"
+          oninput="sectores[${idx}].nPersonas=this.value;calcSector(${idx})"></div>
+      <div><label class="fl" style="margin-top:0">Tipo de actividad</label>
+        <select onchange="sectores[${idx}].actividad=this.value;calcSector(${idx})">
+          <option value="sedentaria" ${s.actividad==='sedentaria'?'selected':''}>Sedentaria</option>
+          <option value="moderada" ${s.actividad==='moderada'?'selected':''}>Moderada</option>
+        </select></div>
+    </div>
+
+    <label class="fl">Tipo de ventilación</label>
+    <select onchange="sectores[${idx}].tipoVent=this.value">
+      <option value="natural" ${s.tipoVent==='natural'?'selected':''}>Natural (aberturas, ventanas, rejillas)</option>
+      <option value="forzada" ${s.tipoVent==='forzada'?'selected':''}>Forzada / mecánica (extractores, inyectores)</option>
+      <option value="mixta" ${s.tipoVent==='mixta'?'selected':''}>Mixta (natural + forzada)</option>
+    </select>
+
+    <div style="font-size:13px;font-weight:700;color:#2E5902;margin:14px 0 6px">Mediciones de caudal — ventilación general</div>
+    <div class="nota verde" style="font-size:12px;margin-bottom:8px">
+      Q (m³/h) = Velocidad (m/s) × Área sección (m²) × 3600. Podés ingresar el caudal directamente si el equipo lo mide. Sumá un punto por cada boca / abertura medida.
+    </div>
+    <div id="meds_${idx}">`;
+
+  s.mediciones.forEach((m, mi) => {
+    html += `<div class="med-block">
+      <div class="med-label">Punto de medición ${mi+1}</div>
+      <div class="field-3">
+        <div>
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Velocidad (m/s)</label>
+          <input type="number" value="${m.velocidad}" placeholder="m/s" min="0" step="0.01"
+            oninput="sectores[${idx}].mediciones[${mi}].velocidad=this.value;calcSector(${idx})"
+            style="padding:8px 9px;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Área sección (m²)</label>
+          <input type="number" value="${m.area}" placeholder="m²" min="0" step="0.001"
+            oninput="sectores[${idx}].mediciones[${mi}].area=this.value;calcSector(${idx})"
+            style="padding:8px 9px;font-size:14px">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px">Q directo (m³/h)</label>
+          <input type="number" value="${m.caudal_directo}" placeholder="m³/h" min="0"
+            oninput="sectores[${idx}].mediciones[${mi}].caudal_directo=this.value;calcSector(${idx})"
+            style="padding:8px 9px;font-size:14px">
+        </div>
+      </div>
+      ${s.mediciones.length>1?`<button onclick="removeMed(${idx},${mi})"
+        style="margin-top:8px;font-size:12px;padding:5px 10px;border:1.5px solid #EF5350;border-radius:8px;background:#fff;color:#EF5350;cursor:pointer">
+        ✕ Eliminar punto</button>`:''}
+    </div>`;
+  });
+
+  html += `</div>
+    <button class="btn-add" onclick="addMed(${idx})" style="font-size:13px;padding:8px">+ Agregar punto de medición</button>
+    <div id="res_vg_${idx}" style="margin-top:8px"></div>
+
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid #E8E8E8">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:#4527A0">🌀 Extracción localizada</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="setEL(${idx},true)"
+            style="padding:7px 14px;font-size:13px;border:1.5px solid ${s.tieneEL?'#7B1FA2':'#DDD'};border-radius:9px;background:${s.tieneEL?'#EDE7F6':'#fff'};color:${s.tieneEL?'#4527A0':'#666'};cursor:pointer;font-weight:${s.tieneEL?'700':'400'}">Sí</button>
+          <button onclick="setEL(${idx},false)"
+            style="padding:7px 14px;font-size:13px;border:1.5px solid ${!s.tieneEL?'#888':'#DDD'};border-radius:9px;background:${!s.tieneEL?'#F5F5F5':'#fff'};color:${!s.tieneEL?'#333':'#666'};cursor:pointer;font-weight:${!s.tieneEL?'600':'400'}">No</button>
+        </div>
+      </div>`;
+
+  if (s.tieneEL) {
+    s.extLocales.forEach((el, eli) => {
+      html += buildELHTML(idx, eli, el);
+    });
+    html += `<button class="btn-add" onclick="addEL(${idx})"
+      style="border-color:#B39DDB;background:#EDE7F6;color:#4527A0;font-size:13px;padding:8px">
+      + Agregar punto de extracción localizada</button>`;
+  }
+
+  html += `</div>
+    <label class="fl">Observaciones del sector</label>
+    <textarea placeholder="Observaciones, deficiencias detectadas, tipo de contaminantes presentes, condiciones especiales (opcional)"
+      oninput="sectores[${idx}].obs=this.value">${esc(s.obs)}</textarea>`;
+
+  return html;
+}
+
+function buildELHTML(idx, eli, el) {
+  let contOpts = '<option value="">— Seleccionar contaminante generado —</option>';
+  CONTAMINANTES.forEach(g => {
+    contOpts += `<optgroup label="${g.grupo}">`;
+    g.items.forEach((item, ii) => {
+      const val = `${g.grupo}|${ii}`;
+      contOpts += `<option value="${val}" ${el.contIdx===val?'selected':''}>${item.label}</option>`;
+    });
+    contOpts += '</optgroup>';
+  });
+
+  let campOpts = CAMPANAS.map(c =>
+    `<option value="${c.id}" ${el.campana===c.id?'selected':''}>${c.label}</option>`
+  ).join('');
+
+  let vcSug = '';
+  if (el.contIdx) {
+    const [grupo, ii] = el.contIdx.split('|');
+    const g = CONTAMINANTES.find(x => x.grupo === grupo);
+    if (g) {
+      const item = g.items[parseInt(ii)];
+      if (item) vcSug = `<div class="vc-sugerida">🎯 Velocidad de captura mínima requerida (ACGIH / Res. 295/03):<br><strong>${item.vc_min} – ${item.vc_max} m/s</strong></div>`;
+    }
+  }
+
+  return `<div class="ext-card" id="el_${idx}_${eli}">
+    <div class="ext-title">
+      <span>🌀</span>
+      <span id="el-title-${idx}-${eli}">Extracción localizada ${eli+1}${el.nombre?' — '+el.nombre:''}</span>
+      <button onclick="removeEL(${idx},${eli})"
+        style="margin-left:auto;padding:4px 9px;border:1.5px solid #EF5350;border-radius:7px;background:#fff;color:#EF5350;font-size:12px;cursor:pointer">✕</button>
+    </div>
+
+    <label class="fl" style="margin-top:0">Descripción / puesto / equipo</label>
+    <input type="text" value="${esc(el.nombre)}"
+      placeholder="Ej: Campana de soldadura MIG, Cabina de pintura, Mesa aspirante"
+      oninput="sectores[${idx}].extLocales[${eli}].nombre=this.value;document.getElementById('el-title-${idx}-${eli}').textContent='Extracción localizada ${eli+1}'+(this.value?' — '+this.value:'')">
+
+    <label class="fl">Contaminante generado</label>
+    <select onchange="sectores[${idx}].extLocales[${eli}].contIdx=this.value;renderSectores()">${contOpts}</select>
+    ${vcSug}
+
+    <label class="fl">Tipo de campana / extractor</label>
+    <select onchange="sectores[${idx}].extLocales[${eli}].campana=this.value">${campOpts}</select>
+
+    <div class="field-2" style="margin-top:10px">
+      <div>
+        <label class="fl" style="margin-top:0">Ancho de campana (m)</label>
+        <input type="number" id="ancho-${idx}-${eli}" value="${el.ancho_camp||''}" placeholder="m" step="0.01" min="0"
+          oninput="sectores[${idx}].extLocales[${eli}].ancho_camp=this.value;calcEL(${idx},${eli});updateAreaBoca(${idx},${eli})">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">Alto de campana (m)</label>
+        <input type="number" id="alto-${idx}-${eli}" value="${el.alto_camp||''}" placeholder="m" step="0.01" min="0"
+          oninput="sectores[${idx}].extLocales[${eli}].alto_camp=this.value;calcEL(${idx},${eli});updateAreaBoca(${idx},${eli})">
+      </div>
+    </div>
+    <div id="area-auto-${idx}-${eli}" style="font-size:12px;color:#2E5902;margin-top:4px;font-weight:500">
+      ${el.ancho_camp&&el.alto_camp?'Área calculada: '+(parseFloat(el.ancho_camp)*parseFloat(el.alto_camp)).toFixed(4)+' m²':''}
+    </div>
+
+    <label class="fl">Distancia foco-campana (m)</label>
+    <input type="number" value="${el.dist||''}" placeholder="metros desde el foco al borde de captación" step="0.01" min="0"
+      oninput="sectores[${idx}].extLocales[${eli}].dist=this.value;calcEL(${idx},${eli})">
+
+    <div class="field-2" style="margin-top:10px">
+      <div>
+        <label class="fl" style="margin-top:0">Velocidad medida en boca (m/s)</label>
+        <input type="number" value="${el.vc_medida||''}" placeholder="m/s" step="0.01" min="0"
+          oninput="sectores[${idx}].extLocales[${eli}].vc_medida=this.value;calcEL(${idx},${eli})">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">Área de la boca (m²)</label>
+        <input type="number" id="area-boca-${idx}-${eli}" value="${el.area_boca||''}" placeholder="m² (o usar calc. arriba)" step="0.001" min="0"
+          oninput="sectores[${idx}].extLocales[${eli}].area_boca=this.value;calcEL(${idx},${eli})">
+        <div style="font-size:11px;color:#888;margin-top:3px">Podés ingresar el área calculada arriba</div>
+      </div>
+    </div>
+    <div id="res_el_${idx}_${eli}" style="margin-top:8px"></div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════
+function updateAreaBoca(idx, eli) {
+  const el = sectores[idx].extLocales[eli];
+  const ancho = parseFloat(el.ancho_camp);
+  const alto = parseFloat(el.alto_camp);
+  const areaEl = document.getElementById(`area-auto-${idx}-${eli}`);
+  if (areaEl) {
+    if (!isNaN(ancho) && !isNaN(alto) && ancho > 0 && alto > 0) {
+      const area = (ancho * alto).toFixed(4);
+      areaEl.textContent = 'Area calculada: ' + area + ' m²';
+      // Autocompletar campo area_boca
+      const areaInput = document.getElementById(`area-boca-${idx}-${eli}`);
+      if (areaInput) {
+        areaInput.value = area;
+        sectores[idx].extLocales[eli].area_boca = area;
+        calcEL(idx, eli);
+      }
+    } else {
+      areaEl.textContent = '';
+    }
+  }
+}
+function addMed(idx) {
+  sectores[idx].mediciones.push({velocidad:'', area:'', caudal_directo:''});
+  renderSectores();
+}
+function removeMed(idx, mi) {
+  if (sectores[idx].mediciones.length <= 1) return;
+  sectores[idx].mediciones.splice(mi, 1);
+  renderSectores();
+}
+function setEL(idx, val) {
+  sectores[idx].tieneEL = val;
+  if (val && sectores[idx].extLocales.length === 0) addEL(idx);
+  else renderSectores();
+}
+function addEL(idx) {
+  sectores[idx].extLocales.push({nombre:'', contIdx:'', campana:'receptora', ancho_camp:'', alto_camp:'', dist:'', vc_medida:'', area_boca:''});
+  renderSectores();
+}
+function removeEL(idx, eli) {
+  sectores[idx].extLocales.splice(eli, 1);
+  if (sectores[idx].extLocales.length === 0) sectores[idx].tieneEL = false;
+  renderSectores();
+}
+
+// ════════════════════════════════════════════════
+// CÁLCULOS
+// ════════════════════════════════════════════════
+function calcSector(idx) {
+  const s = sectores[idx];
+  const L = parseFloat(s.largo), A = parseFloat(s.ancho), H = parseFloat(s.alto);
+  const N = parseFloat(s.nPersonas);
+  const resEl = document.getElementById('res_vg_' + idx);
+  if (!resEl) return;
+  if (!L || !A || !H || !N) { resEl.innerHTML = ''; return; }
+
+  const volumen = L * A * H;
+  const cubaje = volumen / N;
+  const caudMin = getCaudalMin(cubaje, s.actividad);
+  const qReqTotal = caudMin * N;
+
+  let qReal = 0;
+  s.mediciones.forEach(m => {
+    const v = parseFloat(m.velocidad), a = parseFloat(m.area), qd = parseFloat(m.caudal_directo);
+    if (!isNaN(qd) && qd > 0) qReal += qd;
+    else if (!isNaN(v) && !isNaN(a) && v > 0 && a > 0) qReal += v * a * 3600;
+  });
+
+  const cumple = qReal > 0 ? qReal >= qReqTotal : null;
+  sectores[idx]._calc = { volumen, cubaje, caudMin, qReqTotal, qReal, cumple };
+
+  let html = `<div style="background:#F0F7E8;border:1px solid #AED581;border-radius:9px;padding:10px 12px;font-size:13px;color:#333;margin-bottom:8px;line-height:1.9">
+    Volumen del local: <strong>${volumen.toFixed(2)} m³</strong><br>
+    Cubaje por persona: <strong>${cubaje.toFixed(2)} m³/persona</strong><br>
+    Caudal mínimo requerido: <strong>${caudMin} m³/h·persona × ${N} = ${qReqTotal.toFixed(0)} m³/h</strong>
+    ${qReal>0?`<br>Caudal real medido: <strong>${qReal.toFixed(0)} m³/h</strong>`:''}
+  </div>`;
+
+  if (qReal > 0) {
+    const cls = cumple ? 'ok' : 'fail';
+    const dif = Math.abs(qReal - qReqTotal).toFixed(0);
+    html += `<div class="res-inline ${cls}">
+      <div class="val">${cumple?'✅ CUMPLE':'❌ NO CUMPLE'}</div>
+      <div class="sub">${cumple
+        ?`Excedente: +${dif} m³/h sobre el mínimo requerido`
+        :`Déficit: −${dif} m³/h — se necesitan ${qReqTotal.toFixed(0)} m³/h y se dispone de ${qReal.toFixed(0)} m³/h`}
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="res-inline nd"><div class="val">⬜ Sin medición ingresada</div><div class="sub">Ingresá velocidad y área, o caudal directo, en al menos un punto de medición</div></div>`;
+  }
+  resEl.innerHTML = html;
+}
+
+function calcEL(idx, eli) {
+  const el = sectores[idx].extLocales[eli];
+  const resEl = document.getElementById(`res_el_${idx}_${eli}`);
+  if (!resEl) return;
+
+  const vc = parseFloat(el.vc_medida);
+  const area = parseFloat(el.area_boca);
+  if (isNaN(vc) || vc <= 0) { resEl.innerHTML = ''; return; }
+
+  const qExt = (!isNaN(area) && area > 0) ? vc * area * 3600 : null;
+
+  let vcMin = null, vcMax = null;
+  if (el.contIdx) {
+    const [grupo, ii] = el.contIdx.split('|');
+    const g = CONTAMINANTES.find(x => x.grupo === grupo);
+    if (g && g.items[parseInt(ii)]) {
+      vcMin = g.items[parseInt(ii)].vc_min;
+      vcMax = g.items[parseInt(ii)].vc_max;
+    }
+  }
+
+  let html = '';
+  if (vcMin !== null) {
+    const cumpleVc = vc >= vcMin;
+    const cls = cumpleVc ? 'ok' : 'fail';
+    html += `<div class="res-inline ${cls}">
+      <div class="val">${cumpleVc?'✅':'❌'} Vc medida: ${vc} m/s ${cumpleVc?'≥':'<'} ${vcMin} m/s mínimo (ACGIH)</div>
+      ${qExt?`<div class="sub">Q de extracción calculado: ${qExt.toFixed(0)} m³/h</div>`:''}
+      ${!cumpleVc?`<div class="sub" style="color:#B71C1C">Aumentar caudal de extracción para alcanzar Vc mínima de ${vcMin} m/s</div>`:''}
+    </div>`;
+    sectores[idx].extLocales[eli]._calcVC = { vc, vcMin, vcMax, qExt, cumple: cumpleVc };
+  } else {
+    html += `<div class="res-inline nd">
+      <div class="val">Vc medida: ${vc} m/s${qExt?` · Q: ${qExt.toFixed(0)} m³/h`:''}</div>
+      <div class="sub">Seleccioná el contaminante para verificar el límite de velocidad de captura</div>
+    </div>`;
+  }
+  resEl.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════
+// INFORME
+// ════════════════════════════════════════════════
+function goInforme() {
+  sectores.forEach((_, i) => calcSector(i));
+
+  const empresa = document.getElementById('empresa').value || '—';
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  document.getElementById('inf-sub').textContent = empresa + ' · ' + dateStr;
+
+  let body = '';
+  let totalCumple = 0, totalNoCumple = 0;
+
+  body += `<div class="inf-section">
+    <h3>Datos de la medición</h3>
+    ${ir('Empresa / establecimiento', document.getElementById('empresa').value)}
+    ${ir('Dirección', document.getElementById('direccion').value)}
+    ${ir('Actividad / Rubro', document.getElementById('actividad').value)}
+    ${ir('Fecha', dateStr)}
+  </div>`;
+
+  body += `<div class="inf-section">
+    <h3>Equipo y profesional</h3>
+    ${ir('Anemómetro', document.getElementById('ane_marca').value)}
+    ${ir('N° de serie', document.getElementById('ane_serie').value)}
+    ${ir('Fecha calibración', document.getElementById('ane_cal').value)}
+    ${ir('Laboratorio de calibración', document.getElementById('ane_lab').value)}
+    ${ir('Profesional responsable', document.getElementById('profesional').value)}
+    ${ir('Matrícula / Registro', document.getElementById('matricula').value)}
+  </div>`;
+
+  sectores.forEach((s, idx) => {
+    const c = s._calc;
+    body += `<div class="inf-section">
+      <h3>📍 ${s.nombre||'Sector '+(idx+1)} — Ventilación general</h3>
+      ${ir('Dimensiones', `${s.largo||'—'} m × ${s.ancho||'—'} m × ${s.alto||'—'} m (alto)`)}
+      ${ir('Volumen del local', c ? c.volumen.toFixed(2)+' m³' : '—')}
+      ${ir('N° de ocupantes', s.nPersonas||'—')}
+      ${ir('Tipo de actividad', s.actividad==='sedentaria'?'Sedentaria':'Moderada')}
+      ${ir('Cubaje por persona', c ? c.cubaje.toFixed(3)+' m³/persona' : '—')}
+      ${ir('Tipo de ventilación', s.tipoVent)}
+      ${ir('Caudal mín. por persona (Art. 66 Dec. 351/79)', c ? c.caudMin+' m³/h·persona' : '—')}
+      ${ir('Caudal mínimo requerido total', c ? c.qReqTotal.toFixed(2)+' m³/h' : '—')}`;
+
+    s.mediciones.forEach((m, mi) => {
+      const v = parseFloat(m.velocidad), a = parseFloat(m.area), qd = parseFloat(m.caudal_directo);
+      const q = (!isNaN(qd)&&qd>0) ? qd.toFixed(0) : (!isNaN(v)&&!isNaN(a)&&v>0&&a>0 ? (v*a*3600).toFixed(0) : null);
+      body += ir(`Punto ${mi+1} — V / Área / Q`,
+        `${m.velocidad||'—'} m/s · ${m.area||'—'} m² · ${q||'—'} m³/h`);
+    });
+
+    body += ir('Caudal real total medido', c&&c.qReal>0 ? c.qReal.toFixed(0)+' m³/h' : '—');
+
+    if (c && c.cumple !== null) {
+      if (c.cumple) totalCumple++; else totalNoCumple++;
+      body += `<div style="margin-top:8px"><span class="cumple-badge ${c.cumple?'ok':'fail'}">${c.cumple?'✅ CUMPLE':'❌ NO CUMPLE'}</span></div>`;
+    }
+
+    if (s.tieneEL && s.extLocales.length > 0) {
+      s.extLocales.forEach((el, eli) => {
+        const [grupo, ii] = (el.contIdx||'').split('|');
+        const g = CONTAMINANTES.find(x=>x.grupo===grupo);
+        const item = g ? g.items[parseInt(ii)] : null;
+        const vc = parseFloat(el.vc_medida), ab = parseFloat(el.area_boca);
+        const qext = (!isNaN(vc)&&!isNaN(ab)&&vc>0&&ab>0) ? (vc*ab*3600).toFixed(0) : null;
+        body += `<div style="background:#EDE7F6;border-radius:9px;padding:12px;margin-top:10px">
+          <div style="font-size:12px;font-weight:700;color:#4527A0;margin-bottom:8px">🌀 Extracción localizada ${eli+1}${el.nombre?' — '+el.nombre:''}</div>
+          ${ir('Contaminante / proceso', item?item.label:'—')}
+          ${ir('Vc mínima requerida (ACGIH)', item?item.vc_min+'–'+item.vc_max+' m/s':'—')}
+          ${ir('Tipo de campana / extractor', el.campana||'—')}
+          ${ir('Dimensiones campana', el.ancho_camp&&el.alto_camp?el.ancho_camp+' × '+el.alto_camp+' m':'—')}
+          ${ir('Distancia foco-campana', el.dist?el.dist+' m':'—')}
+          ${ir('Vc medida en boca', el.vc_medida?el.vc_medida+' m/s':'—')}
+          ${ir('Área de la boca', el.area_boca?el.area_boca+' m²':'—')}
+          ${qext?ir('Q de extracción calculado', qext+' m³/h'):''}
+          ${el._calcVC?`<div style="margin-top:6px"><span class="cumple-badge ${el._calcVC.cumple?'ok':'fail'}">${el._calcVC.cumple?'✅ Vc CUMPLE':'❌ Vc INSUFICIENTE'}</span></div>`:''}
+        </div>`;
+      });
+    }
+
+    if (s.obs) body += `<div style="margin-top:10px;font-size:13px;color:#555;line-height:1.5"><strong>Observaciones:</strong> ${s.obs}</div>`;
+    body += '</div>';
+  });
+
+  body += `<div class="inf-section"><h3>Resumen de resultados</h3>
+    ${ir('Total de sectores evaluados', sectores.length)}
+    ${ir('✅ Cumplen ventilación mínima', totalCumple)}
+    ${ir('❌ No cumplen ventilación mínima', totalNoCumple)}
+  </div>`;
+
+  document.getElementById('informe-body').innerHTML = body;
+  showScreen('s3');
+}
+
+function ir(k, v) {
+  return `<div class="inf-row"><span class="ik">${k}</span><span class="iv">${v||'—'}</span></div>`;
+}
+
+// ════════════════════════════════════════════════
+// COPIAR
+// ════════════════════════════════════════════════
+function copiarInforme() {
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const SEP = '='.repeat(60), sep = '─'.repeat(42);
+
+  let txt = 'INFORME DE MEDICIÓN DE VENTILACIÓN LABORAL\n';
+  txt += 'Dec. 351/79 Cap. 11 Art. 64-70  ·  Res. 295/03  ·  ACGIH\n';
+  txt += SEP + '\n';
+  txt += `Empresa:                   ${document.getElementById('empresa').value||'—'}\n`;
+  txt += `Dirección:                 ${document.getElementById('direccion').value||'—'}\n`;
+  txt += `Actividad / Rubro:         ${document.getElementById('actividad').value||'—'}\n`;
+  txt += `Fecha de medición:         ${dateStr}\n`;
+  txt += `Anemómetro:                ${document.getElementById('ane_marca').value||'—'}\n`;
+  txt += `N° de serie:               ${document.getElementById('ane_serie').value||'—'}\n`;
+  txt += `Fecha calibración:         ${document.getElementById('ane_cal').value||'—'}\n`;
+  txt += `Laboratorio calibración:   ${document.getElementById('ane_lab').value||'—'}\n`;
+  txt += `Profesional responsable:   ${document.getElementById('profesional').value||'—'}\n`;
+  txt += `Matrícula / Registro:      ${document.getElementById('matricula').value||'—'}\n`;
+
+  let totalC = 0, totalNC = 0;
+
+  sectores.forEach((s, idx) => {
+    const c = s._calc;
+    txt += `\n${SEP}\nSECTOR ${idx+1}: ${(s.nombre||'Sin nombre').toUpperCase()}\n${SEP}\n`;
+    txt += `\nVENTILACIÓN GENERAL — Art. 66 Dec. 351/79\n${sep}\n`;
+    txt += `Dimensiones:              ${s.largo||'—'} m × ${s.ancho||'—'} m × ${s.alto||'—'} m\n`;
+    if (c) {
+      txt += `Volumen del local:        ${c.volumen.toFixed(3)} m³\n`;
+      txt += `N° de ocupantes:          ${s.nPersonas}\n`;
+      txt += `Tipo de actividad:        ${s.actividad}\n`;
+      txt += `Cubaje por persona:       ${c.cubaje.toFixed(4)} m³/persona\n`;
+    }
+    txt += `Tipo de ventilación:      ${s.tipoVent}\n`;
+    if (c) {
+      txt += `Caudal mín. x persona:   ${c.caudMin} m³/h·persona  (tabla Art. 66 Dec. 351/79)\n`;
+      txt += `Caudal mínimo requerido: ${c.qReqTotal.toFixed(2)} m³/h\n`;
+    }
+    txt += `\nMEDICIONES DE CAUDAL:\n`;
+    s.mediciones.forEach((m, mi) => {
+      const v = parseFloat(m.velocidad), a = parseFloat(m.area), qd = parseFloat(m.caudal_directo);
+      const q = (!isNaN(qd)&&qd>0) ? qd.toFixed(2) : (!isNaN(v)&&!isNaN(a)&&v>0&&a>0 ? (v*a*3600).toFixed(2) : null);
+      txt += `  Punto ${mi+1}:\n`;
+      txt += `    Velocidad medida:      ${m.velocidad||'—'} m/s\n`;
+      txt += `    Área de sección:       ${m.area||'—'} m²\n`;
+      if (!isNaN(qd)&&qd>0) txt += `    Caudal directo:        ${qd} m³/h\n`;
+      txt += `    Q calculado:           ${q||'Sin datos'} m³/h\n`;
+    });
+    if (c && c.qReal > 0) {
+      txt += `Caudal real total:        ${c.qReal.toFixed(2)} m³/h\n`;
+      txt += `Resultado:                ${c.cumple?'✅ CUMPLE':'❌ NO CUMPLE'}\n`;
+      if (!c.cumple) txt += `  Déficit: ${(c.qReqTotal-c.qReal).toFixed(0)} m³/h por debajo del mínimo requerido\n`;
+      if (c.cumple) totalC++; else totalNC++;
+    }
+
+    if (s.tieneEL && s.extLocales.length > 0) {
+      txt += `\nEXTRACCIÓN LOCALIZADA — ACGIH / Res. 295/03\n${sep}\n`;
+      s.extLocales.forEach((el, eli) => {
+        const [grupo, ii] = (el.contIdx||'').split('|');
+        const g = CONTAMINANTES.find(x=>x.grupo===grupo);
+        const item = g ? g.items[parseInt(ii)] : null;
+        const vc = parseFloat(el.vc_medida), ab = parseFloat(el.area_boca);
+        const qext = (!isNaN(vc)&&!isNaN(ab)&&vc>0&&ab>0) ? vc*ab*3600 : null;
+        txt += `\n  Punto EL ${eli+1}: ${el.nombre||'Sin nombre'}\n`;
+        txt += `    Contaminante:          ${item?item.label:'—'}\n`;
+        txt += `    Vc mínima (ACGIH):     ${item?item.vc_min+' – '+item.vc_max+' m/s':'—'}\n`;
+        txt += `    Tipo de campana:       ${CAMPANAS.find(c=>c.id===el.campana)?.label||el.campana||'—'}\n`;
+        txt += `    Dimensiones campana:   ${el.ancho_camp||'—'} × ${el.alto_camp||'—'} m\n`;
+        txt += `    Dist. foco-campana:    ${el.dist||'—'} m\n`;
+        txt += `    Vc medida en boca:     ${el.vc_medida||'—'} m/s\n`;
+        txt += `    Área de la boca:       ${el.area_boca||'—'} m²\n`;
+        if (qext) txt += `    Q de extracción:       ${qext.toFixed(2)} m³/h  [Q = Vc × A × 3600]\n`;
+        if (el._calcVC) txt += `    Resultado Vc:          ${el._calcVC.cumple?'✅ CUMPLE (≥ '+el._calcVC.vcMin+' m/s)':'❌ NO CUMPLE (< '+el._calcVC.vcMin+' m/s) — Aumentar caudal de extracción'}\n`;
+      });
+    }
+
+    if (s.obs) txt += `\nObservaciones: ${s.obs}\n`;
+  });
+
+  txt += `\n${SEP}\nRESUMEN FINAL\n${SEP}\n`;
+  txt += `Total sectores evaluados:  ${sectores.length}\n`;
+  txt += `✅ Cumplen:                ${totalC}\n`;
+  txt += `❌ No cumplen:             ${totalNC}\n`;
+
+  txt += `\n${SEP}\nMARCO NORMATIVO APLICABLE\n${SEP}\n`;
+  txt += '· Ley N° 19.587 de Higiene y Seguridad en el Trabajo\n';
+  txt += '· Decreto N° 351/79 Capítulo 11 Art. 64 a 70 — Ventilación\n';
+  txt += '· Art. 64: La ventilación contribuirá a mantener condiciones ambientales que no perjudiquen la salud\n';
+  txt += '· Art. 65: Ventilación preferentemente natural\n';
+  txt += '· Art. 66: Tabla de caudal mínimo en función del cubaje y N° de ocupantes\n';
+  txt += '· Art. 67: Ventilación para control de contaminantes — concentración dentro de valores admisibles\n';
+  txt += '· Resolución MTEySS N° 295/03 — Valores límite de contaminantes en ambiente laboral\n';
+  txt += '· ACGIH Industrial Ventilation Manual — Velocidades de captura mínimas (adoptado por Res. 295/03)\n';
+  txt += '· Método de medición: Q (m³/h) = V (m/s) × S (m²) × 3600\n';
+  txt += '\nGenerado con App PROTOKOL - By S&E Consultores · syeconsultores.com.ar';
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); showCopied(); }
+  catch(e) { alert('No se pudo copiar automáticamente.'); }
+  document.body.removeChild(ta);
+}
+
+function showCopied() {
+  const btn = document.querySelector('#s3 .btn-copy');
+  const orig = btn.textContent;
+  btn.textContent = '✅ ¡Copiado!';
+  setTimeout(() => btn.textContent = orig, 2500);
+}
+
+function nuevaMedicion() {
+  if (!confirm('¿Iniciás una nueva medición? Se perderán todos los datos actuales.')) return;
+  sectores = [];
+  document.querySelectorAll('input,textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  init();
+  showScreen('s1');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+init();
+</script>
+</body>
+</html>
