@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Control de Extintores</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:60px}
+.screen.active{display:block}
+.topbar{background:#B03030;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+label.fl .req{color:#E24B4A;margin-left:2px}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#B03030;box-shadow:0 0 0 3px rgba(176,48,48,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#8a2020}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#B03030;border:1.5px solid #B03030;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-pdf{width:100%;padding:15px;background:#1a6b3a;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-add{width:100%;padding:10px;border:1.5px dashed #B03030;border-radius:10px;background:#FFF0F0;color:#B03030;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-sm{padding:7px 11px;border:1.5px solid #DDD;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.btn-sm.danger{border-color:#EF5350;color:#EF5350}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.roja{background:#FFF0F0;border-color:#FFAB76;color:#B03030}
+.ext-card{background:#fff;border-radius:13px;padding:14px;margin-bottom:10px;border:1.5px solid #DDD}
+.ext-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ext-name{font-size:15px;font-weight:700;color:#B03030}
+.yn-row{display:flex;gap:8px;margin-top:6px}
+.btn-si,.btn-no,.btn-na{flex:1;padding:9px;border:1.5px solid #DDD;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#666;text-align:center}
+.btn-si.active{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20}
+.btn-no.active{background:#FFEBEE;border-color:#C62828;color:#B71C1C}
+.btn-na.active{background:#F5F5F5;border-color:#888;color:#444}
+.res-badge{display:inline-block;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;margin-top:8px}
+.res-badge.ok{background:#E8F5E9;color:#1B5E20}
+.res-badge.fail{background:#FFEBEE;color:#B71C1C}
+.res-badge.nd{background:#F5F5F5;color:#888}
+.inf-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.inf-section h3{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F0F0F0;padding-bottom:8px;margin-bottom:10px}
+.inf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none}
+.inf-row .ik{color:#555;flex:1;padding-right:8px;line-height:1.4}
+.inf-row .iv{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>🧯 Control de Extintores</h1>
+  <span>Dec. 351/79 Art. 90 · Dec. 911/96</span>
+</div>
+
+<!-- S1: DATOS -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos de la inspección</div>
+    <label class="fl">Empresa / establecimiento <span class="req">*</span></label>
+    <input type="text" id="empresa" placeholder="Razón social">
+    <label class="fl">Sector / planta / piso</label>
+    <input type="text" id="sector" placeholder="Ej: Planta baja, Depósito, Piso 2">
+    <label class="fl">Fecha de inspección <span class="req">*</span></label>
+    <input type="date" id="fecha">
+    <label class="fl">Responsable de la inspección</label>
+    <input type="text" id="responsable" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+  <button class="btn-main" onclick="goS2()">Continuar → Extintores ›</button>
+</div>
+
+<!-- S2: EXTINTORES -->
+<div id="s2" class="screen">
+  <div class="nota roja" style="margin-top:12px">Registrá cada extintor por separado. El resultado se calcula automáticamente.</div>
+  <div id="ext-container"></div>
+  <button class="btn-add" onclick="addExtintor()">+ Agregar extintor</button>
+  <button class="btn-main" onclick="goInforme()" style="margin-top:16px">📄 Ver informe ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver</button>
+</div>
+
+<!-- S3: INFORME -->
+<div id="s3" class="screen">
+  <div style="background:#B03030;color:#fff;border-radius:13px;padding:15px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Control de Extintores</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px">Dec. 351/79 Art. 90 · Dec. 911/96</div>
+    <div style="font-size:13px;margin-top:6px;opacity:.9" id="inf-sub"></div>
+  </div>
+  <div id="informe-body"></div>
+  <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF</button>
+  <button style="width:100%;padding:13px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevoControl()">🔄 Nuevo control</button>
+</div>
+
+<script>
+let extintores = [];
+
+const TIPOS_EXT = ['Polvo ABC','CO₂','Agua','Halón/HFC','Espuma AFFF','Clase D'];
+const CAPACIDADES = ['1 kg','2,5 kg','3,5 kg','5 kg','6 kg','9 kg','10 kg','2 L','6 L','9 L','10 L'];
+
+function init(){
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  addExtintor();
+}
+
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function goS2(){
+  if(!document.getElementById('empresa').value.trim()||!document.getElementById('fecha').value){
+    alert('Completá empresa y fecha.');return;
+  }
+  showScreen('s2');
+}
+
+function addExtintor(){
+  extintores.push({
+    id:'',tipo:'',capacidad:'',
+    vcarga:'',vretimbrado:'',
+    presion:'normal',
+    estadoFisico:null,senalizacion:null,accesoLibre:null,
+    obs:''
+  });
+  renderExtintores();
+}
+
+function removeExtintor(idx){
+  if(extintores.length<=1){alert('Debe haber al menos un extintor.');return;}
+  if(!confirm('¿Eliminar este extintor?'))return;
+  extintores.splice(idx,1);
+  renderExtintores();
+}
+
+function renderExtintores(){
+  // Guardar foco antes de re-renderizar
+  const focusId=document.activeElement?document.activeElement.id:null;
+  const cont=document.getElementById('ext-container');
+  cont.innerHTML='';
+  extintores.forEach((e,idx)=>{
+    const div=document.createElement('div');
+    div.className='ext-card';
+    // Calcular resultado
+    const hoy=new Date();
+    const vcarga=e.vcarga?new Date(e.vcarga+'T12:00:00'):null;
+    const vret=e.vretimbrado?new Date(e.vretimbrado+'T12:00:00'):null;
+    const cargaOk=vcarga?vcarga>=hoy:null;
+    const retOk=vret?vret>=hoy:null;
+    const cumple=e.estadoFisico==='si'&&e.senalizacion==='si'&&e.accesoLibre==='si'&&cargaOk!==false&&retOk!==false;
+    const noCumple=e.estadoFisico==='no'||e.senalizacion==='no'||e.accesoLibre==='no'||cargaOk===false||retOk===false;
+    extintores[idx]._cumple=e.estadoFisico&&e.senalizacion&&e.accesoLibre?(cumple?'ok':'fail'):'nd';
+
+    let tipoOpts=TIPOS_EXT.map(t=>`<option value="${t}" ${e.tipo===t?'selected':''}>${t}</option>`).join('');
+    let capOpts=CAPACIDADES.map(c=>`<option value="${c}" ${e.capacidad===c?'selected':''}>${c}</option>`).join('');
+
+    div.innerHTML=`
+      <div class="ext-header">
+        <div class="ext-name" id="ext-name-${idx}">Extintor ${idx+1}${e.id?' — '+e.id:''}</div>
+        ${extintores.length>1?`<button class="btn-sm danger" onclick="removeExtintor(${idx})">✕</button>`:''}
+      </div>
+      <label class="fl" style="margin-top:0">ID / Ubicación</label>
+      <input type="text" id="ext-id-${idx}" value="${esc(e.id)}" placeholder="Ej: EXT-01, Pasillo norte, Tablero eléctrico"
+        oninput="extintores[${idx}].id=this.value;document.getElementById('ext-name-${idx}').textContent='Extintor ${idx+1}'+(this.value?' — '+this.value:'')">
+      <div class="field-2" style="margin-top:10px">
+        <div><label class="fl" style="margin-top:0">Tipo</label>
+          <select onchange="extintores[${idx}].tipo=this.value"><option value="">— Tipo —</option>${tipoOpts}</select></div>
+        <div><label class="fl" style="margin-top:0">Capacidad</label>
+          <select onchange="extintores[${idx}].capacidad=this.value"><option value="">— Cap. —</option>${capOpts}</select></div>
+      </div>
+      <div class="field-2" style="margin-top:10px">
+        <div><label class="fl" style="margin-top:0">Venc. carga</label>
+          <input type="date" value="${e.vcarga}" onchange="extintores[${idx}].vcarga=this.value;renderExtintores()" style="font-size:14px;padding:9px 10px">
+          ${vcarga?`<div style="font-size:11px;margin-top:3px;color:${cargaOk?'#1B5E20':'#B71C1C'}">${cargaOk?'✅ Vigente':'❌ Vencida'}</div>`:''}</div>
+        <div><label class="fl" style="margin-top:0">Venc. retimbrado</label>
+          <input type="date" value="${e.vretimbrado}" onchange="extintores[${idx}].vretimbrado=this.value;renderExtintores()" style="font-size:14px;padding:9px 10px">
+          ${vret?`<div style="font-size:11px;margin-top:3px;color:${retOk?'#1B5E20':'#B71C1C'}">${retOk?'✅ Vigente':'❌ Vencido'}</div>`:''}</div>
+      </div>
+      <label class="fl">Presión (manómetro)</label>
+      <select onchange="extintores[${idx}].presion=this.value">
+        <option value="normal" ${e.presion==='normal'?'selected':''}>Normal (zona verde)</option>
+        <option value="baja" ${e.presion==='baja'?'selected':''}>Baja (zona roja)</option>
+        <option value="alta" ${e.presion==='alta'?'selected':''}>Alta (zona roja alta)</option>
+        <option value="na" ${e.presion==='na'?'selected':''}>N/A (CO2 sin manometro)</option>
+      </select>
+      <label class="fl">Estado físico (sin daños, golpes, corrosión)</label>
+      <div class="yn-row">
+        <button class="btn-si ${e.estadoFisico==='si'?'active':''}" onclick="setExt(${idx},'estadoFisico','si')">OK Bueno</button>
+        <button class="btn-no ${e.estadoFisico==='no'?'active':''}" onclick="setExt(${idx},'estadoFisico','no')">Con daños</button>
+      </div>
+      <label class="fl">Señalización visible y correcta</label>
+      <div class="yn-row">
+        <button class="btn-si ${e.senalizacion==='si'?'active':''}" onclick="setExt(${idx},'senalizacion','si')">Si</button>
+        <button class="btn-no ${e.senalizacion==='no'?'active':''}" onclick="setExt(${idx},'senalizacion','no')">No</button>
+        <button class="btn-na ${e.senalizacion==='na'?'active':''}" onclick="setExt(${idx},'senalizacion','na')">N/A</button>
+      </div>
+      <label class="fl">Acceso libre (sin obstrucciones)</label>
+      <div class="yn-row">
+        <button class="btn-si ${e.accesoLibre==='si'?'active':''}" onclick="setExt(${idx},'accesoLibre','si')">Libre</button>
+        <button class="btn-no ${e.accesoLibre==='no'?'active':''}" onclick="setExt(${idx},'accesoLibre','no')">Obstruido</button>
+      </div>
+      <label class="fl">Observaciones</label>
+      <textarea placeholder="Observaciones, deficiencias, ubicación exacta..." oninput="extintores[${idx}].obs=this.value">${esc(e.obs)}</textarea>
+      <span class="res-badge ${extintores[idx]._cumple}">${extintores[idx]._cumple==='ok'?'CUMPLE':extintores[idx]._cumple==='fail'?'NO CUMPLE':'Completar datos'}</span>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function setExt(idx,field,val){
+  extintores[idx][field]=val;
+  renderExtintores();
+}
+
+function goInforme(){
+  const empresa=document.getElementById('empresa').value||'—';
+  const fecha=document.getElementById('fecha').value;
+  const dateStr=fecha?new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  document.getElementById('inf-sub').textContent=empresa+' · '+dateStr;
+  let body='';
+  const ok=extintores.filter(e=>e._cumple==='ok').length;
+  const fail=extintores.filter(e=>e._cumple==='fail').length;
+  body+=`<div class="inf-section"><h3>Resumen</h3>
+    ${ir('Empresa',empresa)}${ir('Sector',document.getElementById('sector').value)}
+    ${ir('Fecha',dateStr)}${ir('Responsable',document.getElementById('responsable').value)}
+    ${ir('Matrícula',document.getElementById('matricula').value)}
+    ${ir('Total extintores',extintores.length)}
+    ${ir('✅ Cumplen',ok)}${ir('❌ No cumplen',fail)}
+  </div>`;
+  extintores.forEach((e,i)=>{
+    const hoy=new Date();
+    const vcarga=e.vcarga?new Date(e.vcarga+'T12:00:00'):null;
+    const vret=e.vretimbrado?new Date(e.vretimbrado+'T12:00:00'):null;
+    body+=`<div class="inf-section"><h3>🧯 Extintor ${i+1}${e.id?' — '+e.id:''}</h3>
+      ${ir('Tipo / Capacidad',(e.tipo||'—')+' · '+(e.capacidad||'—'))}
+      ${ir('Vencimiento carga',e.vcarga?(vcarga>=hoy?'✅ '+e.vcarga:'❌ VENCIDA '+e.vcarga):'—')}
+      ${ir('Vencimiento retimbrado',e.vretimbrado?(vret>=hoy?'✅ '+e.vretimbrado:'❌ VENCIDO '+e.vretimbrado):'—')}
+      ${ir('Presión',e.presion)}
+      ${ir('Estado físico',e.estadoFisico==='si'?'✅ Bueno':e.estadoFisico==='no'?'❌ Con daños':'—')}
+      ${ir('Señalización',e.senalizacion==='si'?'✅ Sí':e.senalizacion==='no'?'❌ No':e.senalizacion==='na'?'N/A':'—')}
+      ${ir('Acceso libre',e.accesoLibre==='si'?'✅ Libre':e.accesoLibre==='no'?'❌ Obstruido':'—')}
+      ${e.obs?ir('Observaciones',e.obs):''}
+      <span class="res-badge ${e._cumple}">${e._cumple==='ok'?'✅ CUMPLE':e._cumple==='fail'?'❌ NO CUMPLE':'⬜ Sin datos'}</span>
+    </div>`;
+  });
+  document.getElementById('informe-body').innerHTML=body;
+  showScreen('s3');
+}
+
+function ir(k,v){return `<div class="inf-row"><span class="ik">${k}</span><span class="iv">${v||'—'}</span></div>`;}
+
+function generarPDF(){
+  const{jsPDF}=window.jspdf;
+  if(!jsPDF){alert('Error cargando jsPDF');return;}
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,M=15;let y=15;
+  const rojo=[176,48,48],gris=[245,247,250],negro=[30,30,30],verde=[46,125,50],rojof=[198,40,40];
+  function sf(s,sz,c){doc.setFont('helvetica',s);doc.setFontSize(sz);doc.setTextColor(...(c||negro));}
+  doc.setFillColor(...rojo);doc.rect(0,0,W,22,'F');
+  sf('bold',13,[255,255,255]);doc.text('CONTROL DE EXTINTORES — INSPECCIÓN PERIÓDICA',M,10);
+  sf('normal',8,[220,180,180]);doc.text('Dec. 351/79 Art. 90 · Dec. 911/96 · S&E Consultores',M,16);
+  y=28;
+  const fecha=document.getElementById('fecha').value;
+  const dateStr=fecha?new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  doc.setFillColor(...gris);doc.roundedRect(M,y,W-M*2,24,2,2,'F');
+  sf('bold',9,rojo);doc.text('DATOS DE LA INSPECCIÓN',M+4,y+6);
+  sf('normal',8.5,negro);
+  doc.text('Empresa: ',M+4,y+13);sf('bold',8.5,negro);doc.text(document.getElementById('empresa').value||'—',M+22,y+13);
+  sf('normal',8.5,negro);doc.text('Sector: '+( document.getElementById('sector').value||'—'),M+4,y+19);
+  doc.text('Fecha: '+dateStr,M+80,y+13);
+  doc.text('Responsable: '+(document.getElementById('responsable').value||'—')+(document.getElementById('matricula').value?' (Mat. '+document.getElementById('matricula').value+')':''),M+80,y+19);
+  y+=30;
+  // Tabla
+  doc.setFillColor(...rojo);doc.rect(M,y,W-M*2,7,'F');
+  sf('bold',7.5,[255,255,255]);
+  const cols=[M+3,M+28,M+48,M+65,M+82,M+99,M+113,M+127,M+141];
+  const heads=['ID','Tipo','Cap.','V.Carga','V.Retimb','Presión','Estado','Señal.','Acceso','Resultado'];
+  heads.forEach((h,i)=>doc.text(h,cols[i]||cols[cols.length-1]+14*(i-cols.length+1),y+5));
+  y+=8;
+  const hoy=new Date();
+  extintores.forEach((e,i)=>{
+    if(y>270){doc.addPage();y=15;}
+    doc.setFillColor(i%2===0?[250,250,250]:[255,255,255]);
+    doc.rect(M,y,W-M*2,7,'F');
+    doc.setDrawColor(220,220,220);doc.line(M,y+7,W-M,y+7);
+    sf('normal',7,negro);
+    const vcarga=e.vcarga?new Date(e.vcarga+'T12:00:00'):null;
+    const vret=e.vretimbrado?new Date(e.vretimbrado+'T12:00:00'):null;
+    doc.text((e.id||'Ext '+(i+1)).substring(0,10),cols[0],y+5);
+    doc.text((e.tipo||'—').substring(0,8),cols[1],y+5);
+    doc.text(e.capacidad||'—',cols[2],y+5);
+    const cv=vcarga?(vcarga>=hoy?'OK':'VENC.'):'—';
+    const cr=vret?(vret>=hoy?'OK':'VENC.'):'—';
+    if(cv==='VENC.'){doc.setTextColor(...rojof);}else{doc.setTextColor(...negro);}doc.text(cv,cols[3],y+5);
+    if(cr==='VENC.'){doc.setTextColor(...rojof);}else{doc.setTextColor(...negro);}doc.text(cr,cols[4],y+5);
+    doc.setTextColor(...negro);
+    doc.text(e.presion||'—',cols[5],y+5);
+    doc.text(e.estadoFisico==='si'?'OK':e.estadoFisico==='no'?'MAL':'—',cols[6],y+5);
+    doc.text(e.senalizacion==='si'?'OK':e.senalizacion==='no'?'NO':e.senalizacion==='na'?'N/A':'—',cols[7],y+5);
+    doc.text(e.accesoLibre==='si'?'OK':e.accesoLibre==='no'?'NO':'—',cols[8],y+5);
+    const res=e._cumple;
+    if(res==='ok'){doc.setFillColor(...verde);doc.roundedRect(W-M-16,y+1,14,5,1,1,'F');sf('bold',6.5,[255,255,255]);doc.text('CUMPLE',W-M-9,y+5,{align:'center'});}
+    else if(res==='fail'){doc.setFillColor(...rojof);doc.roundedRect(W-M-20,y+1,18,5,1,1,'F');sf('bold',6.5,[255,255,255]);doc.text('NO CUMPLE',W-M-11,y+5,{align:'center'});}
+    y+=8;
+  });
+  y+=6;
+  // Obs
+  const obsItems=extintores.filter(e=>e.obs);
+  if(obsItems.length>0){
+    if(y>240){doc.addPage();y=15;}
+    doc.setFillColor(...rojo);doc.rect(M,y,W-M*2,7,'F');
+    sf('bold',8,[255,255,255]);doc.text('OBSERVACIONES',M+3,y+5);y+=9;
+    obsItems.forEach(e=>{
+      if(y>265){doc.addPage();y=15;}
+      const lines=doc.splitTextToSize((e.id||'Sin ID')+': '+e.obs,W-M*2-8);
+      const h=lines.length*4+4;
+      doc.setFillColor(255,248,225);doc.rect(M,y,W-M*2,h,'F');
+      sf('normal',7.5,negro);doc.text(lines,M+4,y+4);y+=h+2;
+    });
+  }
+  y+=4;sf('normal',7,[150,150,150]);
+  doc.text('Generado con App PROTOKOL - By S&E Consultores · syeconsultores.com.ar',W/2,y,{align:'center'});
+  try {
+    const pdfBlob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    window.open(blobUrl, '_blank');
+  } catch(e) {
+    const nombre='Control_Extintores_'+(document.getElementById('empresa').value||'empresa').replace(/\s+/g,'_')+'_'+(document.getElementById('fecha').value||'sin_fecha')+'.pdf';
+    doc.save(nombre);
+  }
+}
+
+function nuevoControl(){
+  if(!confirm('¿Nuevo control? Se perderán los datos actuales.'))return;
+  extintores=[];
+  document.querySelectorAll('input,textarea').forEach(el=>el.value='');
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+  addExtintor();showScreen('s1');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+init();
+</script>
+</body>
+</html>
