@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Control Red de Incendio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:60px}
+.screen.active{display:block}
+.topbar{background:#7B1C1C;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+label.fl .req{color:#E24B4A;margin-left:2px}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#7B1C1C;box-shadow:0 0 0 3px rgba(123,28,28,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#7B1C1C;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#5a1414}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#7B1C1C;border:1.5px solid #7B1C1C;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-pdf{width:100%;padding:15px;background:#1a6b3a;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.roja{background:#FDF0F0;border-color:#FFAB76;color:#7B1C1C}
+/* TIPO SELECTOR */
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tipo-btn{padding:12px 8px;border:1.5px solid #DDD;border-radius:12px;background:#fff;color:#333;font-size:12px;font-weight:500;cursor:pointer;text-align:center;line-height:1.3;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.tipo-btn .ico{font-size:18px}
+.tipo-btn.sel{background:#FDF0F0;border-color:#7B1C1C;color:#7B1C1C;font-weight:700}
+/* CHECK ITEMS */
+.check-sec{background:#fff;border-radius:13px;padding:14px;margin-bottom:10px;border:1.5px solid #DDD}
+.check-sec-header{background:#7B1C1C;color:#fff;border-radius:9px;padding:10px 12px;margin-bottom:10px;font-size:14px;font-weight:700}
+.check-item{padding:10px 0;border-bottom:1px solid #F0F0F0}
+.check-item:last-child{border-bottom:none}
+.check-item-label{font-size:14px;color:#1a1a1a;font-weight:500;margin-bottom:4px}
+.check-item-sub{font-size:11px;color:#888;margin-bottom:7px}
+.yn-btns{display:flex;gap:8px}
+.btn-si,.btn-no,.btn-na{flex:1;padding:9px;border:1.5px solid #DDD;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#666;text-align:center}
+.btn-si.active{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20}
+.btn-no.active{background:#FFEBEE;border-color:#C62828;color:#B71C1C}
+.btn-na.active{background:#F5F5F5;border-color:#888;color:#444}
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.tab{padding:8px 14px;border:1.5px solid #DDD;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;background:#fff;color:#444;flex-shrink:0}
+.tab.active{background:#7B1C1C;color:#fff;border-color:#7B1C1C}
+.prog-wrap{margin-bottom:14px}
+.prog-label{font-size:13px;color:#555;margin-bottom:5px;text-align:right}
+.prog-bar{background:#DDD;border-radius:20px;height:5px}
+.prog-fill{background:#7B1C1C;height:5px;border-radius:20px;transition:width .3s}
+.res-badge{display:inline-block;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;margin-top:8px}
+.res-badge.ok{background:#E8F5E9;color:#1B5E20}
+.res-badge.fail{background:#FFEBEE;color:#B71C1C}
+.res-badge.nd{background:#F5F5F5;color:#888}
+.inf-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.inf-section h3{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F0F0F0;padding-bottom:8px;margin-bottom:10px}
+.inf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none}
+.inf-row .ik{color:#555;flex:1;padding-right:8px;line-height:1.4}
+.inf-row .iv{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>🔴 Control Red de Incendio</h1>
+  <span>Dec. 351/79 · NFPA 25 · D.911/96</span>
+</div>
+
+<!-- S1: DATOS -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos de la inspección</div>
+    <label class="fl">Empresa / establecimiento <span class="req">*</span></label>
+    <input type="text" id="empresa" placeholder="Razón social">
+    <label class="fl">Dirección / Sector</label>
+    <input type="text" id="sector" placeholder="Ej: Planta industrial, Edificio corporativo">
+    <label class="fl">Fecha de inspección <span class="req">*</span></label>
+    <input type="date" id="fecha">
+    <label class="fl">Responsable de la inspección</label>
+    <input type="text" id="responsable" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+  <div class="card">
+    <div class="ct">🔧 Empresa mantenedora</div>
+    <label class="fl">Nombre de la empresa mantenedora</label>
+    <input type="text" id="mantenedora" placeholder="Empresa a cargo del mantenimiento del sistema">
+    <label class="fl">Fecha del último servicio técnico</label>
+    <input type="date" id="ultimo_servicio">
+    <label class="fl">¿Libro/registro de mantenimiento disponible en planta?</label>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button class="btn-si" id="libro-si" onclick="setLibro('si')">✅ Sí</button>
+      <button class="btn-no" id="libro-no" onclick="setLibro('no')">❌ No</button>
+    </div>
+  </div>
+  <button class="btn-main" onclick="goS2()">Continuar → Componentes ›</button>
+</div>
+
+<!-- S2: SELECCIÓN -->
+<div id="s2" class="screen">
+  <div class="nota roja" style="margin-top:12px">Seleccioná los componentes presentes en la instalación a inspeccionar hoy.</div>
+  <div class="card">
+    <div class="ct">Componentes presentes</div>
+    <div class="tipo-grid" id="comp-grid"></div>
+  </div>
+  <button class="btn-main" onclick="goS3()">Continuar → Checklists ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver</button>
+</div>
+
+<!-- S3: CHECKLISTS -->
+<div id="s3" class="screen">
+  <div style="margin-top:12px" id="s3-banner" class="nota roja"></div>
+  <div class="prog-wrap">
+    <div class="prog-label" id="prog-label">0 de 0 ítems evaluados</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="tabs" id="sec-tabs"></div>
+  <div id="checks-container"></div>
+  <button class="btn-main" onclick="goInforme()">📄 Ver informe ›</button>
+  <button class="btn-sec" onclick="showScreen('s2')">‹ Volver</button>
+</div>
+
+<!-- S4: INFORME -->
+<div id="s4" class="screen">
+  <div style="background:#7B1C1C;color:#fff;border-radius:13px;padding:15px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Control Red de Incendio</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px">Dec. 351/79 · NFPA 25 · D.911/96</div>
+    <div style="font-size:13px;margin-top:6px;opacity:.9" id="inf-sub"></div>
+  </div>
+  <div id="informe-body"></div>
+  <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF</button>
+  <button style="width:100%;padding:13px;background:#7B1C1C;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevoControl()">🔄 Nuevo control</button>
+</div>
+
+<script>
+const COMPONENTES = [
+  {id:'jockey',    label:'Bomba jockey',             ico:'💧'},
+  {id:'principal', label:'Bomba principal eléctrica', ico:'⚡'},
+  {id:'diesel',    label:'Bomba diésel de emergencia',ico:'🔴'},
+  {id:'hidrantes', label:'Hidrantes',                 ico:'🚒'},
+  {id:'rociadores',label:'Rociadores / sprinklers',   ico:'💦'},
+  {id:'tablero',   label:'Tablero / central de control',ico:'🎛️'},
+  {id:'cisterna',  label:'Reserva de agua (cisterna)', ico:'🏊'},
+];
+
+const CHECKS_DATA = {
+  jockey:{
+    titulo:'Bomba jockey / presurizadora',
+    ico:'💧',
+    items:[
+      {q:'Presión de arranque dentro del rango configurado',          s:'Verificar manómetro — NFPA 25'},
+      {q:'Presión de parada dentro del rango configurado',            s:'Verificar manómetro — NFPA 25'},
+      {q:'Arranque automático operativo (caída de presión)',          s:'NFPA 25 Cap. 8'},
+      {q:'Sin fugas visibles en cañerías y conexiones',              s:'Inspección visual'},
+      {q:'Tablero de bomba jockey sin alarmas activas',              s:'Inspección visual'},
+      {q:'Registro del último arranque documentado',                  s:'Libro de mantenimiento'},
+    ]
+  },
+  principal:{
+    titulo:'Bomba principal eléctrica',
+    ico:'⚡',
+    items:[
+      {q:'Arranque manual operativo desde tablero',                   s:'NFPA 25 Cap. 8'},
+      {q:'Arranque automático operativo (presostato)',                s:'NFPA 25 Cap. 8'},
+      {q:'Caudal y presión nominales verificados',                    s:'Según placa del equipo'},
+      {q:'Sin fugas en empaquetaduras y sellos',                     s:'Inspección visual'},
+      {q:'Alineación y estado mecánico general correcto',            s:'Inspección visual'},
+      {q:'Alimentación eléctrica exclusiva y protegida',             s:'Dec. 351/79'},
+    ]
+  },
+  diesel:{
+    titulo:'Bomba diésel de emergencia',
+    ico:'🔴',
+    items:[
+      {q:'Nivel de combustible diésel adecuado (>75% tanque)',       s:'NFPA 25 Cap. 8'},
+      {q:'Nivel de aceite correcto',                                 s:'Inspección visual'},
+      {q:'Arranque automático operativo ante falla eléctrica',       s:'NFPA 25 Cap. 8'},
+      {q:'Batería de arranque en buen estado y cargada',            s:'NFPA 25 Cap. 8'},
+      {q:'Sistema de refrigeración sin fugas ni obstrucciones',     s:'Inspección visual'},
+      {q:'Prueba semanal de arranque registrada',                    s:'NFPA 25 Cap. 8'},
+    ]
+  },
+  hidrantes:{
+    titulo:'Hidrantes',
+    ico:'🚒',
+    items:[
+      {q:'Hidrantes accesibles y sin obstrucciones',                 s:'Dec. 351/79 · NFPA 25'},
+      {q:'Válvula de apertura operativa (sin óxido ni traba)',       s:'NFPA 25 Cap. 7'},
+      {q:'Manguera en buen estado, sin roturas ni deterioro',       s:'NFPA 25 Cap. 6'},
+      {q:'Pitón / lanza en correcto estado y almacenado',           s:'Inspección visual'},
+      {q:'Señalización visible y correcta',                          s:'Dec. 351/79'},
+      {q:'Tapa de protección en buen estado',                       s:'Inspección visual'},
+      {q:'Presión en boca de hidrante dentro del rango',            s:'NFPA 25 Cap. 7'},
+    ]
+  },
+  rociadores:{
+    titulo:'Rociadores / sprinklers',
+    ico:'💦',
+    items:[
+      {q:'Rociadores sin obstrucciones (almacenamiento, pinturas)',  s:'NFPA 25 Cap. 5'},
+      {q:'Sin rociadores dañados, corroídos o con pérdidas',        s:'NFPA 25 Cap. 5'},
+      {q:'Distancias de separación a estanterías/materiales correctas',s:'NFPA 25 Cap. 5'},
+      {q:'Presión en cabecera del sistema dentro del rango',        s:'NFPA 25 Cap. 5'},
+      {q:'Válvulas de control abiertas y con traba anti-cierre',    s:'NFPA 25 Cap. 13'},
+      {q:'Alarma de flujo operativa (probeta de prueba)',           s:'NFPA 25 Cap. 5'},
+      {q:'Gabinete con rociadores de repuesto disponible',          s:'NFPA 25 Cap. 5'},
+    ]
+  },
+  tablero:{
+    titulo:'Tablero / central de control',
+    ico:'🎛️',
+    items:[
+      {q:'Sin alarmas activas ni fallas en display',                 s:'Inspección visual'},
+      {q:'Alimentación principal y batería de respaldo operativas',  s:'Inspección visual'},
+      {q:'Cableado sin daños visibles ni improvisaciones',          s:'Inspección visual'},
+      {q:'Acceso al tablero libre y sin candado',                   s:'Dec. 351/79'},
+      {q:'Leyendas y etiquetas de zonas legibles',                  s:'Inspección visual'},
+      {q:'Manual/diagrama del sistema disponible en planta',        s:'NFPA 25'},
+    ]
+  },
+  cisterna:{
+    titulo:'Reserva de agua (cisterna / tanque)',
+    ico:'🏊',
+    items:[
+      {q:'Nivel de agua adecuado (verificar indicador)',             s:'NFPA 25 · Dec. 351/79'},
+      {q:'Sin contaminación visible (aceites, suciedad)',           s:'Inspección visual'},
+      {q:'Válvulas de llenado automático operativas',               s:'NFPA 25'},
+      {q:'Respiradero sin obstrucciones (mallas, tapas)',           s:'Inspección visual'},
+      {q:'Estructura sin fisuras, filtraciones ni daños',           s:'Inspección visual'},
+      {q:'Acceso a cisterna seguro y con tapa en buen estado',     s:'Inspección visual'},
+    ]
+  }
+};
+
+let selectedComps = [];
+let checkState = {};
+let activeTab = '';
+let libroVal = null;
+
+function init(){
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  buildCompGrid();
+}
+
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function setLibro(v){
+  libroVal=v;
+  document.getElementById('libro-si').classList.toggle('active',v==='si');
+  document.getElementById('libro-no').classList.toggle('active',v==='no');
+}
+
+function goS2(){
+  if(!document.getElementById('empresa').value.trim()||!document.getElementById('fecha').value){
+    alert('Completá empresa y fecha.');return;
+  }
+  showScreen('s2');
+}
+
+function buildCompGrid(){
+  const grid=document.getElementById('comp-grid');
+  grid.innerHTML='';
+  COMPONENTES.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='tipo-btn'+(selectedComps.includes(c.id)?' sel':'');
+    btn.innerHTML=`<span class="ico">${c.ico}</span><span>${c.label}</span>`;
+    btn.onclick=()=>toggleComp(c.id,btn);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleComp(id,btn){
+  const idx=selectedComps.indexOf(id);
+  if(idx===-1){selectedComps.push(id);btn.classList.add('sel');}
+  else{selectedComps.splice(idx,1);btn.classList.remove('sel');}
+}
+
+function goS3(){
+  if(selectedComps.length===0){alert('Seleccioná al menos un componente.');return;}
+  checkState={};
+  selectedComps.forEach(id=>{
+    checkState[id]={};
+    CHECKS_DATA[id].items.forEach((_,i)=>checkState[id][i]={val:null,obs:''});
+  });
+  activeTab=selectedComps[0];
+  buildChecklists();
+  document.getElementById('s3-banner').textContent=
+    document.getElementById('empresa').value+' · '+selectedComps.length+' componente'+(selectedComps.length>1?'s':'')+' a inspeccionar';
+  showScreen('s3');
+  updateProg();
+}
+
+function buildChecklists(){
+  const tabsEl=document.getElementById('sec-tabs');
+  tabsEl.innerHTML='';
+  selectedComps.forEach(id=>{
+    const c=COMPONENTES.find(x=>x.id===id);
+    const tab=document.createElement('button');
+    tab.className='tab'+(id===activeTab?' active':'');
+    tab.textContent=c.ico+' '+c.label.split(' ')[0];
+    tab.onclick=()=>switchTab(id);
+    tabsEl.appendChild(tab);
+  });
+  const cont=document.getElementById('checks-container');
+  cont.innerHTML='';
+  selectedComps.forEach(id=>{
+    const sec=CHECKS_DATA[id];
+    const div=document.createElement('div');
+    div.id='sec_'+id;
+    div.className=id===activeTab?'':'hidden';
+    let html=`<div class="check-sec-header">${sec.ico} ${sec.titulo}</div>`;
+    sec.items.forEach((item,i)=>{
+      const st=checkState[id][i];
+      html+=`<div class="check-item" id="ci_${id}_${i}">
+        <div class="check-item-label">${item.q}</div>
+        <div class="check-item-sub">${item.s}</div>
+        <div class="yn-btns">
+          <button class="btn-si ${st.val==='si'?'active':''}" onclick="setCheck('${id}',${i},'si')">✅ OK</button>
+          <button class="btn-no ${st.val==='no'?'active':''}" onclick="setCheck('${id}',${i},'no')">❌ Falla</button>
+          <button class="btn-na ${st.val==='na'?'active':''}" onclick="setCheck('${id}',${i},'na')">— N/A</button>
+        </div>
+        <div id="obs_${id}_${i}" class="${st.val==='no'?'':'hidden'}" style="margin-top:8px">
+          <textarea placeholder="Describir la falla o condición observada..." style="width:100%;min-height:50px;font-size:13px;padding:8px 10px;border-radius:9px;border:1.5px solid #EF5350;background:#FFFAFA;outline:none;font-family:inherit;resize:none"
+            oninput="checkState['${id}'][${i}].obs=this.value">${esc(st.obs)}</textarea>
+        </div>
+      </div>`;
+    });
+    div.innerHTML=html;
+    cont.appendChild(div);
+  });
+}
+
+function setCheck(id,idx,val){
+  checkState[id][idx].val=val;
+  const ci=document.getElementById(`ci_${id}_${idx}`);
+  ci.querySelectorAll('.btn-si,.btn-no,.btn-na').forEach(b=>b.classList.remove('active'));
+  ci.querySelector('.btn-'+val).classList.add('active');
+  document.getElementById(`obs_${id}_${idx}`).classList.toggle('hidden',val!=='no');
+  updateProg();
+}
+
+function switchTab(id){
+  activeTab=id;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',selectedComps[i]===id));
+  selectedComps.forEach(sid=>{
+    const el=document.getElementById('sec_'+sid);
+    if(el)el.classList.toggle('hidden',sid!==id);
+  });
+}
+
+function updateProg(){
+  let total=0,done=0;
+  selectedComps.forEach(id=>Object.values(checkState[id]||{}).forEach(v=>{total++;if(v.val)done++;}));
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`${done} de ${total} ítems evaluados (${pct}%)`;
+}
+
+function goInforme(){
+  const empresa=document.getElementById('empresa').value||'—';
+  const fecha=document.getElementById('fecha').value;
+  const dateStr=fecha?new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  document.getElementById('inf-sub').textContent=empresa+' · '+dateStr;
+  let body='';
+  body+=`<div class="inf-section"><h3>Datos de la inspección</h3>
+    ${ir('Empresa',empresa)}${ir('Sector',document.getElementById('sector').value)}
+    ${ir('Fecha',dateStr)}
+    ${ir('Responsable',document.getElementById('responsable').value+(document.getElementById('matricula').value?' (Mat. '+document.getElementById('matricula').value+')':''))}
+    ${ir('Empresa mantenedora',document.getElementById('mantenedora').value)}
+    ${ir('Último servicio técnico',document.getElementById('ultimo_servicio').value)}
+    ${ir('Libro de mantenimiento',libroVal==='si'?'✅ Disponible':libroVal==='no'?'❌ No disponible':'—')}
+  </div>`;
+  selectedComps.forEach(id=>{
+    const sec=CHECKS_DATA[id];
+    const vals=checkState[id];
+    const ok=Object.values(vals).filter(v=>v.val==='si').length;
+    const fail=Object.values(vals).filter(v=>v.val==='no').length;
+    const nd=Object.values(vals).filter(v=>!v.val).length;
+    body+=`<div class="inf-section"><h3>${sec.ico} ${sec.titulo}</h3>`;
+    sec.items.forEach((item,i)=>{
+      const st=vals[i];
+      body+=ir(item.q,st.val==='si'?'✅ OK':st.val==='no'?`❌ FALLA${st.obs?' — '+st.obs:''}`:st.val==='na'?'N/A':'—');
+    });
+    const resFail=fail>0;
+    body+=`<span class="res-badge ${nd===sec.items.length?'nd':resFail?'fail':'ok'}">${nd===sec.items.length?'⬜ Sin evaluar':resFail?`❌ ${fail} falla(s) detectada(s)`:'✅ Sin fallas'}</span></div>`;
+  });
+  document.getElementById('informe-body').innerHTML=body;
+  showScreen('s4');
+}
+
+function ir(k,v){return `<div class="inf-row"><span class="ik">${k}</span><span class="iv">${v||'—'}</span></div>`;}
+
+function generarPDF(){
+  const{jsPDF}=window.jspdf;
+  if(!jsPDF){alert('Error cargando jsPDF');return;}
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,M=15;let y=15;
+  const rojo=[123,28,28],gris=[245,247,250],negro=[30,30,30],verde=[46,125,50],rojof=[198,40,40],naranja=[245,127,23];
+  function sf(s,sz,c){doc.setFont('helvetica',s);doc.setFontSize(sz);doc.setTextColor(...(c||negro));}
+  // Header
+  doc.setFillColor(...rojo);doc.rect(0,0,W,22,'F');
+  sf('bold',13,[255,255,255]);doc.text('CONTROL DE RED DE INCENDIO — INSPECCIÓN VISUAL',M,10);
+  sf('normal',8,[200,160,160]);doc.text('Dec. 351/79 · NFPA 25 · Dec. 911/96 · S&E Consultores',M,16);
+  y=28;
+  const fecha=document.getElementById('fecha').value;
+  const dateStr=fecha?new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  const resp=document.getElementById('responsable').value||'—';
+  const mat=document.getElementById('matricula').value;
+  doc.setFillColor(...gris);doc.roundedRect(M,y,W-M*2,32,2,2,'F');
+  sf('bold',9,rojo);doc.text('DATOS DE LA INSPECCIÓN',M+4,y+6);
+  sf('normal',8.5,negro);
+  doc.text('Empresa: ',M+4,y+13);sf('bold',8.5,negro);doc.text(document.getElementById('empresa').value||'—',M+22,y+13);
+  sf('normal',8.5,negro);
+  doc.text('Sector: '+(document.getElementById('sector').value||'—'),M+4,y+19);
+  doc.text('Fecha: '+dateStr,M+80,y+13);
+  // Responsable prominente en PDF
+  sf('bold',8.5,rojo);doc.text('Responsable: ',M+4,y+25);
+  sf('bold',8.5,negro);doc.text(resp+(mat?' (Mat. '+mat+')':''),M+30,y+25);
+  sf('normal',8.5,negro);
+  doc.text('Mantenedora: '+(document.getElementById('mantenedora').value||'—'),M+80,y+19);
+  doc.text('Último servicio: '+(document.getElementById('ultimo_servicio').value||'—'),M+80,y+25);
+  doc.text('Libro mant.: '+(libroVal==='si'?'Disponible':libroVal==='no'?'NO disponible':'—'),M+4,y+31);
+  y+=38;
+  // Secciones
+  selectedComps.forEach(id=>{
+    const sec=CHECKS_DATA[id];
+    const vals=checkState[id];
+    if(y>240){doc.addPage();y=15;}
+    doc.setFillColor(...rojo);doc.rect(M,y,W-M*2,8,'F');
+    sf('bold',9,[255,255,255]);doc.text(sec.ico+' '+sec.titulo.toUpperCase(),M+4,y+5.5);y+=10;
+    sec.items.forEach((item,i)=>{
+      if(y>268){doc.addPage();y=15;}
+      const st=vals[i];
+      doc.setFillColor(i%2===0?[250,250,250]:[255,255,255]);
+      const rowH=st.val==='no'&&st.obs?10:7;
+      doc.rect(M,y,W-M*2,rowH,'F');
+      doc.setDrawColor(220,220,220);doc.line(M,y+rowH,W-M,y+rowH);
+      sf('normal',7.5,negro);
+      const txt=doc.splitTextToSize(item.q,140);
+      doc.text(txt[0],M+4,y+5);
+      if(st.val==='si'){doc.setFillColor(...verde);doc.roundedRect(W-M-12,y+1.5,10,4,1,1,'F');sf('bold',6.5,[255,255,255]);doc.text('OK',W-M-7,y+4.8,{align:'center'});}
+      else if(st.val==='no'){doc.setFillColor(...rojof);doc.roundedRect(W-M-16,y+1.5,14,4,1,1,'F');sf('bold',6.5,[255,255,255]);doc.text('FALLA',W-M-9,y+4.8,{align:'center'});}
+      else if(st.val==='na'){doc.setFillColor(150,150,150);doc.roundedRect(W-M-12,y+1.5,10,4,1,1,'F');sf('bold',6.5,[255,255,255]);doc.text('N/A',W-M-7,y+4.8,{align:'center'});}
+      if(st.val==='no'&&st.obs){sf('normal',6.5,[130,40,40]);doc.text('→ '+st.obs.substring(0,80),M+6,y+9);}
+      y+=rowH;
+    });
+    y+=4;
+  });
+  y+=4;sf('normal',7,[150,150,150]);
+  doc.text('Generado con Protokol — S&E Consultores · syeconsultores.com.ar',W/2,y,{align:'center'});
+  const nombre='Red_Incendio_'+(document.getElementById('empresa').value||'empresa').replace(/\s+/g,'_')+'_'+(fecha||'sin_fecha')+'.pdf';
+  doc.save(nombre);
+}
+
+function nuevoControl(){
+  if(!confirm('¿Nuevo control? Se perderán los datos actuales.'))return;
+  selectedComps=[];checkState={};libroVal=null;
+  document.querySelectorAll('input,textarea').forEach(el=>el.value='');
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.getElementById('libro-si').classList.remove('active');
+  document.getElementById('libro-no').classList.remove('active');
+  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+  buildCompGrid();showScreen('s1');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+init();
+</script>
+</body>
+</html>
