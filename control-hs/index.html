@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Constancia de Visita H&S</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;min-height:100vh;font-size:16px}
+.screen{display:none;padding:16px;max-width:480px;margin:0 auto;padding-bottom:40px}
+.screen.active{display:block}
+.logo{text-align:center;padding:24px 0 12px}
+.logo-icon{font-size:36px;display:block;margin-bottom:6px}
+.logo h1{font-size:20px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px}
+.logo span{font-size:13px;color:#666;display:block;margin-top:2px}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.card-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px}
+.field-label{font-size:14px;color:#444;display:block;margin-bottom:5px;margin-top:14px;font-weight:500}
+.field-label:first-of-type{margin-top:0}
+.field-label .req{color:#E24B4A;margin-left:2px}
+input[type=text],input[type=date],textarea{width:100%;padding:12px 14px;border:1.5px solid #E0E0E0;border-radius:10px;font-size:16px;background:#fff;color:#1a1a1a;outline:none;appearance:none;-webkit-appearance:none;font-family:inherit}
+input[type=text]:focus,input[type=date]:focus,textarea:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.12)}
+textarea{resize:none;min-height:60px}
+.items-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item-toggle{padding:12px 8px;border:1.5px solid #E0E0E0;border-radius:12px;background:#fff;color:#333;font-size:13px;font-weight:500;cursor:pointer;text-align:center;line-height:1.3;transition:all 0.15s;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.item-toggle .ico{font-size:22px}
+.item-toggle.selected{background:#EBF4FF;border-color:#185FA5;color:#0D4F9A}
+.btn-primary{width:100%;padding:16px;background:#185FA5;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px}
+.btn-primary:active{background:#0D4F9A}
+.btn-secondary{width:100%;padding:14px;background:#fff;color:#333;border:1.5px solid #E0E0E0;border-radius:14px;font-size:16px;font-weight:500;cursor:pointer;margin-top:10px}
+.btn-danger{width:100%;padding:16px;background:#C0392B;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px}
+.btn-pdf{width:100%;padding:16px;background:#27AE60;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px}
+.progress-wrap{margin-bottom:16px}
+.progress-label{font-size:13px;color:#666;margin-bottom:6px;text-align:right}
+.progress-bar{background:#E0E0E0;border-radius:20px;height:6px}
+.progress-fill{background:#185FA5;height:6px;border-radius:20px;transition:width 0.3s}
+.section-header{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:#1a1a1a}
+.check-item{padding:14px 0;border-bottom:1px solid #F0F0F0}
+.check-item:last-child{border-bottom:none;padding-bottom:0}
+.check-label{font-size:15px;margin-bottom:10px;color:#1a1a1a;line-height:1.4}
+.check-btns{display:flex;gap:8px}
+.btn-cumple,.btn-nocumple{flex:1;padding:11px 8px;border:1.5px solid #E0E0E0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:#fff;color:#666;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn-cumple.active{background:#E8F8EF;border-color:#27AE60;color:#1E7A44}
+.btn-nocumple.active{background:#FDEDEC;border-color:#C0392B;color:#A93226}
+.obs-wrap{margin-top:10px;display:none}
+.obs-wrap textarea{font-size:14px;min-height:55px;border-color:#C0392B;background:#FFFAFA}
+.report-header-card{background:#EBF4FF;border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid #B5D4F4}
+.report-header-card p{font-size:15px;color:#0D4F9A;line-height:1.9}
+.summary-row{display:flex;gap:10px;margin-bottom:16px}
+.summary-box{flex:1;border-radius:14px;padding:14px;text-align:center}
+.summary-box.ok{background:#E8F8EF}
+.summary-box.nc{background:#FDEDEC}
+.summary-box .num{font-size:32px;font-weight:700}
+.summary-box.ok .num{color:#1E7A44}
+.summary-box.nc .num{color:#A93226}
+.summary-box .lbl{font-size:13px;color:#666;margin-top:2px}
+.report-section{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.report-section h3{font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid #F0F0F0;padding-bottom:10px;margin-bottom:10px}
+.report-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #F8F8F8}
+.report-item:last-child{border-bottom:none;padding-bottom:0}
+.report-item-text{flex:1}
+.report-item-name{font-size:14px;color:#1a1a1a;line-height:1.4}
+.report-item-obs{font-size:13px;color:#C0392B;margin-top:3px;font-style:italic;line-height:1.3}
+.badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.badge.ok{background:#E8F8EF;color:#1E7A44}
+.badge.nc{background:#FDEDEC;color:#A93226}
+.badge.nd{background:#F5F5F5;color:#888}
+.client-banner{background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.06);display:flex;align-items:center;gap:10px}
+.client-banner .ico{font-size:20px}
+.client-banner-name{font-size:15px;font-weight:600;color:#1a1a1a}
+.client-banner-sub{font-size:13px;color:#666}
+/* FIRMAS */
+.firma-wrap{background:#F8F9FA;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #E0E0E0}
+.firma-label{font-size:14px;font-weight:600;color:#185FA5;margin-bottom:8px}
+.firma-canvas-wrap{position:relative;background:#fff;border:1.5px dashed #CCC;border-radius:10px;overflow:hidden}
+.firma-canvas-wrap canvas{display:block;touch-action:none;width:100%;height:120px}
+.firma-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#CCC;pointer-events:none;text-align:center}
+.firma-tools{display:flex;gap:8px;margin-top:8px}
+.firma-tools button{flex:1;padding:9px;border:1.5px solid #DDD;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.firma-done{background:#E8F8EF;border:1px solid #66BB6A;border-radius:8px;padding:6px 10px;font-size:12px;color:#1E7A44;text-align:center;margin-top:6px;display:none}
+</style>
+</head>
+<body>
+
+<!-- S1: DATOS -->
+<div id="screen1" class="screen active">
+  <div class="logo">
+    <span class="logo-icon">🛡️</span>
+    <h1>Constancia de Visita H&S</h1>
+    <span>Relevamiento y valores para constancia oficial</span>
+  </div>
+  <div class="card">
+    <div class="card-title">Datos de la visita</div>
+    <label class="field-label">Fecha <span class="req">*</span></label>
+    <input type="date" id="fecha">
+    <label class="field-label">Cliente / Empresa <span class="req">*</span></label>
+    <input type="text" id="cliente" placeholder="Nombre del cliente o empresa">
+    <label class="field-label">Dirección del establecimiento</label>
+    <input type="text" id="direccion" placeholder="Dirección completa">
+    <label class="field-label">Tec./Lic. H&S responsable</label>
+    <input type="text" id="responsable" placeholder="Nombre y apellido">
+    <label class="field-label">Matrícula</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+    <label class="field-label">Responsable del establecimiento</label>
+    <input type="text" id="resp_empresa" placeholder="Nombre y apellido del responsable">
+  </div>
+  <div class="card">
+    <div class="card-title">Items a controlar</div>
+    <div class="items-grid" id="items-grid"></div>
+  </div>
+  <button class="btn-primary" onclick="iniciarControl()">Iniciar control →</button>
+</div>
+
+<!-- S2: CHECKLISTS -->
+<div id="screen2" class="screen">
+  <div class="logo" style="padding:16px 0 8px">
+    <h1 style="font-size:18px">Constancia de Visita H&S</h1>
+  </div>
+  <div class="client-banner">
+    <span class="ico">🏭</span>
+    <div>
+      <div class="client-banner-name" id="s2-cliente"></div>
+      <div class="client-banner-sub" id="s2-fecha"></div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label" id="progress-label">0 de 0 items (0%)</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div id="checklists-container"></div>
+  <button class="btn-primary" onclick="generarInforme()">Ver informe y firmas →</button>
+  <button class="btn-secondary" onclick="volverInicio()">← Volver al inicio</button>
+</div>
+
+<!-- S3: INFORME + FIRMAS -->
+<div id="screen3" class="screen">
+  <div class="logo" style="padding:16px 0 12px">
+    <span class="logo-icon">📋</span>
+    <h1>Constancia de Visita H&S</h1>
+    <span id="s3-subtitulo"></span>
+  </div>
+  <div class="report-header-card" id="report-header"></div>
+  <div class="summary-row">
+    <div class="summary-box ok"><div class="num" id="total-ok">0</div><div class="lbl">Cumplen</div></div>
+    <div class="summary-box nc"><div class="num" id="total-nc">0</div><div class="lbl">No cumplen</div></div>
+  </div>
+  <div id="report-body"></div>
+
+  <!-- FIRMAS -->
+  <div class="card" style="margin-top:8px">
+    <div class="card-title">Firmas digitales</div>
+    <div class="firma-wrap">
+      <div class="firma-label" id="firma1-label">Firma del Tec./Lic. H&S</div>
+      <div class="firma-canvas-wrap">
+        <canvas id="firma1-canvas" width="800" height="240"></canvas>
+        <div class="firma-hint" id="firma1-hint">Firmar aqui con el dedo</div>
+      </div>
+      <div class="firma-tools">
+        <button onclick="clearFirma(1)">Borrar</button>
+        <button onclick="confirmFirma(1)" style="background:#185FA5;color:#fff;border-color:#185FA5">Confirmar firma</button>
+      </div>
+      <div class="firma-done" id="firma1-done">Firma Tec./Lic. confirmada</div>
+    </div>
+    <div class="firma-wrap">
+      <div class="firma-label" id="firma2-label">Firma del Responsable del establecimiento</div>
+      <div class="firma-canvas-wrap">
+        <canvas id="firma2-canvas" width="800" height="240"></canvas>
+        <div class="firma-hint" id="firma2-hint">Firmar aqui con el dedo</div>
+      </div>
+      <div class="firma-tools">
+        <button onclick="clearFirma(2)">Borrar</button>
+        <button onclick="confirmFirma(2)" style="background:#185FA5;color:#fff;border-color:#185FA5">Confirmar firma</button>
+      </div>
+      <div class="firma-done" id="firma2-done">Firma del Responsable confirmada</div>
+    </div>
+  </div>
+
+  <button class="btn-pdf" onclick="generarPDF()">Generar PDF — Constancia oficial</button>
+  <button class="btn-danger" onclick="nuevoControl()">Nuevo control</button>
+</div>
+
+<script>
+const ITEMS = [
+  {id:'extintores', label:'Extintores', ico:'Extintores', checks:[
+    'Cantidad segun plano de evacuacion',
+    'Acceso libre y señalizado',
+    'Carga vigente (tarjeta de control)',
+    'Pasador y precinto intactos',
+    'Estado fisico del equipo',
+    'Altura de montaje correcta (1,20-1,50m)'
+  ]},
+  {id:'emergencia', label:'Emergencia', ico:'Emergencia', checks:[
+    'Luces de emergencia operativas',
+    'Señales de salida iluminadas',
+    'Rutas de evacuación despejadas',
+    'Plan de evacuacion visible',
+    'Punto de encuentro senalizado'
+  ]},
+  {id:'documentacion', label:'Documentación', ico:'Documentacion', checks:[
+    'ART al dia y exhibida',
+    'Libro de actas de H&S',
+    'Registros de capacitación',
+    'Habilitación municipal vigente',
+    'Reglamento interno de H&S',
+    'Plan de emergencias'
+  ]},
+  {id:'epp', label:'Uso de EPP', ico:'EPP', checks:[
+    'Calzado de seguridad en uso',
+    'Casco donde corresponde',
+    'Guantes según tarea',
+    'Protección ocular en uso',
+    'EPP en buen estado',
+    'Stock de EPP disponible'
+  ]},
+  {id:'planta', label:'Condiciones de planta', ico:'Planta', checks:[
+    'Orden y limpieza general',
+    'Pasillos despejados (mín. 1m)',
+    'Iluminación adecuada',
+    'Ventilación suficiente',
+    'Pisos sin peligros de caída',
+    'Almacenamiento correcto de materiales'
+  ]},
+  {id:'senalizacion', label:'Señalización', ico:'Senal.', checks:[
+    'Señales de riesgo visibles',
+    'Prohibiciones señalizadas',
+    'Obligaciones señalizadas',
+    'Equipos identificados',
+    'Señales en buen estado'
+  ]},
+  {id:'botiquin', label:'Botiquín', ico:'Botiquin', checks:[
+    'Botiquín accesible y señalizado',
+    'Contenido completo y en fecha',
+    'Personal capacitado en primeros auxilios',
+    'Registro de atenciones'
+  ]},
+  {id:'maquinas', label:'Maquinaria', ico:'Maquin.', checks:[
+    'Guardas de seguridad colocadas',
+    'Paros de emergencia operativos',
+    'Mantenimiento al dia',
+    'Operadores capacitados',
+    'Señalización de riesgos en equipos'
+  ]}
+];
+
+let selectedItems = [];
+let checkState = {};
+let firma1Data = null, firma2Data = null;
+let firma1Confirmed = false, firma2Confirmed = false;
+
+function init() {
+  const grid = document.getElementById('items-grid');
+  ITEMS.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'item-toggle';
+    btn.dataset.id = item.id;
+    btn.innerHTML = item.label;
+    btn.onclick = () => toggleItem(item.id, btn);
+    grid.appendChild(btn);
+  });
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  initFirma(1);
+  initFirma(2);
+}
+
+function toggleItem(id, btn) {
+  const idx = selectedItems.indexOf(id);
+  if (idx === -1) { selectedItems.push(id); btn.classList.add('selected'); }
+  else { selectedItems.splice(idx, 1); btn.classList.remove('selected'); }
+}
+
+function iniciarControl() {
+  const cliente = document.getElementById('cliente').value.trim();
+  const fecha = document.getElementById('fecha').value;
+  if (!cliente || !fecha) { alert('Completá cliente y fecha.'); return; }
+  if (selectedItems.length === 0) { alert('Selecciona al menos un item a controlar.'); return; }
+  selectedItems.forEach(id => {
+    const cfg = ITEMS.find(x => x.id === id);
+    if (!cfg) return;
+    checkState[id] = {};
+    cfg.checks.forEach(c => { checkState[id][c] = { estado: null, obs: '' }; });
+  });
+  document.getElementById('s2-cliente').textContent = cliente;
+  document.getElementById('s2-fecha').textContent = formatDate(fecha);
+  buildChecklists();
+  showScreen('screen2');
+}
+
+function buildChecklists() {
+  const container = document.getElementById('checklists-container');
+  container.innerHTML = '';
+  selectedItems.forEach(id => {
+    const cfg = ITEMS.find(x => x.id === id);
+    if (!cfg) return;
+    const card = document.createElement('div');
+    card.className = 'card';
+    let html = '<div class="section-header">' + cfg.label + '</div>';
+    cfg.checks.forEach((chk, i) => {
+      const sid = id + '_' + i;
+      html += '<div class="check-item" id="ci_' + sid + '">' +
+        '<div class="check-label">' + chk + '</div>' +
+        '<div class="check-btns">' +
+        '<button class="btn-cumple" onclick="setCheck(\'' + id + '\',\'' + escQ(chk) + '\',\'cumple\',\'' + sid + '\')">Cumple</button>' +
+        '<button class="btn-nocumple" onclick="setCheck(\'' + id + '\',\'' + escQ(chk) + '\',\'nocumple\',\'' + sid + '\')">No cumple</button>' +
+        '</div>' +
+        '<div class="obs-wrap" id="obs_' + sid + '">' +
+        '<textarea placeholder="Describir hallazgo..." oninput="setObs(\'' + id + '\',\'' + escQ(chk) + '\',this.value)"></textarea>' +
+        '</div></div>';
+    });
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+function escQ(s) { return s.replace(/'/g, "\\'"); }
+
+function setCheck(secId, chkLabel, estado, sid) {
+  if (!checkState[secId]) return;
+  checkState[secId][chkLabel].estado = estado;
+  const cumpleBtn = document.querySelector('#ci_' + sid + ' .btn-cumple');
+  const ncBtn = document.querySelector('#ci_' + sid + ' .btn-nocumple');
+  const obsDiv = document.getElementById('obs_' + sid);
+  if (cumpleBtn) cumpleBtn.classList.toggle('active', estado === 'cumple');
+  if (ncBtn) ncBtn.classList.toggle('active', estado === 'nocumple');
+  if (obsDiv) {
+    obsDiv.style.display = estado === 'nocumple' ? 'block' : 'none';
+    if (estado === 'cumple') checkState[secId][chkLabel].obs = '';
+  }
+  updateProgress();
+}
+
+function setObs(secId, chkLabel, val) {
+  if (checkState[secId] && checkState[secId][chkLabel] !== undefined) {
+    checkState[secId][chkLabel].obs = val;
+  }
+}
+
+function updateProgress() {
+  let total = 0, done = 0;
+  selectedItems.forEach(id => {
+    const cfg = ITEMS.find(x => x.id === id);
+    if (!cfg) return;
+    cfg.checks.forEach(c => {
+      total++;
+      if (checkState[id] && checkState[id][c] && checkState[id][c].estado) done++;
+    });
+  });
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = done + ' de ' + total + ' items controlados (' + pct + '%)';
+}
+
+function generarInforme() {
+  const fecha = document.getElementById('fecha').value;
+  const cliente = document.getElementById('cliente').value;
+  const direccion = document.getElementById('direccion').value;
+  const responsable = document.getElementById('responsable').value;
+  const matricula = document.getElementById('matricula').value;
+  const respEmpresa = document.getElementById('resp_empresa').value;
+  const dateStr = formatDate(fecha);
+  document.getElementById('s3-subtitulo').textContent = cliente + ' - ' + dateStr;
+  document.getElementById('firma1-label').textContent = 'Firma del Tec./Lic. H&S' + (responsable ? ' - ' + responsable : '');
+  document.getElementById('firma2-label').textContent = 'Firma del Responsable' + (respEmpresa ? ' - ' + respEmpresa : '');
+  document.getElementById('report-header').innerHTML =
+    '<p><strong>Cliente:</strong> ' + cliente + '<br>' +
+    '<strong>Direccion:</strong> ' + (direccion||'—') + '<br>' +
+    '<strong>Fecha:</strong> ' + dateStr + '<br>' +
+    '<strong>Tec./Lic. H&S:</strong> ' + (responsable||'—') + (matricula?' (Mat. '+matricula+')':'') + '<br>' +
+    '<strong>Responsable establecimiento:</strong> ' + (respEmpresa||'—') + '</p>';
+  let totalOk = 0, totalNc = 0;
+  let body = '';
+  selectedItems.forEach(id => {
+    const cfg = ITEMS.find(x => x.id === id);
+    if (!cfg) return;
+    body += '<div class="report-section"><h3>' + cfg.label + '</h3>';
+    cfg.checks.forEach(chk => {
+      const st = checkState[id][chk];
+      let badge, badgeClass;
+      if (st.estado === 'cumple') { badge = 'Cumple'; badgeClass = 'ok'; totalOk++; }
+      else if (st.estado === 'nocumple') { badge = 'No cumple'; badgeClass = 'nc'; totalNc++; }
+      else { badge = 'Sin evaluar'; badgeClass = 'nd'; }
+      body += '<div class="report-item">' +
+        '<div class="report-item-text"><div class="report-item-name">' + chk + '</div>' +
+        (st.obs ? '<div class="report-item-obs">Hallazgo: ' + st.obs + '</div>' : '') +
+        '</div><span class="badge ' + badgeClass + '">' + badge + '</span></div>';
+    });
+    body += '</div>';
+  });
+  document.getElementById('total-ok').textContent = totalOk;
+  document.getElementById('total-nc').textContent = totalNc;
+  document.getElementById('report-body').innerHTML = body;
+  showScreen('screen3');
+}
+
+// ═══ FIRMAS ═══
+function initFirma(n) {
+  const canvas = document.getElementById('firma' + n + '-canvas');
+  const hint = document.getElementById('firma' + n + '-hint');
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#185FA5';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false, lastX = 0, lastY = 0;
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches) return [(e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY];
+    return [(e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY];
+  }
+  function start(e) { e.preventDefault(); drawing = true; [lastX, lastY] = getPos(e); hint.style.display = 'none'; }
+  function draw(e) {
+    if (!drawing) return; e.preventDefault();
+    const [x, y] = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    [lastX, lastY] = [x, y];
+  }
+  function stop() { drawing = false; }
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', draw, {passive:false});
+  canvas.addEventListener('touchend', stop);
+}
+
+function clearFirma(n) {
+  const canvas = document.getElementById('firma' + n + '-canvas');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('firma' + n + '-hint').style.display = 'block';
+  document.getElementById('firma' + n + '-done').style.display = 'none';
+  if (n === 1) { firma1Confirmed = false; firma1Data = null; }
+  else { firma2Confirmed = false; firma2Data = null; }
+}
+
+function confirmFirma(n) {
+  const canvas = document.getElementById('firma' + n + '-canvas');
+  if (n === 1) { firma1Data = canvas.toDataURL('image/png'); firma1Confirmed = true; }
+  else { firma2Data = canvas.toDataURL('image/png'); firma2Confirmed = true; }
+  document.getElementById('firma' + n + '-done').style.display = 'block';
+}
+
+// ═══ PDF ═══
+function generarPDF() {
+  // Generar ventana de impresion con el contenido formateado
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = formatDate(fecha);
+  const cliente = document.getElementById('cliente').value || '-';
+  const direccion = document.getElementById('direccion').value || '-';
+  const responsable = document.getElementById('responsable').value || '-';
+  const matricula = document.getElementById('matricula').value || '';
+  const respEmpresa = document.getElementById('resp_empresa').value || '-';
+
+  // Construir tabla de items
+  let tablaHTML = '';
+  let totalOk = 0, totalNc = 0, totalNd = 0;
+  selectedItems.forEach(id => {
+    const cfg = ITEMS.find(x => x.id === id);
+    if (!cfg) return;
+    tablaHTML += `<tr><td colspan="2" style="background:#1A3A6C;color:#fff;font-weight:700;font-size:11px;padding:5px 8px;letter-spacing:.5px">${cfg.label.toUpperCase()}</td></tr>`;
+    cfg.checks.forEach((chk, i) => {
+      const st = checkState[id] ? checkState[id][chk] : {estado:null, obs:''};
+      let badge = '', color = '';
+      if (st.estado === 'cumple') { badge = 'CUMPLE'; color = '#1E7A44'; totalOk++; }
+      else if (st.estado === 'nocumple') { badge = 'NO CUMPLE'; color = '#C0392B'; totalNc++; }
+      else { badge = 'S/E'; color = '#999'; totalNd++; }
+      const bg = i % 2 === 0 ? '#fff' : '#F8F9FC';
+      tablaHTML += `<tr style="background:${bg}">
+        <td style="padding:5px 8px;font-size:10px;border-bottom:1px solid #EEE">
+          ${chk}${st.obs ? '<br><span style="color:#C0392B;font-style:italic">Hallazgo: ' + st.obs + '</span>' : ''}
+        </td>
+        <td style="padding:5px 8px;text-align:center;white-space:nowrap;border-bottom:1px solid #EEE">
+          <span style="background:${color};color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px">${badge}</span>
+        </td>
+      </tr>`;
+    });
+  });
+
+  // Firmas como imágenes
+  const f1 = firma1Data ? `<img src="${firma1Data}" style="max-height:60px;display:block;margin:4px auto">` : '';
+  const f2 = firma2Data ? `<img src="${firma2Data}" style="max-height:60px;display:block;margin:4px auto">` : '';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Constancia de Visita H&S</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:0;font-size:11px;color:#222}
+    @media print{body{margin:0}}
+    .header{background:#1A3A6C;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+    .header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:-.3px}
+    .header p{font-size:9px;margin:2px 0;opacity:.8}
+    .datos{background:#EBF4FF;border:1px solid #B5D4F4;margin:12px 16px;padding:10px 14px;border-radius:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:10px}
+    .datos strong{color:#1A3A6C}
+    table{width:calc(100% - 32px);margin:0 16px;border-collapse:collapse;font-size:10px}
+    .firmas{display:flex;gap:20px;margin:16px;margin-top:20px}
+    .firma-box{flex:1;border-top:1.5px solid #333;padding-top:6px;text-align:center;font-size:9px;color:#555}
+    .resumen{display:flex;gap:10px;margin:10px 16px;font-size:10px}
+    .res-ok{background:#E8F8EF;color:#1E7A44;padding:5px 12px;border-radius:6px;font-weight:700}
+    .res-nc{background:#FDEDEC;color:#C0392B;padding:5px 12px;border-radius:6px;font-weight:700}
+    .footer{text-align:center;font-size:8px;color:#999;margin:12px;border-top:1px solid #EEE;padding-top:8px}
+  </style>
+  </head><body>
+  <div class="header">
+    <div><h1>CONSTANCIA DE VISITA H&S</h1></div>
+    <div style="text-align:right;font-size:10px;opacity:.85">S&E Consultores</div>
+  </div>
+  <div class="datos">
+    <div><strong>Cliente:</strong> ${cliente}</div>
+    <div><strong>Fecha:</strong> ${dateStr}</div>
+    <div><strong>Direccion:</strong> ${direccion}</div>
+    <div><strong>Tec./Lic. H&S:</strong> ${responsable}${matricula?' (Mat. '+matricula+')':''}</div>
+    <div><strong>Responsable establecimiento:</strong> ${respEmpresa}</div>
+  </div>
+  <div class="resumen">
+    <div class="res-ok">Cumplen: ${totalOk}</div>
+    <div class="res-nc">No cumplen: ${totalNc}</div>
+  </div>
+  <table>
+    <tr style="background:#1A3A6C;color:#fff">
+      <th style="text-align:left;padding:6px 8px;font-size:10px">DESCRIPCION</th>
+      <th style="padding:6px 8px;font-size:10px;width:80px">ESTADO</th>
+    </tr>
+    ${tablaHTML}
+  </table>
+  <div class="firmas">
+    <div class="firma-box">${f1}<br>Firma del Tec./Lic. H&S<br><strong>${responsable}</strong></div>
+    <div class="firma-box">${f2}<br>Firma del Responsable<br><strong>${respEmpresa}</strong></div>
+  </div>
+  <div class="footer">Generado con App PROTOKOL - By S&E Consultores</div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else { alert('Permitir ventanas emergentes para generar el PDF.'); }
+}
+
+function nuevoControl() {
+  if (!confirm('Nuevo control? Se perderan los datos actuales.')) return;
+  ['cliente','direccion','responsable','matricula','resp_empresa'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  selectedItems = []; checkState = {};
+  firma1Data = null; firma2Data = null;
+  firma1Confirmed = false; firma2Confirmed = false;
+  clearFirma(1); clearFirma(2);
+  document.querySelectorAll('.item-toggle').forEach(b => b.classList.remove('selected'));
+  showScreen('screen1');
+}
+
+function volverInicio() { showScreen('screen1'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function formatDate(fecha) {
+  if (!fecha) return '';
+  return new Date(fecha + 'T12:00:00').toLocaleDateString('es-AR', {day:'2-digit', month:'long', year:'numeric'});
+}
+
+init();
+</script>
+</body>
+</html>
