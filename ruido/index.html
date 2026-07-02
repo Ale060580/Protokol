@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Medición de Ruido — Res. SRT 85/12</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:50px}
+.screen.active{display:block}
+.topbar{background:#4A1942;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700}
+.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
+.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
+label.fl:first-of-type{margin-top:0}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#4A1942;box-shadow:0 0 0 3px rgba(74,25,66,.1)}
+textarea{min-height:56px;resize:none}
+.btn-main{width:100%;padding:15px;background:#4A1942;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-main:active{background:#361230}
+.btn-sec{width:100%;padding:13px;background:#fff;color:#4A1942;border:1.5px solid #4A1942;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-danger{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-copy{width:100%;padding:15px;background:#1a6b3a;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-add{width:100%;padding:10px;border:1.5px dashed #4A1942;border-radius:10px;background:#F5EFF5;color:#4A1942;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-sm{padding:8px 12px;border:1.5px solid #DDD;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#444}
+.btn-sm.danger{border-color:#EF5350;color:#EF5350}
+.btn-sm.add{border-color:#4A1942;color:#4A1942;background:#F5EFF5}
+.puesto-card{background:#fff;border-radius:13px;padding:16px;margin-bottom:12px;border:1.5px solid #DDD}
+.puesto-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.puesto-name{font-size:15px;font-weight:700;color:#4A1942}
+.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
+.nota.morada{background:#F5EFF5;border-color:#CE93D8;color:#4A1942}
+.nota.verde{background:#E8F5E9;border-color:#81C784;color:#1B5E20}
+.nota.roja{background:#FFEBEE;border-color:#EF9A9A;color:#B71C1C}
+.hidden{display:none}
+.field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.periodo-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;background:#F8F5F8;border-radius:10px;padding:12px}
+.periodo-row label{font-size:12px;color:#555;font-weight:500;display:block;margin-bottom:4px}
+.periodo-row input{padding:9px 10px;font-size:14px;border-radius:8px}
+.periodo-row .del-per{padding:8px 11px;border:1.5px solid #EF5350;border-radius:8px;background:#fff;color:#EF5350;cursor:pointer;font-size:15px;font-weight:700;flex-shrink:0;margin-top:18px}
+.res-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{flex:1;min-width:88px;border-radius:10px;padding:10px 8px;text-align:center}
+.chip .val{font-size:18px;font-weight:700;line-height:1.2}
+.chip .lbl{font-size:11px;color:#555;margin-top:3px;line-height:1.3}
+.chip.ok{background:#E8F5E9}.chip.ok .val{color:#1B5E20}
+.chip.warn{background:#FFF8E1}.chip.warn .val{color:#E65100}
+.chip.fail{background:#FFEBEE}.chip.fail .val{color:#B71C1C}
+.chip.neutral{background:#F5F5F5}.chip.neutral .val{color:#333}
+.cumple-badge{display:inline-block;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;margin-top:8px}
+.cumple-badge.ok{background:#E8F5E9;color:#1B5E20}
+.cumple-badge.fail{background:#FFEBEE;color:#B71C1C}
+.cumple-badge.warn{background:#FFF8E1;color:#E65100}
+.cumple-badge.nd{background:#F5F5F5;color:#888}
+.inf-section{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.inf-section h3{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F0F0F0;padding-bottom:8px;margin-bottom:10px}
+.inf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
+.inf-row:last-child{border-bottom:none}
+.inf-row .ik{color:#555;flex:1;padding-right:8px;line-height:1.4}
+.inf-row .iv{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+.puesto-result{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8}
+.puesto-result h3{font-size:15px;font-weight:700;color:#4A1942;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Medición de Ruido Laboral</h1>
+  <span>Res. SRT 85/12 · Dec. 351/79 · Res. 295/03 Anexo V</span>
+</div>
+
+<!-- ══════════════════════════════════════
+     S1 — DATOS GENERALES
+══════════════════════════════════════ -->
+<div id="s1" class="screen active">
+  <div class="card" style="margin-top:12px">
+    <div class="ct">📋 Datos de la medición</div>
+    <label class="fl">Fecha de inicio de medición</label>
+    <input type="date" id="fecha_ini">
+    <label class="fl">Fecha de fin (si la medición abarca más de un día)</label>
+    <input type="date" id="fecha_fin">
+    <label class="fl">Empresa / establecimiento</label>
+    <input type="text" id="empresa" placeholder="Razón social completa">
+    <label class="fl">CUIT</label>
+    <input type="text" id="cuit" placeholder="XX-XXXXXXXX-X">
+    <label class="fl">Dirección</label>
+    <input type="text" id="direccion" placeholder="Dirección completa">
+    <label class="fl">Localidad</label>
+    <input type="text" id="localidad" placeholder="Localidad">
+    <label class="fl">Provincia</label>
+    <input type="text" id="provincia" placeholder="Provincia">
+    <label class="fl">Actividad principal del establecimiento</label>
+    <input type="text" id="actividad" placeholder="Ej: Metalúrgica, Industria alimenticia, Construcción">
+    <label class="fl">Duración de la jornada laboral</label>
+    <select id="jornada">
+      <option value="">— Seleccionar —</option>
+      <option value="6">6 horas</option>
+      <option value="8">8 horas</option>
+      <option value="9">9 horas</option>
+      <option value="10">10 horas</option>
+      <option value="12">12 horas</option>
+    </select>
+    <label class="fl">Turno de medición</label>
+    <input type="text" id="turno" placeholder="Ej: Mañana — 06:00 a 14:00 hs">
+    <label class="fl">Hora de inicio de la primera medición</label>
+    <input type="text" id="hora_ini" placeholder="Ej: 09:30 hs">
+  </div>
+
+  <div class="card">
+    <div class="ct">🔧 Equipo de medición</div>
+    <label class="fl">Tipo de instrumento</label>
+    <select id="tipo_instrumento">
+      <option value="">— Seleccionar —</option>
+      <option>Decibelímetro / Sonómetro integrador (Clase 2)</option>
+      <option>Dosímetro (Clase 2)</option>
+      <option>Sonómetro integrador Clase 1</option>
+      <option>Dosímetro Clase 1</option>
+    </select>
+    <label class="fl">Marca y modelo</label>
+    <input type="text" id="equipo_marca" placeholder="Ej: Svantek SV 971, Testo 815">
+    <div class="field-2" style="margin-top:10px">
+      <div>
+        <label class="fl" style="margin-top:0">N° de serie</label>
+        <input type="text" id="equipo_serie" placeholder="N° de serie">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">Fecha de calibración</label>
+        <input type="date" id="equipo_cal">
+      </div>
+    </div>
+    <label class="fl">Laboratorio de calibración</label>
+    <input type="text" id="equipo_lab" placeholder="Nombre del laboratorio acreditado">
+  </div>
+
+  <div class="card">
+    <div class="ct">👷 Profesional responsable</div>
+    <label class="fl">Nombre y apellido</label>
+    <input type="text" id="profesional" placeholder="Nombre y apellido">
+    <label class="fl">Matrícula / Registro</label>
+    <input type="text" id="matricula" placeholder="Nº de matrícula">
+  </div>
+
+  <div class="card">
+    <div class="ct">📝 Condiciones de trabajo</div>
+    <label class="fl" style="margin-top:0">Condiciones normales y habituales de los puestos</label>
+    <textarea id="cond_normales" placeholder="Enumeración y descripción de las fuentes de ruido presentes, condición de funcionamiento de las mismas..."></textarea>
+    <label class="fl">Condiciones al momento de la medición</label>
+    <textarea id="cond_medicion" placeholder="Completar solo si difieren de las condiciones normales descritas arriba (opcional)"></textarea>
+  </div>
+
+  <button class="btn-main" onclick="showScreen('s2')">Continuar → Puestos de trabajo ›</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     S2 — PUESTOS DE TRABAJO
+══════════════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="nota morada" style="margin-top:12px">
+    Agregá cada puesto de trabajo a evaluar. Puestos similares pueden agruparse como "puesto tipo". Para puestos con alta movilidad usar dosimetría.
+  </div>
+  <div id="puestos-container"></div>
+  <button class="btn-add" onclick="addPuesto()">+ Agregar puesto de trabajo</button>
+  <button class="btn-main" onclick="goResultados()" style="margin-top:16px">📄 Ver resultados e informe ›</button>
+  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver a datos generales</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     S3 — INFORME
+══════════════════════════════════════ -->
+<div id="s3" class="screen">
+  <div style="background:#4A1942;color:#fff;border-radius:13px;padding:15px;margin-top:12px;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">Protocolo de Medición — Ruido Laboral</div>
+    <div style="font-size:12px;opacity:.8;margin-top:2px">Res. SRT N° 85/12 · Dec. 351/79 · Res. 295/03 Anexo V</div>
+    <div style="font-size:13px;margin-top:6px;opacity:.9" id="inf-sub"></div>
+  </div>
+  <div id="informe-body"></div>
+  <div class="nota" style="margin-top:4px">Datos estructurados para volcar al Formulario oficial Res. SRT 85/12. Validez del protocolo: 12 meses.</div>
+  <button class="btn-copy" onclick="copiarInforme()">📋 Copiar datos para protocolo</button>
+  <button class="btn-danger" onclick="nuevaMedicion()">🔄 Nueva medición</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// TABLA VALORES PERMISIBLES Res. 295/03 Anexo V
+// Criterio: 85 dBA / 8 hs / índice de conversión 3 dB
+// Fórmula: T(h) = 8 / 2^((L-85)/3)
+// ══════════════════════════════════════════════════
+function getTmax(dba) {
+  if (dba < 80) return Infinity;
+  if (dba > 115) return 0;
+  return 8 / Math.pow(2, (dba - 85) / 3);
+}
+
+// ══════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════
+let puestos = [];
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+function init() {
+  document.getElementById('fecha_ini').value = new Date().toISOString().split('T')[0];
+  addPuesto();
+}
+
+// ══════════════════════════════════════════════════
+// PUESTOS
+// ══════════════════════════════════════════════════
+function addPuesto() {
+  puestos.push({
+    nombre:'', sector:'', nTrabajadores:'',
+    tipoRuido:'continuo',
+    metodoMed:'sonometro',
+    periodos:[{laeq:'', tExp:'', tMed:''}],
+    lcpico:'',
+    dosisPorc:'', tMedDos:'', tExpDos:'',
+    obs:''
+  });
+  renderPuestos();
+}
+
+function removePuesto(idx) {
+  if (puestos.length <= 1) { alert('Debe haber al menos un puesto de trabajo.'); return; }
+  if (!confirm('¿Eliminar este puesto?')) return;
+  puestos.splice(idx, 1);
+  renderPuestos();
+}
+
+function renderPuestos() {
+  const cont = document.getElementById('puestos-container');
+  cont.innerHTML = '';
+  puestos.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'puesto-card';
+    div.innerHTML = buildPuestoHTML(p, idx);
+    cont.appendChild(div);
+    setTimeout(() => calcPuesto(idx), 60);
+  });
+}
+
+function buildPuestoHTML(p, idx) {
+  let html = `
+    <div class="puesto-header">
+      <div class="puesto-name" id="pn_${idx}">Puesto ${idx+1}${p.nombre?' — '+esc(p.nombre):''}</div>
+      <button class="btn-sm danger" onclick="removePuesto(${idx})">✕ Eliminar</button>
+    </div>
+    <label class="fl" style="margin-top:0">Nombre del puesto / tarea</label>
+    <input type="text" value="${esc(p.nombre)}" placeholder="Ej: Operario tornero, Soldador, Administrativo"
+      oninput="puestos[${idx}].nombre=this.value;document.getElementById('pn_${idx}').textContent='Puesto ${idx+1}'+(this.value?' — '+this.value:'')">
+    <label class="fl">Sector / área</label>
+    <input type="text" value="${esc(p.sector)}" placeholder="Ej: Planta baja, Taller de soldadura, Depósito"
+      oninput="puestos[${idx}].sector=this.value">
+    <label class="fl">N° de trabajadores en el puesto</label>
+    <input type="number" value="${p.nTrabajadores}" placeholder="Cantidad de trabajadores" min="1"
+      oninput="puestos[${idx}].nTrabajadores=this.value">
+
+    <label class="fl">Tipo de ruido presente</label>
+    <select id="trsel_${idx}" onchange="puestos[${idx}].tipoRuido=this.value;renderPuestos()">
+      <option value="continuo" ${p.tipoRuido==='continuo'?'selected':''}>Continuo / Intermitente</option>
+      <option value="impulso" ${p.tipoRuido==='impulso'?'selected':''}>Impulso o impacto</option>
+    </select>
+
+    <label class="fl">Método de medición utilizado</label>
+    <select id="mmsel_${idx}" onchange="puestos[${idx}].metodoMed=this.value;renderPuestos()">
+      <option value="sonometro" ${p.metodoMed==='sonometro'?'selected':''}>Sonómetro / Decibelímetro — LAeq (dBA)</option>
+      <option value="dosimetro" ${p.metodoMed==='dosimetro'?'selected':''}>Dosímetro — % de dosis</option>
+    </select>`;
+
+  // Bloque sonómetro
+  if (p.metodoMed === 'sonometro') {
+    html += `<div class="nota morada" style="margin-top:10px;margin-bottom:8px">
+      Ingresá un período si el ruido es estable durante toda la jornada, o varios períodos si hay distintos niveles.
+      Si mediste solo parte de la jornada, completá el tiempo de medición además del tiempo de exposición real.
+    </div>
+    <div id="periodos_${idx}">`;
+    p.periodos.forEach((per, pi) => {
+      html += `<div class="periodo-row">
+        <div style="flex:1">
+          <div class="field-2" style="margin-bottom:8px">
+            <div>
+              <label>LAeq medido (dBA)</label>
+              <input type="number" value="${per.laeq}" placeholder="dBA" min="50" max="140" step="0.1"
+                oninput="puestos[${idx}].periodos[${pi}].laeq=this.value;calcPuesto(${idx})">
+            </div>
+            <div>
+              <label>T exposición real (hs)</label>
+              <input type="number" value="${per.tExp}" placeholder="hs" min="0" max="24" step="0.25"
+                oninput="puestos[${idx}].periodos[${pi}].tExp=this.value;calcPuesto(${idx})">
+            </div>
+          </div>
+          <div>
+            <label>T de medición (hs) — si midió solo parte del período</label>
+            <input type="number" value="${per.tMed}" placeholder="hs (dejar vacío si midió toda la exposición)" min="0" max="24" step="0.25"
+              oninput="puestos[${idx}].periodos[${pi}].tMed=this.value;calcPuesto(${idx})">
+          </div>
+        </div>
+        ${p.periodos.length > 1 ? `<button class="del-per" onclick="removePeriodo(${idx},${pi})">✕</button>` : ''}
+      </div>`;
+    });
+    html += `</div>
+    <button class="btn-sm add" onclick="addPeriodo(${idx})" style="width:100%;margin-top:4px;padding:10px">
+      + Agregar período de exposición
+    </button>`;
+  }
+
+  // Bloque dosímetro
+  if (p.metodoMed === 'dosimetro') {
+    html += `<div class="nota morada" style="margin-top:10px;margin-bottom:8px">
+      Dosímetro configurado: índice de conversión 3 dB, criterio 85 dBA para 8 hs (Res. 295/03 Anexo V).
+      Si mediste solo parte de la jornada, la app proyecta la dosis al total de la exposición.
+    </div>
+    <div class="field-2" style="margin-top:4px">
+      <div>
+        <label class="fl" style="margin-top:0">Dosis medida (%)</label>
+        <input type="number" value="${p.dosisPorc}" placeholder="%" min="0" step="0.1"
+          oninput="puestos[${idx}].dosisPorc=this.value;calcPuesto(${idx})">
+      </div>
+      <div>
+        <label class="fl" style="margin-top:0">T de medición (hs)</label>
+        <input type="number" value="${p.tMedDos}" placeholder="hs" min="0" max="24" step="0.25"
+          oninput="puestos[${idx}].tMedDos=this.value;calcPuesto(${idx})">
+      </div>
+    </div>
+    <label class="fl">T de exposición total real (hs)</label>
+    <input type="number" value="${p.tExpDos}" placeholder="Horas totales de exposición al ruido en la jornada" min="0" max="24" step="0.25"
+      oninput="puestos[${idx}].tExpDos=this.value;calcPuesto(${idx})">`;
+  }
+
+  // Bloque impulso
+  if (p.tipoRuido === 'impulso') {
+    html += `<div class="nota roja" style="margin-top:10px">
+      ⚠️ Ruido de impulso o impacto: no se permite exposición sin protección auditiva por encima de 140 dBC (LC pico). Por encima de 135 dBA no se permite el trabajo ni con protectores individuales.
+    </div>
+    <label class="fl">LC pico ponderado C (dBC)</label>
+    <input type="number" value="${p.lcpico}" placeholder="dBC" min="80" max="200" step="0.1"
+      oninput="puestos[${idx}].lcpico=this.value;calcPuesto(${idx})">`;
+  }
+
+  html += `<div id="res_${idx}" style="margin-top:6px"></div>`;
+
+  html += `<label class="fl" style="margin-top:14px">Observaciones del puesto</label>
+    <textarea placeholder="Fuentes de ruido, EPP utilizado, condiciones especiales, puestos agrupados como tipo, etc."
+      oninput="puestos[${idx}].obs=this.value">${esc(p.obs)}</textarea>`;
+
+  return html;
+}
+
+function addPeriodo(idx) {
+  puestos[idx].periodos.push({laeq:'', tExp:'', tMed:''});
+  renderPuestos();
+}
+
+function removePeriodo(idx, pi) {
+  if (puestos[idx].periodos.length <= 1) return;
+  puestos[idx].periodos.splice(pi, 1);
+  renderPuestos();
+}
+
+function esc(s) {
+  return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════════════════
+// CÁLCULO POR PUESTO
+// ══════════════════════════════════════════════════
+function calcPuesto(idx) {
+  const p = puestos[idx];
+  const resEl = document.getElementById('res_' + idx);
+  if (!resEl) return;
+
+  let dosisTotal = null;
+  let laeqd = null;
+
+  if (p.metodoMed === 'dosimetro') {
+    const d    = parseFloat(p.dosisPorc);
+    const tMed = parseFloat(p.tMedDos);
+    const tExp = parseFloat(p.tExpDos);
+    if (!isNaN(d) && !isNaN(tMed) && tMed > 0) {
+      let dosisProy = d;
+      if (!isNaN(tExp) && tExp > tMed) dosisProy = d * tExp / tMed;
+      dosisTotal = dosisProy / 100;
+      laeqd = 85 + 10 * Math.log10(Math.max(dosisTotal, 0.00001));
+    }
+  } else {
+    // Sonómetro — Σ Cn/Tn
+    let suma = 0;
+    let allValid = true;
+    p.periodos.forEach(per => {
+      const laeq = parseFloat(per.laeq);
+      const tExp = parseFloat(per.tExp);
+      if (isNaN(laeq) || isNaN(tExp) || tExp <= 0) { allValid = false; return; }
+      const tmax = getTmax(laeq);
+      suma += tExp / tmax;
+    });
+    if (allValid && p.periodos.length > 0) {
+      dosisTotal = suma;
+      laeqd = 85 + 10 * Math.log10(Math.max(dosisTotal, 0.00001));
+    }
+  }
+
+  // LC pico
+  const lcpicoVal = parseFloat(p.lcpico);
+  const lcpicoOk  = isNaN(lcpicoVal) ? null : lcpicoVal <= 140;
+
+  if (dosisTotal === null && isNaN(lcpicoVal)) {
+    resEl.innerHTML = '';
+    return;
+  }
+
+  let cumple = true;
+  if (dosisTotal !== null) cumple = cumple && dosisTotal <= 1;
+  if (lcpicoOk !== null)   cumple = cumple && lcpicoOk;
+
+  puestos[idx]._calc = { dosisTotal, laeqd, lcpicoVal, lcpicoOk, cumple };
+
+  const dosisPct = dosisTotal !== null ? dosisTotal * 100 : null;
+  const dosisCls = dosisPct === null ? 'neutral' : dosisPct <= 50 ? 'ok' : dosisPct <= 100 ? 'warn' : 'fail';
+  const laeqCls  = laeqd === null ? 'neutral' : laeqd <= 82 ? 'ok' : laeqd <= 85 ? 'warn' : 'fail';
+
+  resEl.innerHTML = `
+    <div class="res-chips">
+      ${dosisTotal !== null ? `
+        <div class="chip ${dosisCls}"><div class="val">${dosisPct.toFixed(1)}%</div><div class="lbl">Dosis total<br>(≤ 100%)</div></div>
+        <div class="chip ${laeqCls}"><div class="val">${laeqd.toFixed(1)}</div><div class="lbl">LAeq,d<br>(dBA)</div></div>
+      ` : ''}
+      ${!isNaN(lcpicoVal) ? `<div class="chip ${lcpicoOk?'ok':'fail'}"><div class="val">${lcpicoVal}</div><div class="lbl">LC pico<br>(≤140 dBC)</div></div>` : ''}
+    </div>
+    <span class="cumple-badge ${cumple?'ok':'fail'}">${cumple ? '✅ CUMPLE' : '❌ NO CUMPLE'} — ${p.nombre||'Puesto '+(idx+1)}</span>
+    ${dosisTotal!==null && dosisTotal>1 ? '<div style="font-size:13px;color:#B71C1C;margin-top:6px">⚠️ Dosis supera el 100% — exposición fuera de los valores permisibles (Res. 295/03 Anexo V)</div>' : ''}
+    ${dosisTotal!==null && dosisTotal>0.5 && dosisTotal<=1 ? '<div style="font-size:13px;color:#E65100;margin-top:6px">⚠️ Dosis entre 50 y 100% — zona de atención. Evaluar medidas preventivas.</div>' : ''}
+    ${lcpicoOk===false ? '<div style="font-size:13px;color:#B71C1C;margin-top:4px">⚠️ LC pico supera 140 dBC — requiere protección auditiva ininterrumpida obligatoria</div>' : ''}
+  `;
+}
+
+// ══════════════════════════════════════════════════
+// INFORME
+// ══════════════════════════════════════════════════
+function goResultados() {
+  puestos.forEach((_, i) => calcPuesto(i));
+
+  const empresa  = document.getElementById('empresa').value || '—';
+  const fechaIni = document.getElementById('fecha_ini').value;
+  const dateIni  = fechaIni ? new Date(fechaIni+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const fechaFin = document.getElementById('fecha_fin').value;
+  const dateFin  = fechaFin ? ' al ' + new Date(fechaFin+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '';
+
+  document.getElementById('inf-sub').textContent = empresa + ' · ' + dateIni;
+
+  let body = '';
+
+  body += `<div class="inf-section">
+    <h3>Datos de la medición</h3>
+    ${ir('Empresa / establecimiento', document.getElementById('empresa').value)}
+    ${ir('CUIT', document.getElementById('cuit').value)}
+    ${ir('Dirección', document.getElementById('direccion').value)}
+    ${ir('Localidad', document.getElementById('localidad').value)}
+    ${ir('Provincia', document.getElementById('provincia').value)}
+    ${ir('Actividad principal', document.getElementById('actividad').value)}
+    ${ir('Fecha de medición', dateIni + dateFin)}
+    ${ir('Duración de la jornada', document.getElementById('jornada').value ? document.getElementById('jornada').value+' horas' : '—')}
+    ${ir('Turno', document.getElementById('turno').value)}
+    ${ir('Hora inicio primera medición', document.getElementById('hora_ini').value)}
+  </div>`;
+
+  body += `<div class="inf-section">
+    <h3>Equipo de medición</h3>
+    ${ir('Tipo de instrumento', document.getElementById('tipo_instrumento').value)}
+    ${ir('Marca / Modelo', document.getElementById('equipo_marca').value)}
+    ${ir('N° de serie', document.getElementById('equipo_serie').value)}
+    ${ir('Fecha de calibración', document.getElementById('equipo_cal').value)}
+    ${ir('Laboratorio de calibración', document.getElementById('equipo_lab').value)}
+  </div>`;
+
+  body += `<div class="inf-section">
+    <h3>Profesional responsable</h3>
+    ${ir('Nombre y apellido', document.getElementById('profesional').value)}
+    ${ir('Matrícula / Registro', document.getElementById('matricula').value)}
+  </div>`;
+
+  const cn = document.getElementById('cond_normales').value;
+  const cm = document.getElementById('cond_medicion').value;
+  if (cn || cm) {
+    body += `<div class="inf-section">
+      <h3>Condiciones de trabajo</h3>
+      ${cn ? `<div style="font-size:13px;color:#444;margin-bottom:8px"><strong>Condiciones normales:</strong><br>${cn}</div>` : ''}
+      ${cm ? `<div style="font-size:13px;color:#444"><strong>Condiciones al momento de la medición:</strong><br>${cm}</div>` : ''}
+    </div>`;
+  }
+
+  // Resumen
+  const cumplieron   = puestos.filter(p => p._calc?.cumple === true).length;
+  const noCumplieron = puestos.filter(p => p._calc?.cumple === false).length;
+  const sinDatos     = puestos.filter(p => !p._calc).length;
+
+  body += `<div class="inf-section">
+    <h3>Resumen de resultados</h3>
+    ${ir('Total de puestos evaluados', puestos.length)}
+    ${ir('✅ Cumplen con la normativa', cumplieron)}
+    ${ir('❌ No cumplen con la normativa', noCumplieron)}
+    ${sinDatos > 0 ? ir('⬜ Sin datos suficientes para calcular', sinDatos) : ''}
+  </div>`;
+
+  // Detalle por puesto
+  puestos.forEach((p, idx) => {
+    const c = p._calc;
+    body += `<div class="puesto-result">
+      <h3>📍 ${p.nombre || 'Puesto '+(idx+1)}</h3>
+      ${ir('Sector / área', p.sector)}
+      ${ir('N° de trabajadores', p.nTrabajadores)}
+      ${ir('Tipo de ruido', p.tipoRuido==='impulso'?'Impulso o impacto':'Continuo / Intermitente')}
+      ${ir('Método de medición', p.metodoMed==='dosimetro'?'Dosímetro (% de dosis)':'Sonómetro / Decibelímetro (LAeq)')}`;
+
+    if (p.metodoMed === 'sonometro') {
+      p.periodos.forEach((per, pi) => {
+        const laeq = parseFloat(per.laeq);
+        const tmax = !isNaN(laeq) ? getTmax(laeq) : null;
+        const tExp = parseFloat(per.tExp);
+        const frac = (tmax && !isNaN(tExp)) ? (tExp/tmax) : null;
+        body += `<div style="background:#F8F5F8;border-radius:9px;padding:10px;margin-top:8px;font-size:13px">
+          <strong>Período ${pi+1}</strong><br>
+          LAeq medido: <strong>${per.laeq||'—'} dBA</strong> &nbsp;·&nbsp;
+          T exposición: <strong>${per.tExp||'—'} hs</strong>
+          ${per.tMed ? ` &nbsp;·&nbsp; T medición: <strong>${per.tMed} hs</strong>` : ''}
+          ${tmax ? `<br>T máx. permisible: <strong>${tmax.toFixed(3)} hs</strong> &nbsp;·&nbsp; Fracción Cn/Tn: <strong>${frac!==null?frac.toFixed(4):'—'}</strong>` : ''}
+        </div>`;
+      });
+    } else {
+      body += `${ir('Dosis medida (dosímetro)', p.dosisPorc ? p.dosisPorc+'%' : '—')}
+               ${ir('T de medición', p.tMedDos ? p.tMedDos+' hs' : '—')}
+               ${ir('T de exposición total', p.tExpDos ? p.tExpDos+' hs' : '—')}`;
+    }
+
+    if (p.tipoRuido === 'impulso') {
+      body += ir('LC pico ponderado C medido', p.lcpico ? p.lcpico+' dBC' : '—');
+      body += ir('Límite LC pico (Res. 295/03)', '140 dBC — sin protección auditiva');
+    }
+
+    if (c) {
+      body += `<div style="height:6px"></div>
+        ${c.dosisTotal !== null ? ir('Dosis total calculada (Σ Cn/Tn)', (c.dosisTotal*100).toFixed(3)+'%') : ''}
+        ${c.laeqd !== null ? ir('LAeq,d proyectado a jornada completa', c.laeqd.toFixed(2)+' dBA') : ''}
+        ${ir('Valor límite normativo', '85 dBA · Dosis ≤ 100% (Res. 295/03 Anexo V)')}
+        <div style="margin-top:10px">
+          <span class="cumple-badge ${c.cumple?'ok':'fail'}">${c.cumple?'✅ CUMPLE con la normativa vigente':'❌ NO CUMPLE con la normativa vigente'}</span>
+        </div>`;
+    } else {
+      body += `<div style="margin-top:10px"><span class="cumple-badge nd">⬜ Sin datos suficientes para calcular</span></div>`;
+    }
+
+    if (p.obs) body += `<div style="margin-top:10px;font-size:13px;color:#555;line-height:1.5"><strong>Observaciones:</strong> ${p.obs}</div>`;
+    body += `</div>`;
+  });
+
+  document.getElementById('informe-body').innerHTML = body;
+  showScreen('s3');
+}
+
+function ir(k, v) {
+  return `<div class="inf-row"><span class="ik">${k}</span><span class="iv">${v||'—'}</span></div>`;
+}
+
+// ══════════════════════════════════════════════════
+// COPIAR INFORME
+// ══════════════════════════════════════════════════
+function copiarInforme() {
+  const fechaIni = document.getElementById('fecha_ini').value;
+  const fechaFin = document.getElementById('fecha_fin').value;
+  const dateIni  = fechaIni ? new Date(fechaIni+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const dateFin  = fechaFin ? ' al '+new Date(fechaFin+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '';
+  const SEP = '='.repeat(60);
+  const sep = '─'.repeat(42);
+
+  let txt = 'PROTOCOLO DE MEDICIÓN DEL NIVEL DE RUIDO EN EL AMBIENTE LABORAL\n';
+  txt += 'Resolución SRT N° 85/12  ·  Decreto 351/79  ·  Resolución 295/03 Anexo V\n';
+  txt += SEP + '\n';
+  txt += `Empresa / establecimiento: ${document.getElementById('empresa').value||'—'}\n`;
+  txt += `CUIT:                      ${document.getElementById('cuit').value||'—'}\n`;
+  txt += `Dirección:                 ${document.getElementById('direccion').value||'—'}\n`;
+  txt += `Localidad:                 ${document.getElementById('localidad').value||'—'}\n`;
+  txt += `Provincia:                 ${document.getElementById('provincia').value||'—'}\n`;
+  txt += `Actividad principal:       ${document.getElementById('actividad').value||'—'}\n`;
+  txt += `Fecha de medición:         ${dateIni}${dateFin}\n`;
+  txt += `Duración de jornada:       ${document.getElementById('jornada').value||'—'} horas\n`;
+  txt += `Turno:                     ${document.getElementById('turno').value||'—'}\n`;
+  txt += `Hora inicio 1° medición:   ${document.getElementById('hora_ini').value||'—'}\n`;
+
+  txt += '\nEQUIPO DE MEDICIÓN\n' + sep + '\n';
+  txt += `Instrumento:               ${document.getElementById('tipo_instrumento').value||'—'}\n`;
+  txt += `Marca / Modelo:            ${document.getElementById('equipo_marca').value||'—'}\n`;
+  txt += `N° de serie:               ${document.getElementById('equipo_serie').value||'—'}\n`;
+  txt += `Fecha de calibración:      ${document.getElementById('equipo_cal').value||'—'}\n`;
+  txt += `Laboratorio calibración:   ${document.getElementById('equipo_lab').value||'—'}\n`;
+
+  txt += '\nPROFESIONAL RESPONSABLE\n' + sep + '\n';
+  txt += `Nombre y apellido:         ${document.getElementById('profesional').value||'—'}\n`;
+  txt += `Matrícula / Registro:      ${document.getElementById('matricula').value||'—'}\n`;
+
+  const cn = document.getElementById('cond_normales').value;
+  const cm = document.getElementById('cond_medicion').value;
+  if (cn) txt += `\nCondiciones normales habituales de los puestos:\n${cn}\n`;
+  if (cm) txt += `\nCondiciones al momento de la medición:\n${cm}\n`;
+
+  txt += '\n' + SEP + '\nRESULTADOS POR PUESTO DE TRABAJO\n' + SEP + '\n';
+
+  puestos.forEach((p, idx) => {
+    const c = p._calc;
+    txt += `\nPUESTO ${idx+1}: ${(p.nombre||'Sin nombre').toUpperCase()}\n` + sep + '\n';
+    txt += `Sector / área:                    ${p.sector||'—'}\n`;
+    txt += `N° de trabajadores:               ${p.nTrabajadores||'—'}\n`;
+    txt += `Tipo de ruido:                    ${p.tipoRuido==='impulso'?'Impulso o impacto':'Continuo / Intermitente'}\n`;
+    txt += `Método de medición:               ${p.metodoMed==='dosimetro'?'Dosímetro (% de dosis)':'Sonómetro / Decibelímetro (LAeq)'}\n`;
+
+    if (p.metodoMed === 'sonometro') {
+      txt += '\nPERÍODOS DE EXPOSICIÓN:\n';
+      p.periodos.forEach((per, pi) => {
+        const laeq = parseFloat(per.laeq);
+        const tExp = parseFloat(per.tExp);
+        const tmax = !isNaN(laeq) ? getTmax(laeq) : null;
+        const frac = (tmax && !isNaN(tExp)) ? tExp/tmax : null;
+        txt += `  Período ${pi+1}:\n`;
+        txt += `    LAeq medido (dBA):          ${per.laeq||'—'} dBA\n`;
+        txt += `    T de exposición (C):         ${per.tExp||'—'} hs\n`;
+        if (per.tMed) txt += `    T de medición:              ${per.tMed} hs\n`;
+        if (tmax !== null) txt += `    T máx. permisible (T):      ${tmax.toFixed(4)} hs  [T = 8 / 2^((L-85)/3)]\n`;
+        if (frac !== null) txt += `    Fracción Cn/Tn:             ${frac.toFixed(5)}\n`;
+      });
+    } else {
+      txt += '\nDOSIMETRÍA:\n';
+      txt += `  Dosis medida con dosímetro:    ${p.dosisPorc||'—'} %\n`;
+      txt += `  T de medición:                 ${p.tMedDos||'—'} hs\n`;
+      txt += `  T de exposición total real:    ${p.tExpDos||'—'} hs\n`;
+      if (p.dosisPorc && p.tMedDos && p.tExpDos) {
+        const d = parseFloat(p.dosisPorc);
+        const tm = parseFloat(p.tMedDos);
+        const te = parseFloat(p.tExpDos);
+        if (!isNaN(d) && !isNaN(tm) && !isNaN(te) && te > tm) {
+          txt += `  Dosis proyectada a jornada:   ${(d*te/tm).toFixed(2)} %  [D_proy = D_med × T_exp / T_med]\n`;
+        }
+      }
+    }
+
+    if (p.tipoRuido === 'impulso') {
+      txt += '\nRUIDO DE IMPULSO / IMPACTO:\n';
+      txt += `  LC pico ponderado C:           ${p.lcpico||'—'} dBC\n`;
+      txt += `  Límite LC pico (Res. 295/03):  140 dBC (sin protección auditiva)\n`;
+    }
+
+    if (c) {
+      txt += '\nRESULTADOS DE CÁLCULO:\n';
+      if (c.dosisTotal !== null) {
+        txt += `  Dosis total (Σ Cn/Tn):        ${(c.dosisTotal*100).toFixed(4)} %\n`;
+        txt += `  LAeq,d proyectado a jornada:  ${c.laeqd.toFixed(3)} dBA\n`;
+        txt += `  Valor límite normativo:        85 dBA para 8 hs · Dosis ≤ 100%\n`;
+        txt += `                                 Criterio: T(h) = 8 / 2^((L-85)/3)\n`;
+      }
+      if (c.lcpicoVal !== null && !isNaN(c.lcpicoVal)) {
+        txt += `  LC pico medido vs límite:      ${c.lcpicoVal} dBC vs 140 dBC\n`;
+      }
+      txt += `\n  RESULTADO: ${c.cumple ? '✅ CUMPLE con la normativa vigente' : '❌ NO CUMPLE con la normativa vigente'}\n`;
+      if (!c.cumple && c.dosisTotal > 1) {
+        txt += `  ⚠️  Dosis supera el 100% — exposición fuera de los valores permisibles.\n`;
+        txt += `      Implementar medidas de control (ingeniería, administrativas, EPP).\n`;
+      }
+      if (c.lcpicoOk === false) {
+        txt += `  ⚠️  LC pico supera 140 dBC — uso obligatorio e ininterrumpido de protección auditiva.\n`;
+      }
+    }
+
+    if (p.obs) txt += `\n  Observaciones: ${p.obs}\n`;
+  });
+
+  const cumplieron   = puestos.filter(p => p._calc?.cumple === true).length;
+  const noCumplieron = puestos.filter(p => p._calc?.cumple === false).length;
+  txt += '\n' + SEP + '\nRESUMEN FINAL\n' + SEP + '\n';
+  txt += `Total de puestos evaluados:   ${puestos.length}\n`;
+  txt += `✅ Cumplen:                   ${cumplieron}\n`;
+  txt += `❌ No cumplen:                ${noCumplieron}\n`;
+
+  txt += '\n' + SEP + '\nMARCO NORMATIVO APLICABLE\n' + SEP + '\n';
+  txt += '· Res. SRT N° 85/12 — Protocolo para la Medición del Nivel de Ruido en el Ambiente Laboral\n';
+  txt += '· Ley N° 19.587 de Higiene y Seguridad en el Trabajo\n';
+  txt += '· Decreto N° 351/79 Capítulo 13 Art. 85 y 86 — Ruidos y Vibraciones\n';
+  txt += '· Resolución MTEySS N° 295/03 Anexo V — Valores Límite Umbral para Ruido\n';
+  txt += '· Criterio: LAeq,d ≤ 85 dBA / 8 hs · Dosis ≤ 100% · LC pico ≤ 140 dBC\n';
+  txt += '· Índice de conversión: 3 dB · Fórmula: T(h) = 8 / 2^((L-85)/3)\n';
+  txt += '· Instrumento mínimo requerido: Clase/Tipo 2 (IRAM 4074 / IEC 804)\n';
+  txt += '· Validez del protocolo: 12 meses desde la fecha de medición\n';
+  txt += '\nGenerado con App Medición de Ruido Laboral — Res. SRT 85/12';
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); showCopied(); }
+  catch(e) { alert('No se pudo copiar automáticamente.'); }
+  document.body.removeChild(ta);
+}
+
+function showCopied() {
+  const btn = document.querySelector('#s3 .btn-copy');
+  const orig = btn.textContent;
+  btn.textContent = '✅ ¡Copiado!';
+  setTimeout(() => btn.textContent = orig, 2500);
+}
+
+function nuevaMedicion() {
+  if (!confirm('¿Iniciás una nueva medición? Se perderán todos los datos actuales.')) return;
+  puestos = [];
+  document.querySelectorAll('input,textarea').forEach(el => el.value = '');
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.getElementById('fecha_ini').value = new Date().toISOString().split('T')[0];
+  addPuesto();
+  showScreen('s1');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+init();
+</script>
+</body>
+</html>
