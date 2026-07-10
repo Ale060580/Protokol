@@ -46,6 +46,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;c
 .arg-badge-main{display:flex;flex-direction:column;align-items:center;gap:5px}
 .arg-text-main{font-size:6px;color:#4A6580;letter-spacing:0.6px;text-align:center;line-height:1.5;text-transform:uppercase}
 .arg-hs{color:#0A84FF;font-weight:700}
+
+/* BOTÓN CLIENTES destacado */
+.clientes-btn{background:linear-gradient(135deg,#1A1F2B,#0F1B2B);border-radius:16px;padding:16px 14px;border:1px solid #0A84FF;text-decoration:none;display:flex;align-items:center;gap:14px;margin-bottom:12px;cursor:pointer;transition:transform .12s}
+.clientes-btn:active{transform:scale(.97)}
+.clientes-icon{width:46px;height:46px;border-radius:13px;background:#0c2240;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.clientes-name{font-size:15px;font-weight:700;color:#E5E5E5}
+.clientes-sub{font-size:11px;color:#4A5568;margin-top:3px}
+.clientes-arrow{margin-left:auto;color:#0A84FF;font-size:18px;flex-shrink:0}
+
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .app-card{background:#1A1F2B;border-radius:16px;padding:14px 12px;border:1px solid #252B38;text-decoration:none;display:block;transition:transform .12s,background .12s;cursor:pointer}
 .app-card:active{transform:scale(.96);background:#202633}
@@ -57,6 +66,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;c
 .footer-main{text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid #1A1F2B}
 .footer-main .by{font-size:10px;color:#2D3748}
 .footer-main .name{font-size:12px;font-weight:600;color:#3D4A5C;margin-top:3px;letter-spacing:0.3px}
+svg.icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.section-sep{grid-column:span 2;font-size:10px;font-weight:700;color:#4A5568;text-transform:uppercase;letter-spacing:1px;padding:8px 2px 2px;border-top:1px solid #1A1F2B;margin-top:4px}
+.section-sep:first-child{border-top:none;margin-top:0;padding-top:0}
 
 /* ══ IFRAME VIEW ════════════════════════════════════ */
 #app-view{display:none;position:fixed;inset:0;z-index:100;flex-direction:column;background:#0D1117}
@@ -65,11 +77,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;c
 .back-btn svg{width:18px;height:18px;fill:none;stroke:#0A84FF;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .app-topbar-title{font-size:14px;font-weight:600;color:#E5E5E5;flex:1}
 #app-frame{flex:1;border:none;width:100%;height:100%;background:#fff}
-svg.icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-/* SEPARADOR DE SECCIÓN */
-.section-sep{grid-column:span 2;font-size:10px;font-weight:700;color:#4A5568;text-transform:uppercase;letter-spacing:1px;padding:8px 2px 2px;border-top:1px solid #1A1F2B;margin-top:4px}
-.section-sep:first-child{border-top:none;margin-top:0;padding-top:0}
 </style>
 </head>
 <body>
@@ -140,6 +147,18 @@ svg.icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;s
         </svg>
         <div class="arg-text-main">Basado en protocolos<br>oficiales de la<br>legislación <span class="arg-hs">argentina</span></div>
       </div>
+    </div>
+
+    <!-- CLIENTES — botón destacado -->
+    <div class="clientes-btn" onclick="openApp('clientes','Mis Clientes')">
+      <div class="clientes-icon">
+        <svg class="icon" style="color:#0A84FF" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div>
+        <div class="clientes-name">Mis clientes</div>
+        <div class="clientes-sub">Fichas, contactos, ART y visitas</div>
+      </div>
+      <div class="clientes-arrow">›</div>
     </div>
 
     <div class="grid">
@@ -236,12 +255,14 @@ svg.icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;s
       <!-- RELEVAMIENTOS -->
       <div class="section-sep">Relevamientos</div>
 
-      <div class="app-card" onclick="openApp('Cargafuego','Carga de Fuego')">
+      <div class="app-card wide" onclick="openApp('Cargafuego','Carga de Fuego')">
         <div class="app-icon" style="background:#1a0c04">
           <svg class="icon" style="color:#FB923C" viewBox="0 0 24 24"><path d="M12 12c0-4-3-7-3-7s-.5 3.5-2 5c-1.5 1.5-3 2-3 4a8 8 0 0016 0c0-4-5-7-8-2z"/></svg>
         </div>
-        <div class="app-name">Carga de fuego</div>
-        <div class="app-norm">Dec. 351/79 Anexo VII</div>
+        <div>
+          <div class="app-name">Carga de fuego</div>
+          <div class="app-norm">Dec. 351/79 Anexo VII</div>
+        </div>
       </div>
 
     </div>
