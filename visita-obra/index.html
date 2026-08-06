@@ -925,6 +925,7 @@ function guardarEnGestion() {
   });
 }
 
+function nuevaVisita() {
   if (!confirm('¿Iniciás una nueva visita? Se perderán todos los datos actuales.')) return;
   document.querySelectorAll('input[type=text],input[type=date],input[type=number],input[type=time],textarea').forEach(el=>el.value='');
   document.getElementById('es_caba').checked = false;
