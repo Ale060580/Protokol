@@ -214,6 +214,8 @@ textarea{min-height:70px;resize:none}
   </div>
 
   <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF — Constancia de visita</button>
+  <button id="btnGestion" onclick="guardarEnGestion()" style="width:100%;padding:15px;background:#0D1117;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">☁️ Guardar en Gestión</button>
+  <div id="gestionStatus" style="display:none;background:#E8F5E9;border:1px solid #C8E6C9;border-radius:12px;padding:14px;margin-top:10px;font-size:14px;color:#1E7A44;text-align:center"></div>
   <button class="btn-sec" onclick="showScreen('s3')" style="margin-top:8px">‹ Volver a checklists</button>
   <button style="width:100%;padding:13px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevaVisita()">🔄 Nueva visita</button>
 </div>
@@ -831,7 +833,98 @@ function showScreen(id) {
   window.scrollTo(0,0);
 }
 
-function nuevaVisita() {
+// ═══ GUARDAR EN GESTIÓN ═══
+const API_GESTION = 'https://script.google.com/macros/s/AKfycbwzEPMlIbNxymr2iqwHBcOjqg9s8dh1OqttmCNeG40aViGFkSke76x55zuKvOs6mpnL5w/exec';
+
+function guardarEnGestion() {
+  const btn = document.getElementById('btnGestion');
+  const status = document.getElementById('gestionStatus');
+  const empresa = document.getElementById('empresa').value.trim();
+  const fecha = document.getElementById('fecha').value;
+
+  if (!empresa || !fecha) {
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.borderColor = '#F5C6CB';
+    status.style.color = '#C0392B';
+    status.textContent = 'Completá empresa y fecha antes de guardar.';
+    return;
+  }
+
+  // Armar resumen de checklists
+  const resumen = {};
+  selectedTipos.forEach(function(tid) {
+    const tipo = TIPOS.find(function(t){ return t.id === tid; });
+    if (!tipo) return;
+    const cumple = [], noCumple = [];
+    (tipo.checks || []).forEach(function(chk) {
+      const st = checkState[tid] && checkState[tid][chk.id];
+      if (!st) return;
+      if (st.estado === 'cumple') cumple.push(chk.label);
+      if (st.estado === 'nocumple') noCumple.push({item: chk.label, obs: st.obs || ''});
+    });
+    resumen[tipo.label] = {cumple: cumple, noCumple: noCumple};
+  });
+
+  const payload = {
+    accion: 'guardarRelevamiento',
+    datos: {
+      tipo: 'Visita a obra',
+      fecha: fecha,
+      cliente: empresa,
+      idCliente: '',
+      tecnico: document.getElementById('tecnico').value.trim(),
+      matricula: document.getElementById('matricula').value.trim(),
+      horaInicio: document.getElementById('hora_ini').value,
+      horaFin: document.getElementById('hora_fin').value,
+      direccion: document.getElementById('domicilio').value.trim(),
+      trabajadores: document.getElementById('n_trabajadores').value,
+      responsableObra: document.getElementById('resp_obra').value.trim(),
+      observaciones: document.getElementById('obs_grales').value.trim(),
+      datos: resumen
+    }
+  };
+
+  btn.textContent = 'Guardando…';
+  btn.disabled = true;
+  status.style.display = 'none';
+
+  fetch(API_GESTION, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    btn.disabled = false;
+    if (res.ok) {
+      btn.textContent = '✅ Guardado en Gestión';
+      btn.style.background = '#1E7A44';
+      status.style.display = 'block';
+      status.style.background = '#E8F5E9';
+      status.style.borderColor = '#C8E6C9';
+      status.style.color = '#1E7A44';
+      status.textContent = 'Guardado correctamente. N° ' + res.nroInforme + ' · También registrado en Visitas.';
+    } else {
+      btn.textContent = '☁️ Guardar en Gestión';
+      status.style.display = 'block';
+      status.style.background = '#FDEDEC';
+      status.style.borderColor = '#F5C6CB';
+      status.style.color = '#C0392B';
+      status.textContent = 'Error: ' + (res.error || 'No se pudo guardar.');
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '☁️ Guardar en Gestión';
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.borderColor = '#F5C6CB';
+    status.style.color = '#C0392B';
+    status.textContent = 'Sin conexion. Verificá internet e intentá de nuevo.';
+  });
+}
+
   if (!confirm('¿Iniciás una nueva visita? Se perderán todos los datos actuales.')) return;
   document.querySelectorAll('input[type=text],input[type=date],input[type=number],input[type=time],textarea').forEach(el=>el.value='');
   document.getElementById('es_caba').checked = false;
