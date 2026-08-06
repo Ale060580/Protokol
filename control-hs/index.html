@@ -30,7 +30,11 @@ textarea{resize:none;min-height:60px}
 .btn-primary{width:100%;padding:16px;background:#185FA5;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px}
 .btn-primary:active{background:#0D4F9A}
 .btn-secondary{width:100%;padding:14px;background:#fff;color:#333;border:1.5px solid #E0E0E0;border-radius:14px;font-size:16px;font-weight:500;cursor:pointer;margin-top:10px}
-.btn-danger{width:100%;padding:16px;background:#C0392B;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px}
+.btn-gestion{width:100%;padding:16px;background:#0D1117;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-gestion:active{background:#1A1F2B}
+.btn-gestion.ok{background:#1E7A44}
+.btn-gestion.err{background:#C0392B}
+.gestion-status{background:#F0F7FF;border:1px solid #B5D4F4;border-radius:12px;padding:14px;margin-top:10px;font-size:14px;color:#185FA5;text-align:center;display:none}
 .btn-pdf{width:100%;padding:16px;background:#27AE60;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;margin-top:10px}
 .progress-wrap{margin-bottom:16px}
 .progress-label{font-size:13px;color:#666;margin-bottom:6px;text-align:right}
@@ -178,6 +182,8 @@ textarea{resize:none;min-height:60px}
   </div>
 
   <button class="btn-pdf" onclick="generarPDF()">Generar PDF — Constancia oficial</button>
+  <button class="btn-gestion" id="btnGestion" onclick="guardarEnGestion()">☁️ Guardar en Gestión</button>
+  <div class="gestion-status" id="gestionStatus"></div>
   <button class="btn-danger" onclick="nuevoControl()">Nuevo control</button>
 </div>
 
@@ -558,6 +564,101 @@ function showScreen(id) {
 function formatDate(fecha) {
   if (!fecha) return '';
   return new Date(fecha + 'T12:00:00').toLocaleDateString('es-AR', {day:'2-digit', month:'long', year:'numeric'});
+}
+
+// ═══ GUARDAR EN GESTIÓN ═══
+const API_GESTION = 'https://script.google.com/macros/s/AKfycbwzEPMlIbNxymr2iqwHBcOjqg9s8dh1OqttmCNeG40aViGFkSke76x55zuKvOs6mpnL5w/exec';
+
+function guardarEnGestion() {
+  const btn = document.getElementById('btnGestion');
+  const status = document.getElementById('gestionStatus');
+  const fecha = document.getElementById('fecha').value;
+  const cliente = document.getElementById('cliente').value.trim();
+  const direccion = document.getElementById('direccion').value.trim();
+  const responsable = document.getElementById('responsable').value.trim();
+  const matricula = document.getElementById('matricula').value.trim();
+  const respEmpresa = document.getElementById('resp_empresa').value.trim();
+
+  if (!cliente || !fecha) {
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.borderColor = '#F5C6CB';
+    status.style.color = '#C0392B';
+    status.textContent = 'Completá cliente y fecha antes de guardar.';
+    return;
+  }
+
+  // Armar resumen de ítems controlados
+  const resumenItems = {};
+  selectedItems.forEach(function(id) {
+    const cfg = ITEMS.find(function(x){ return x.id === id; });
+    if (!cfg) return;
+    const cumple = [], noCumple = [];
+    cfg.checks.forEach(function(chk) {
+      const st = checkState[id] && checkState[id][chk];
+      if (!st) return;
+      if (st.estado === 'cumple') cumple.push(chk);
+      if (st.estado === 'nocumple') noCumple.push({item: chk, obs: st.obs || ''});
+    });
+    resumenItems[cfg.label] = {cumple: cumple, noCumple: noCumple};
+  });
+
+  const payload = {
+    accion: 'guardarRelevamiento',
+    datos: {
+      tipo: 'Constancia de visita',
+      fecha: fecha,
+      cliente: cliente,
+      idCliente: '',  // se completa si viene del selector de clientes de Gestión
+      tecnico: responsable,
+      matricula: matricula,
+      direccion: direccion,
+      responsableObra: respEmpresa,
+      observaciones: '',
+      datos: resumenItems
+    }
+  };
+
+  btn.textContent = 'Guardando…';
+  btn.disabled = true;
+  status.style.display = 'none';
+
+  fetch(API_GESTION, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    btn.disabled = false;
+    if (res.ok) {
+      btn.textContent = '✅ Guardado en Gestión';
+      btn.classList.add('ok');
+      status.style.display = 'block';
+      status.style.background = '#E8F5E9';
+      status.style.borderColor = '#C8E6C9';
+      status.style.color = '#1E7A44';
+      status.textContent = 'Guardado correctamente. N° ' + res.nroInforme + ' · También registrado en Visitas.';
+    } else {
+      btn.textContent = '☁️ Guardar en Gestión';
+      btn.classList.add('err');
+      status.style.display = 'block';
+      status.style.background = '#FDEDEC';
+      status.style.borderColor = '#F5C6CB';
+      status.style.color = '#C0392B';
+      status.textContent = 'Error: ' + (res.error || 'No se pudo guardar.');
+      setTimeout(function(){ btn.classList.remove('err'); }, 3000);
+    }
+  })
+  .catch(function(e){
+    btn.disabled = false;
+    btn.textContent = '☁️ Guardar en Gestión';
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.borderColor = '#F5C6CB';
+    status.style.color = '#C0392B';
+    status.textContent = 'Sin conexión. Verificá internet e intentá de nuevo.';
+  });
 }
 
 init();
