@@ -4,943 +4,550 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Visita a Obra H&S</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>Clientes — Protokol</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px}
-.screen{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:60px}
-.screen.active{display:block}
-.topbar{background:#1A3A5C;color:#fff;padding:13px 16px;text-align:center;position:sticky;top:0;z-index:200}
-.topbar h1{font-size:15px;font-weight:700}
-.topbar span{font-size:11px;opacity:.75;display:block;margin-top:1px}
-.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #E8E8E8}
-.ct{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
-label.fl{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:12px}
-label.fl:first-of-type{margin-top:0}
-label.fl .req{color:#E24B4A;margin-left:2px}
-input[type=text],input[type=date],input[type=number],input[type=time],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
-input:focus,select:focus,textarea:focus{border-color:#1A3A5C;box-shadow:0 0 0 3px rgba(26,58,92,.1)}
-textarea{min-height:70px;resize:none}
-.btn-main{width:100%;padding:15px;background:#1A3A5C;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
-.btn-main:active{background:#122a44}
-.btn-sec{width:100%;padding:13px;background:#fff;color:#1A3A5C;border:1.5px solid #1A3A5C;border-radius:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px}
-.btn-pdf{width:100%;padding:15px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
-.btn-add{width:100%;padding:9px;border:1.5px dashed #1A3A5C;border-radius:9px;background:#EBF0F7;color:#1A3A5C;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
-.btn-sm{padding:7px 12px;border:1.5px solid #DDD;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#444}
-.btn-sm.danger{border-color:#EF5350;color:#EF5350}
-.nota{background:#FFFDE7;border:1px solid #FDD835;border-radius:9px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;margin-bottom:10px}
-.nota.azul{background:#EBF0F7;border-color:#90CAF9;color:#1A3A5C}
-.hidden{display:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:16px;min-height:100vh}
+.topbar{background:#0D1117;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:15px;font-weight:700;color:#fff}
+.topbar span{font-size:11px;color:#4A5568}
+.btn-icon{background:#1A1F2B;border:1px solid #252B38;border-radius:9px;padding:7px 11px;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px}
+
+/* VISTAS */
+.view{display:none}
+.view.active{display:block}
+
+/* LISTA */
+.search-wrap{padding:12px 16px 8px}
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #E0E0E0;border-radius:11px;padding:10px 13px}
+.search-box input{border:none;outline:none;font-size:15px;color:#1a1a1a;width:100%;background:transparent;font-family:inherit}
+.search-box input::placeholder{color:#AAA}
+.cli-list{padding:0 16px 80px}
+.cli-card{background:#fff;border-radius:13px;padding:14px;margin-bottom:10px;border:1px solid #E8E8E8;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .12s}
+.cli-card:active{border-color:#0A84FF;background:#F0F7FF}
+.cli-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;color:#fff}
+.cli-info{flex:1;min-width:0}
+.cli-name{font-size:15px;font-weight:600;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cli-sub{font-size:12px;color:#888;margin-top:2px}
+.cli-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge-ok{background:#E8F5E9;color:#2E7D32}
+.badge-nd{background:#F5F5F5;color:#888}
+.empty-state{text-align:center;padding:60px 24px;color:#888}
+.empty-state p{font-size:15px;margin-top:8px}
+.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:50%;background:#0A84FF;border:none;color:#fff;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(10,132,255,.4);z-index:100}
+
+/* FICHA */
+.ficha-wrap{padding:0 16px 80px;margin-top:12px}
+.ficha-hero{background:#0D1117;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.ficha-avatar-lg{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;color:#fff}
+.ficha-hero-name{font-size:17px;font-weight:700;color:#fff}
+.ficha-hero-cuit{font-size:12px;color:#4A5568;margin-top:2px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid #E8E8E8}
+.card-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #F5F5F5;font-size:14px}
+.info-row:last-child{border-bottom:none;padding-bottom:0}
+.info-key{color:#666;flex-shrink:0;padding-right:12px}
+.info-val{color:#1a1a1a;font-weight:500;text-align:right;word-break:break-word;max-width:60%}
+.info-val.accent{color:#185FA5}
+.art-box{background:#F8F9FC;border:1px solid #E8E8E8;border-radius:10px;padding:12px;margin-top:4px}
+.art-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid #EFEFEF;font-size:13px}
+.art-row:last-child{border-bottom:none}
+.art-key{color:#666}
+.art-val{color:#1a1a1a;font-weight:500;font-family:monospace;font-size:12px;word-break:break-all;text-align:right;max-width:55%}
+.badge-visita{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-top:6px}
+.badge-visita.ok{background:#E8F5E9;color:#2E7D32}
+.badge-visita.warn{background:#FFF8E1;color:#F57F17}
+.btn-usar{width:100%;padding:14px;background:#0A84FF;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.btn-usar:active{background:#0070D8}
+.btn-editar{width:100%;padding:13px;background:#fff;color:#1a1a1a;border:1.5px solid #E0E0E0;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:8px}
+.btn-danger{width:100%;padding:13px;background:#fff;color:#C62828;border:1.5px solid #FFCDD2;border-radius:12px;font-size:14px;cursor:pointer}
+
+/* FORMULARIO */
+.form-wrap{padding:0 16px 80px;margin-top:12px}
+label{font-size:14px;color:#444;font-weight:500;display:block;margin-bottom:5px;margin-top:14px}
+label:first-of-type{margin-top:0}
+label .req{color:#E24B4A;margin-left:2px}
+input[type=text],input[type=date],input[type=number],input[type=tel],input[type=email],select,textarea{width:100%;padding:11px 13px;border:1.5px solid #DDD;border-radius:10px;font-size:15px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#0A84FF;box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+textarea{min-height:60px;resize:none}
 .field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-/* TIPO TRABAJO */
-.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tipo-btn{padding:12px 8px;border:1.5px solid #DDD;border-radius:12px;background:#fff;color:#333;font-size:12px;font-weight:500;cursor:pointer;text-align:center;line-height:1.3;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .12s}
-.tipo-btn .ico{font-size:20px}
-.tipo-btn.sel{background:#EBF0F7;border-color:#1A3A5C;color:#1A3A5C;font-weight:700}
-.tipo-btn.always{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20;pointer-events:none}
-
-/* CHECKLIST */
-.check-section{margin-bottom:14px}
-.check-section-header{background:#1A3A5C;color:#fff;border-radius:11px;padding:11px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.check-section-header h3{font-size:14px;font-weight:700}
-.check-section-header p{font-size:11px;opacity:.75;margin-top:2px}
-.check-item{background:#fff;border:1px solid #E8E8E8;border-radius:11px;padding:13px;margin-bottom:8px}
-.check-item-label{font-size:14px;color:#1a1a1a;margin-bottom:4px;line-height:1.4;font-weight:500}
-.check-item-norm{font-size:11px;color:#888;margin-bottom:8px}
-.yn-btns{display:flex;gap:8px}
-.btn-si,.btn-no,.btn-na{flex:1;padding:10px;border:1.5px solid #DDD;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#666;transition:all .12s;text-align:center}
-.btn-si.active{background:#E8F5E9;border-color:#2E7D32;color:#1B5E20}
-.btn-no.active{background:#FFEBEE;border-color:#C62828;color:#B71C1C}
-.btn-na.active{background:#F5F5F5;border-color:#888;color:#444}
-.obs-field{margin-top:8px}
-.obs-field textarea{font-size:13px;min-height:50px;border-color:#EF5350;background:#FFFAFA}
-
-/* RECOMENDACIONES */
-.rec-item{background:#FFF8E1;border-left:3px solid #F57F17;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:8px}
-.rec-item .rec-sec{font-size:11px;color:#F57F17;font-weight:700;margin-bottom:3px}
-.rec-item .rec-txt{font-size:13px;color:#333;line-height:1.5}
-
-/* FIRMA */
-.firma-wrap{background:#F8F9FA;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #E0E0E0}
-.firma-label{font-size:13px;font-weight:600;color:#1A3A5C;margin-bottom:8px}
-.firma-canvas-wrap{position:relative;background:#fff;border:1.5px dashed #CCC;border-radius:10px;overflow:hidden}
-.firma-canvas-wrap canvas{display:block;touch-action:none}
-.firma-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#CCC;pointer-events:none;text-align:center}
-.firma-tools{display:flex;gap:8px;margin-top:6px}
-.firma-tools button{flex:1;padding:8px;border:1px solid #DDD;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#444}
-.firma-done-badge{background:#E8F5E9;border:1px solid #66BB6A;border-radius:8px;padding:6px 10px;font-size:12px;color:#1B5E20;text-align:center;margin-top:4px}
-
-/* PROG BAR */
-.prog-wrap{margin-bottom:14px}
-.prog-label{font-size:13px;color:#555;margin-bottom:5px;text-align:right}
-.prog-bar{background:#DDD;border-radius:20px;height:5px}
-.prog-fill{background:#1A3A5C;height:5px;border-radius:20px;transition:width .3s}
-
-/* TABS */
-.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
-.tab{padding:8px 14px;border:1.5px solid #DDD;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;background:#fff;color:#444;flex-shrink:0}
-.tab.active{background:#1A3A5C;color:#fff;border-color:#1A3A5C}
-
-.inf-row{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;border-bottom:1px solid #F8F8F8}
-.inf-row:last-child{border-bottom:none}
-.inf-row .ik{color:#555;flex:1}
-.inf-row .iv{font-weight:600;color:#1a1a1a}
+.btn-save{width:100%;padding:15px;background:#0A84FF;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-save:active{background:#0070D8}
+.btn-cancel{width:100%;padding:13px;background:#fff;color:#666;border:1.5px solid #DDD;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px}
+.add-field-btn{width:100%;padding:9px;border:1.5px dashed #0A84FF;border-radius:9px;background:#F0F7FF;color:#0A84FF;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px}
+.rm-btn{padding:6px 10px;border:1.5px solid #FFCDD2;border-radius:8px;background:#fff;color:#C62828;font-size:12px;cursor:pointer;margin-top:4px;float:right}
+.sub-card{background:#F8F9FC;border:1px solid #E8E8E8;border-radius:10px;padding:12px;margin-bottom:8px;position:relative}
+.sub-card-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.color-selector{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s}
+.color-dot.sel{border-color:#333;transform:scale(1.15)}
+.nota{background:#EBF4FF;border:1px solid #B5D4F4;border-radius:9px;padding:10px 12px;font-size:13px;color:#185FA5;line-height:1.5;margin-bottom:10px}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <h1>Visita a Obra — H&S</h1>
-  <span id="topbar-sub">Dec. 911/96 · Res. 61/23 · Res. 550/11</span>
+  <div>
+    <h1 id="topbar-title">Mis clientes</h1>
+    <span id="topbar-sub"></span>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-icon" id="back-btn" onclick="goBack()" style="display:none">‹ Volver</button>
+  </div>
 </div>
 
-<!-- ═══ S1: DATOS DE OBRA ═══ -->
-<div id="s1" class="screen active">
-  <div class="card" style="margin-top:12px">
-    <div class="ct">📋 Datos de la obra</div>
-    <label class="fl">Empresa / razón social <span class="req">*</span></label>
-    <input type="text" id="empresa" placeholder="Razón social de la empresa contratista">
-    <label class="fl">CUIT</label>
-    <input type="text" id="cuit" placeholder="XX-XXXXXXXX-X">
-    <label class="fl">Denominación de la obra</label>
-    <input type="text" id="denominacion" placeholder="Ej: Edificio Mitre 1250 — Torre A">
-    <label class="fl">Domicilio de la obra <span class="req">*</span></label>
-    <input type="text" id="domicilio" placeholder="Dirección completa">
-    <div style="margin-top:8px">
-      <label style="font-size:13px;color:#555;display:flex;align-items:center;gap:8px;cursor:pointer">
-        <input type="checkbox" id="es_caba" style="width:auto;padding:0;margin:0"> 
-        <span>La obra está en CABA (aplican requerimientos específicos)</span>
-      </label>
+<!-- ══ LISTA ══════════════════════════════════════════ -->
+<div id="view-lista" class="view active">
+  <div class="search-wrap">
+    <div class="search-box">
+      <span style="font-size:18px;color:#AAA">🔍</span>
+      <input type="text" id="search-input" placeholder="Buscar cliente..." oninput="filtrarClientes()">
     </div>
-    <label class="fl">Fecha de visita <span class="req">*</span></label>
-    <input type="date" id="fecha">
-    <div class="field-2" style="margin-top:10px">
-      <div><label class="fl" style="margin-top:0">Hora inicio</label><input type="time" id="hora_ini"></div>
-      <div><label class="fl" style="margin-top:0">Hora fin</label><input type="time" id="hora_fin"></div>
-    </div>
-    <label class="fl">Cantidad de trabajadores en obra</label>
-    <input type="number" id="n_trabajadores" placeholder="N° de trabajadores" min="1">
   </div>
-  <div class="card">
-    <div class="ct">👷 Responsables</div>
-    <label class="fl">Técnico / Lic. H&S responsable de la visita</label>
-    <input type="text" id="tecnico" placeholder="Nombre y apellido">
-    <label class="fl">Matrícula</label>
-    <input type="text" id="matricula" placeholder="Nº de matrícula">
-    <label class="fl">Responsable / Capataz de obra</label>
-    <input type="text" id="resp_obra" placeholder="Nombre y apellido">
-  </div>
-  <div class="card">
-    <div class="ct">📝 Observaciones generales de la obra</div>
-    <textarea id="obs_grales" placeholder="Etapa actual de obra, empresa subcontratista presente, condiciones generales al inicio de la visita (opcional)"></textarea>
-  </div>
-  <button class="btn-main" onclick="goS2()">Continuar → Tipo de trabajos ›</button>
+  <div class="cli-list" id="cli-list"></div>
+  <button class="fab" onclick="goNuevo()" title="Nuevo cliente">+</button>
 </div>
 
-<!-- ═══ S2: TIPO DE TRABAJOS ═══ -->
-<div id="s2" class="screen">
-  <div class="nota azul" style="margin-top:12px">
-    Las <strong>condiciones generales</strong> siempre se controlan. Seleccioná los trabajos específicos presentes hoy en la obra.
-  </div>
-  <div class="card">
-    <div class="ct">Trabajos presentes en obra hoy</div>
-    <div class="tipo-grid" id="tipo-grid"></div>
-  </div>
-  <button class="btn-main" onclick="goS3()">Continuar → Checklists ›</button>
-  <button class="btn-sec" onclick="showScreen('s1')">‹ Volver</button>
+<!-- ══ FICHA ══════════════════════════════════════════ -->
+<div id="view-ficha" class="view">
+  <div class="ficha-wrap" id="ficha-content"></div>
 </div>
 
-<!-- ═══ S3: CHECKLISTS ═══ -->
-<div id="s3" class="screen">
-  <div style="margin-top:12px" id="s3-banner" class="nota azul"></div>
-  <div class="prog-wrap">
-    <div class="prog-label" id="prog-label">0 de 0 ítems evaluados</div>
-    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-  </div>
-  <div class="tabs" id="section-tabs"></div>
-  <div id="checklists-container"></div>
-  <button class="btn-main" onclick="goS4()">Continuar → Recomendaciones y firmas ›</button>
-  <button class="btn-sec" onclick="showScreen('s2')">‹ Volver a tipo de trabajos</button>
-</div>
-
-<!-- ═══ S4: RECOMENDACIONES + FIRMAS ═══ -->
-<div id="s4" class="screen">
-  <div style="background:#1A3A5C;color:#fff;border-radius:13px;padding:14px;margin-top:12px;margin-bottom:14px">
-    <div style="font-size:15px;font-weight:700">Finalizar visita</div>
-    <div style="font-size:12px;opacity:.8;margin-top:2px" id="s4-sub"></div>
-  </div>
-
-  <div class="card">
-    <div class="ct">⚠️ Recomendaciones por incumplimientos</div>
-    <div id="recs-auto"></div>
-    <div style="font-size:13px;font-weight:600;color:#1A3A5C;margin-top:10px;margin-bottom:6px">Agregar recomendación libre</div>
-    <div id="recs-libres"></div>
-    <button class="btn-add" onclick="addRecLibre()">+ Agregar recomendación</button>
-  </div>
-
-  <div class="card">
-    <div class="ct">✍️ Firma — Técnico H&S</div>
-    <div class="firma-wrap">
-      <div class="firma-label" id="firma1-label">Firma del Técnico H&S</div>
-      <div class="firma-canvas-wrap">
-        <canvas id="firma1-canvas" width="400" height="120"></canvas>
-        <div class="firma-hint" id="firma1-hint">Firmar aquí con el dedo</div>
-      </div>
-      <div class="firma-tools">
-        <button onclick="clearFirma(1)">🗑️ Borrar</button>
-        <button onclick="confirmFirma(1)" style="background:#1A3A5C;color:#fff;border-color:#1A3A5C">✅ Confirmar firma</button>
-      </div>
-      <div class="firma-done-badge hidden" id="firma1-done">✅ Firma confirmada</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ct">✍️ Firma — Responsable de obra</div>
-    <div class="firma-wrap">
-      <div class="firma-label" id="firma2-label">Firma del Responsable de obra</div>
-      <div class="firma-canvas-wrap">
-        <canvas id="firma2-canvas" width="400" height="120"></canvas>
-        <div class="firma-hint" id="firma2-hint">Firmar aquí con el dedo</div>
-      </div>
-      <div class="firma-tools">
-        <button onclick="clearFirma(2)">🗑️ Borrar</button>
-        <button onclick="confirmFirma(2)" style="background:#1A3A5C;color:#fff;border-color:#1A3A5C">✅ Confirmar firma</button>
-      </div>
-      <div class="firma-done-badge hidden" id="firma2-done">✅ Firma confirmada</div>
-    </div>
-  </div>
-
-  <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF — Constancia de visita</button>
-  <button id="btnGestion" onclick="guardarEnGestion()" style="width:100%;padding:15px;background:#0D1117;color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">☁️ Guardar en Gestión</button>
-  <div id="gestionStatus" style="display:none;background:#E8F5E9;border:1px solid #C8E6C9;border-radius:12px;padding:14px;margin-top:10px;font-size:14px;color:#1E7A44;text-align:center"></div>
-  <button class="btn-sec" onclick="showScreen('s3')" style="margin-top:8px">‹ Volver a checklists</button>
-  <button style="width:100%;padding:13px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevaVisita()">🔄 Nueva visita</button>
+<!-- ══ FORMULARIO ════════════════════════════════════ -->
+<div id="view-form" class="view">
+  <div class="form-wrap" id="form-content"></div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// DATOS MAESTROS
-// ═══════════════════════════════════════════════════════
-const TIPOS = [
-  {id:'general',   label:'Condiciones generales', ico:'📋', always:true},
-  {id:'altura',    label:'Trabajo en altura',      ico:'🏗️'},
-  {id:'excav',     label:'Excavaciones y zanjas',  ico:'⛏️'},
-  {id:'electrico', label:'Instalaciones eléctricas',ico:'⚡'},
-  {id:'demolic',   label:'Demoliciones',           ico:'🔨'},
-  {id:'albanil',   label:'Albañilería',             ico:'🧱'},
-  {id:'izaje',     label:'Izaje y equipos',         ico:'🏗️'},
-  {id:'confinado', label:'Espacios confinados',     ico:'🕳️'},
-  {id:'vial',      label:'Equipos viales',          ico:'🚛'},
+// ══ STORAGE ══════════════════════════════════════════
+const STORE_KEY = 'protokol_clientes_v1';
+
+function loadClientes() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+  catch(e) { return []; }
+}
+
+function saveClientes(data) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+}
+
+// ══ ESTADO ═══════════════════════════════════════════
+let clientes = loadClientes();
+let clienteActual = null;
+let viewHistory = ['lista'];
+
+const COLORES = [
+  {bg:'#0c2240', text:'#60A5FA'},
+  {bg:'#200a30', text:'#C084FC'},
+  {bg:'#0a200a', text:'#86EFAC'},
+  {bg:'#300a0a', text:'#FCA5A5'},
+  {bg:'#1a1a0a', text:'#FCD34D'},
+  {bg:'#0a1a0f', text:'#6EE7B7'},
+  {bg:'#1a0c04', text:'#FB923C'},
+  {bg:'#1A3A5C', text:'#90CAF9'},
 ];
 
-const CHECKS = {
-  general:{
-    titulo:'Condiciones generales',
-    ico:'📋',
-    norma:'Dec. 911/96 · Res. 231/96',
-    items:[
-      {q:'Legajo Técnico disponible en obra',                              n:'D.911/96 · R.231/96 · R.051/97'},
-      {q:'Afiche SRT exhibido en lugar visible',                           n:'Res. SRT 70/97'},
-      {q:'Almacenamiento de materiales — orden y limpieza',               n:'D.911/96 · R.231/96'},
-      {q:'Normas higiénico-ambientales en obrador',                        n:'D.911/96'},
-      {q:'Señalización y demarcación perimetral',                          n:'D.911/96'},
-      {q:'Protección contra incendio — extintores vigentes',              n:'D.911/96'},
-      {q:'EPP completo en uso con registros de entrega',                  n:'D.911/96 · R.231/96'},
-      {q:'Programa de capacitación y registros de capacitación',          n:'R.231/96'},
-      {q:'Programa de seguridad aprobado con copia en obra',              n:'R.051/97 · R.035/98 · R.319/99'},
-      {q:'Iluminación adecuada en sectores de trabajo',                   n:'D.911/96'},
-    ]
-  },
-  altura:{
-    titulo:'Trabajo en altura',
-    ico:'🏗️',
-    norma:'Res. SRT 61/23 · D.911/96 Cap. 9',
-    items:[
-      {q:'Permiso de trabajo en altura firmado y vigente',                n:'Res. 61/23'},
-      {q:'Checklist de arneses y sistemas de arresto de caída completado',n:'Res. 61/23'},
-      {q:'Responsable en altura designado y presente',                    n:'Res. 61/23'},
-      {q:'Capacitación de 5 minutos realizada y registrada',             n:'Res. 61/23'},
-      {q:'Andamios con barandas (1m), travesaños intermedios y rodapiés', n:'D.911/96 Art.188'},
-      {q:'Andamios fijos/móviles en buen estado y debidamente anclados', n:'D.911/96 Art.194'},
-      {q:'Puntos de anclaje calculados y aprobados por profesional',      n:'Res. 61/23'},
-      {q:'Redes de seguridad instaladas donde corresponde',              n:'D.911/96 Art.62'},
-      {q:'Aberturas y bordes con protección perimetral',                  n:'D.911/96 Art.54/55'},
-    ]
-  },
-  excav:{
-    titulo:'Excavaciones y zanjas',
-    ico:'⛏️',
-    norma:'Res. SRT 550/11 · D.911/96 Cap. 6',
-    items:[
-      {q:'Vallado perimetral de excavación con señalización',             n:'D.911/96 · Res. 550/11'},
-      {q:'Entibado o tablestacado en excavaciones mayores a 1,50m',       n:'Res. 550/11'},
-      {q:'Permiso de trabajo seguro (PTS) confeccionado y firmado',       n:'Res. 550/11'},
-      {q:'Charla de 5 minutos realizada antes del inicio',               n:'Res. 550/11'},
-      {q:'Arnés con línea de vida en excavaciones mayores a 1,80m',      n:'Res. 550/11'},
-      {q:'Personal de apoyo/vigía presente en cada frente activo',        n:'Res. 550/11'},
-      {q:'Análisis de trabajo seguro (ATS) para tareas extraordinarias',  n:'Res. 550/11'},
-      {q:'Sistema de achique operativo si hay presencia de agua',         n:'D.911/96'},
-    ]
-  },
-  electrico:{
-    titulo:'Instalaciones eléctricas',
-    ico:'⚡',
-    norma:'D.911/96 Cap. 6 Art. 75-87',
-    items:[
-      {q:'Tablero eléctrico provisorio con disyuntor y diferencial',      n:'D.911/96'},
-      {q:'Cables sin empalmes expuestos — tendidos a ≥2,40m o subterráneos',n:'D.911/96 Art.86'},
-      {q:'Puesta a tierra verificada en tablero y equipos',               n:'D.911/96 Art.85'},
-      {q:'Trabajos en tensión con bloqueo/etiquetado (LOTO)',             n:'D.911/96 Art.85'},
-      {q:'EPP eléctrico disponible (guantes dieléctricos, calzado)',      n:'D.911/96'},
-      {q:'Interruptores diferenciales operativos',                        n:'D.911/96'},
-      {q:'Tablero con tapa, identificado y con extintor próximo',         n:'D.911/96'},
-      {q:'Personal habilitado para tareas eléctricas',                    n:'D.911/96 Art.85'},
-    ]
-  },
-  demolic:{
-    titulo:'Demoliciones',
-    ico:'🔨',
-    norma:'D.911/96 Cap. 6 Art. 96-104',
-    items:[
-      {q:'Plan de demolición aprobado con secuencia técnica definida',    n:'D.911/96 Art.96'},
-      {q:'Apuntalamientos previos ejecutados donde corresponde',           n:'D.911/96 Art.99'},
-      {q:'Zona de demolición acordonada y señalizada',                    n:'D.911/96 Art.98'},
-      {q:'Corte previo de servicios (gas, electricidad, agua) verificado',n:'D.911/96 Art.97'},
-      {q:'EPP específico: casco, antiparras, protección auditiva, barbijo',n:'D.911/96'},
-      {q:'Control de polvo con humectación en tarea',                     n:'D.911/96 Art.103'},
-      {q:'Acopio y retiro de escombros sin sobrecarga de losa',          n:'D.911/96 Art.101'},
-      {q:'Verificación de ausencia de amianto u otros materiales peligrosos',n:'D.911/96'},
-    ]
-  },
-  albanil:{
-    titulo:'Albañilería / Mampostería',
-    ico:'🧱',
-    norma:'D.911/96 general',
-    items:[
-      {q:'EPP básico en uso: casco, calzado de seguridad, guantes',       n:'D.911/96'},
-      {q:'Superficies de trabajo y accesos en buen estado y despejados',  n:'D.911/96'},
-      {q:'Herramientas manuales en buen estado y almacenadas correctamente',n:'D.911/96'},
-      {q:'Mezcladoras con guarda de protección en polea/correa',          n:'D.911/96'},
-      {q:'Andamios de apoyo con tablones en buen estado (≥2, sin nudos)', n:'D.911/96'},
-      {q:'Materiales estibados correctamente sin riesgo de vuelco',       n:'D.911/96'},
-      {q:'Protección contra proyección de partículas en trabajos con amoladora',n:'D.911/96'},
-      {q:'Iluminación adecuada en sectores cerrados o sin luz natural',   n:'D.911/96'},
-    ]
-  },
-  izaje:{
-    titulo:'Izaje y equipos elevadores',
-    ico:'🏗️',
-    norma:'D.911/96 Cap. 9 Art. 270-330',
-    items:[
-      {q:'Operador habilitado con certificación vigente',                  n:'D.911/96 Art.270'},
-      {q:'Registro de mantenimiento del equipo actualizado',              n:'D.911/96 Art.275'},
-      {q:'Cargas debidamente eslingadas y con peso identificado',         n:'D.911/96 Art.290'},
-      {q:'Zona de maniobra acordonada — prohibición de paso bajo cargas', n:'D.911/96 Art.280'},
-      {q:'Señalero/eslinguero con chaleco y comunicación con operador',   n:'D.911/96'},
-      {q:'Capacidad máxima del equipo verificada — carga no supera límite',n:'D.911/96 Art.285'},
-      {q:'Ganchos con pestillo de seguridad operativo',                   n:'D.911/96 Art.295'},
-      {q:'Verificación visual de cables, eslingas y cadenas antes del uso',n:'D.911/96 Art.289'},
-    ]
-  },
-  confinado:{
-    titulo:'Espacios confinados',
-    ico:'🕳️',
-    norma:'D.911/96 Art. 84 · Res. SRT 415/02',
-    items:[
-      {q:'Permiso de entrada a espacio confinado firmado',                n:'Res. 415/02'},
-      {q:'Medición de atmósfera previa al ingreso (O₂, gases, LEL)',      n:'Res. 415/02'},
-      {q:'Vigía externo permanente durante toda la tarea',                n:'Res. 415/02'},
-      {q:'Arnés con línea de vida y trípode de rescate disponible',      n:'Res. 415/02'},
-      {q:'Ventilación forzada activa durante la tarea',                   n:'D.911/96 Art.84'},
-      {q:'Equipos de comunicación operativos vigía/trabajador',           n:'Res. 415/02'},
-      {q:'Plan de rescate definido y comunicado antes del ingreso',       n:'Res. 415/02'},
-      {q:'EPP específico: protección respiratoria, casco, calzado',      n:'Res. 415/02'},
-    ]
-  },
-  vial:{
-    titulo:'Equipos viales y maquinaria pesada',
-    ico:'🚛',
-    norma:'D.911/96 Cap. 10',
-    items:[
-      {q:'Operador con licencia habilitante vigente para el equipo',      n:'D.911/96'},
-      {q:'VTV y documentación del equipo al día',                        n:'D.911/96 Art.140'},
-      {q:'Zona de trabajo señalizada — vallas y conos perimetrales',     n:'D.911/96'},
-      {q:'Señalero con chaleco reflectivo y banderín en maniobras',      n:'D.911/96'},
-      {q:'ROPS (estructura anti-vuelco) operativa donde corresponde',    n:'D.911/96'},
-      {q:'Extintor de 5kg ABC en cabina del operador',                   n:'D.911/96'},
-      {q:'Revisión pre-operacional diaria registrada',                    n:'D.911/96 Art.142'},
-      {q:'Prohibición de personal a menos de 5m durante maniobras',      n:'D.911/96'},
-    ]
-  }
-};
-
-// ═══════════════════════════════════════════════════════
-// ESTADO
-// ═══════════════════════════════════════════════════════
-let selectedTipos = ['general'];
-let checkState = {};
-let activeTab = 'general';
-let firma1Confirmed = false, firma2Confirmed = false;
-let firma1Data = null, firma2Data = null;
-let recLibres = [];
-
-// ═══════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════
-function init() {
-  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-  buildTipoGrid();
-  initFirma(1);
-  initFirma(2);
+function initials(nombre) {
+  if (!nombre) return '?';
+  return nombre.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
-function esc(s){ return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function colorFor(idx) {
+  return COLORES[idx % COLORES.length];
+}
 
-// ═══════════════════════════════════════════════════════
-// S1 → S2
-// ═══════════════════════════════════════════════════════
-function goS2() {
-  const empresa = document.getElementById('empresa').value.trim();
-  const domicilio = document.getElementById('domicilio').value.trim();
-  const fecha = document.getElementById('fecha').value;
-  if (!empresa || !domicilio || !fecha) {
-    alert('Completá los campos obligatorios: Empresa, Domicilio y Fecha.');
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const diff = (new Date() - new Date(dateStr + 'T12:00:00')) / 86400000;
+  return Math.floor(diff);
+}
+
+// ══ NAVEGACIÓN ═══════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+  document.getElementById('back-btn').style.display = id === 'lista' ? 'none' : 'flex';
+}
+
+function goBack() {
+  viewHistory.pop();
+  const prev = viewHistory[viewHistory.length - 1] || 'lista';
+  if (prev === 'lista') {
+    document.getElementById('topbar-title').textContent = 'Mis clientes';
+    document.getElementById('topbar-sub').textContent = '';
+    renderLista();
+  } else if (prev === 'ficha') {
+    renderFicha(clienteActual);
+  }
+  showView(prev);
+}
+
+// ══ LISTA ═════════════════════════════════════════════
+function renderLista(filtro) {
+  const cont = document.getElementById('cli-list');
+  const lista = filtro
+    ? clientes.filter(c => c.razonSocial.toLowerCase().includes(filtro.toLowerCase()))
+    : clientes;
+
+  document.getElementById('topbar-sub').textContent = '';
+
+  if (lista.length === 0) {
+    cont.innerHTML = `<div class="empty-state">
+      <div style="font-size:40px">🏭</div>
+      <p>${filtro ? 'Sin resultados para "' + filtro + '"' : 'Todavía no tenés clientes.<br>Tocá + para agregar el primero.'}</p>
+    </div>`;
     return;
   }
-  showScreen('s2');
+
+  cont.innerHTML = lista.map((c, i) => {
+    const idx = clientes.indexOf(c);
+    const col = colorFor(c.colorIdx !== undefined ? c.colorIdx : idx);
+    const dias = daysSince(c.ultimaVisita);
+    let badge = '';
+    if (dias === null) badge = `<span class="cli-badge badge-nd">Sin visitas</span>`;
+    else if (dias <= 35) badge = `<span class="cli-badge badge-ok">Al día</span>`;
+    else badge = `<span class="cli-badge" style="background:#FFF8E1;color:#F57F17">Hace ${dias}d</span>`;
+    return `<div class="cli-card" onclick="verCliente(${idx})">
+      <div class="cli-avatar" style="background:${col.bg};color:${col.text}">${initials(c.razonSocial)}</div>
+      <div class="cli-info">
+        <div class="cli-name">${c.razonSocial || '—'}</div>
+        <div class="cli-sub">${c.establecimientos && c.establecimientos[0] ? c.establecimientos[0].direccion : (c.localidad || 'Sin dirección')}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
 }
 
-// ═══════════════════════════════════════════════════════
-// TIPO DE TRABAJOS
-// ═══════════════════════════════════════════════════════
-function buildTipoGrid() {
-  const grid = document.getElementById('tipo-grid');
-  grid.innerHTML = '';
-  TIPOS.forEach(t => {
-    const btn = document.createElement('button');
-    btn.className = 'tipo-btn' + (t.always ? ' always' : (selectedTipos.includes(t.id) ? ' sel' : ''));
-    btn.innerHTML = `<span class="ico">${t.ico}</span><span>${t.label}</span>`;
-    if (!t.always) btn.onclick = () => toggleTipo(t.id, btn);
-    grid.appendChild(btn);
-  });
+function filtrarClientes() {
+  renderLista(document.getElementById('search-input').value);
 }
 
-function toggleTipo(id, btn) {
-  const idx = selectedTipos.indexOf(id);
-  if (idx === -1) { selectedTipos.push(id); btn.classList.add('sel'); }
-  else { selectedTipos.splice(idx, 1); btn.classList.remove('sel'); }
+// ══ FICHA ════════════════════════════════════════════
+function verCliente(idx) {
+  clienteActual = idx;
+  renderFicha(idx);
+  viewHistory.push('ficha');
+  document.getElementById('topbar-title').textContent = clientes[idx].razonSocial || 'Cliente';
+  document.getElementById('topbar-sub').textContent = '';
+  showView('ficha');
 }
 
-// ═══════════════════════════════════════════════════════
-// S2 → S3
-// ═══════════════════════════════════════════════════════
-function goS3() {
-  if (selectedTipos.length === 0) { alert('Seleccioná al menos un tipo de trabajo.'); return; }
-  // Inicializar estado
-  checkState = {};
-  selectedTipos.forEach(id => {
-    checkState[id] = {};
-    CHECKS[id].items.forEach((_, i) => checkState[id][i] = {val: null, obs: ''});
-  });
-  buildChecklists();
-  const empresa = document.getElementById('empresa').value;
-  document.getElementById('s3-banner').textContent =
-    empresa + ' · ' + selectedTipos.length + ' sección' + (selectedTipos.length > 1 ? 'es' : '') + ' activa' + (selectedTipos.length > 1 ? 's' : '');
-  activeTab = selectedTipos[0];
-  showScreen('s3');
-  updateProg();
-}
+function renderFicha(idx) {
+  const c = clientes[idx];
+  const col = colorFor(c.colorIdx !== undefined ? c.colorIdx : idx);
+  const dias = daysSince(c.ultimaVisita);
+  let badgeVisita = '';
+  if (dias === null) badgeVisita = `<span class="badge-visita warn">Sin visitas registradas</span>`;
+  else if (dias <= 35) badgeVisita = `<span class="badge-visita ok">✅ Visita al día (hace ${dias} días)</span>`;
+  else badgeVisita = `<span class="badge-visita warn">⚠️ Hace ${dias} días sin visita</span>`;
 
-function buildChecklists() {
-  // Tabs
-  const tabsEl = document.getElementById('section-tabs');
-  tabsEl.innerHTML = '';
-  selectedTipos.forEach(id => {
-    const t = TIPOS.find(x => x.id === id);
-    const tab = document.createElement('button');
-    tab.className = 'tab' + (id === activeTab ? ' active' : '');
-    tab.textContent = t.ico + ' ' + (t.always ? 'General' : t.label.split(' ')[0]);
-    tab.onclick = () => switchTab(id);
-    tabsEl.appendChild(tab);
-  });
-  // Contenido
-  const cont = document.getElementById('checklists-container');
-  cont.innerHTML = '';
-  selectedTipos.forEach(id => {
-    const sec = CHECKS[id];
-    const div = document.createElement('div');
-    div.id = 'sec_' + id;
-    div.className = id === activeTab ? '' : 'hidden';
-    let html = `<div class="check-section-header"><div>
-      <h3>${sec.ico} ${sec.titulo}</h3>
-      <p>${sec.norma}</p>
-    </div></div>`;
-    sec.items.forEach((item, i) => {
-      const st = checkState[id][i];
-      html += `<div class="check-item" id="ci_${id}_${i}">
-        <div class="check-item-label">${item.q}</div>
-        <div class="check-item-norm">${item.n}</div>
-        <div class="yn-btns">
-          <button class="btn-si ${st.val==='si'?'active':''}" onclick="setCheck('${id}',${i},'si')">✅ Sí</button>
-          <button class="btn-no ${st.val==='no'?'active':''}" onclick="setCheck('${id}',${i},'no')">❌ No</button>
-          <button class="btn-na ${st.val==='na'?'active':''}" onclick="setCheck('${id}',${i},'na')">— N/A</button>
-        </div>
-        <div class="obs-field ${st.val==='no'?'':'hidden'}" id="obs_${id}_${i}">
-          <textarea placeholder="Describir el incumplimiento y la recomendación..." 
-            oninput="checkState['${id}'][${i}].obs=this.value">${esc(st.obs)}</textarea>
-        </div>
+  // Establecimientos
+  let estHTML = '';
+  if (c.establecimientos && c.establecimientos.length > 0) {
+    c.establecimientos.forEach(e => {
+      estHTML += `<div class="info-row">
+        <span class="info-key">${e.nombre || 'Establecimiento'}</span>
+        <span class="info-val accent">${e.direccion}</span>
       </div>`;
     });
-    div.innerHTML = html;
-    cont.appendChild(div);
-  });
-}
+  } else {
+    estHTML = `<div class="info-row"><span class="info-key">Dirección</span><span class="info-val">—</span></div>`;
+  }
 
-function setCheck(id, idx, val) {
-  checkState[id][idx].val = val;
-  // Update buttons
-  const ci = document.getElementById(`ci_${id}_${idx}`);
-  ci.querySelectorAll('.btn-si,.btn-no,.btn-na').forEach(b => b.classList.remove('active'));
-  ci.querySelector('.btn-' + val).classList.add('active');
-  const obsDiv = document.getElementById(`obs_${id}_${idx}`);
-  obsDiv.classList.toggle('hidden', val !== 'no');
-  updateProg();
-}
-
-function switchTab(id) {
-  activeTab = id;
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', selectedTipos[i] === id));
-  selectedTipos.forEach(sid => {
-    const el = document.getElementById('sec_' + sid);
-    if (el) el.classList.toggle('hidden', sid !== id);
-  });
-}
-
-function updateProg() {
-  let total = 0, done = 0;
-  selectedTipos.forEach(id => {
-    Object.values(checkState[id] || {}).forEach(v => { total++; if (v.val) done++; });
-  });
-  const pct = total > 0 ? Math.round(done / total * 100) : 0;
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-label').textContent = `${done} de ${total} ítems evaluados (${pct}%)`;
-}
-
-// ═══════════════════════════════════════════════════════
-// S3 → S4
-// ═══════════════════════════════════════════════════════
-function goS4() {
-  const empresa = document.getElementById('empresa').value;
-  const fecha = document.getElementById('fecha').value;
-  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
-  document.getElementById('s4-sub').textContent = empresa + ' · ' + dateStr;
-  const tecnico = document.getElementById('tecnico').value;
-  const respObra = document.getElementById('resp_obra').value;
-  document.getElementById('firma1-label').textContent = 'Firma del Técnico H&S' + (tecnico ? ' — ' + tecnico : '');
-  document.getElementById('firma2-label').textContent = 'Firma del Responsable de obra' + (respObra ? ' — ' + respObra : '');
-  buildRecsAuto();
-  showScreen('s4');
-}
-
-function buildRecsAuto() {
-  const cont = document.getElementById('recs-auto');
-  cont.innerHTML = '';
-  let count = 0;
-  selectedTipos.forEach(id => {
-    const sec = CHECKS[id];
-    sec.items.forEach((item, i) => {
-      const st = checkState[id][i];
-      if (st.val === 'no') {
-        count++;
-        const div = document.createElement('div');
-        div.className = 'rec-item';
-        div.innerHTML = `<div class="rec-sec">${sec.titulo}</div>
-          <div class="rec-txt">${count}. ${item.q}${st.obs ? ' — ' + st.obs : ''}</div>`;
-        cont.appendChild(div);
-      }
+  // Contactos
+  let contHTML = '';
+  if (c.contactos && c.contactos.length > 0) {
+    c.contactos.forEach(ct => {
+      contHTML += `<div class="info-row">
+        <span class="info-key">${ct.rol || 'Contacto'}</span>
+        <span class="info-val">${ct.nombre}${ct.telefono ? '<br><span style="color:#185FA5;font-size:12px">' + ct.telefono + '</span>' : ''}</span>
+      </div>`;
     });
-  });
-  if (count === 0) {
-    cont.innerHTML = '<div style="font-size:14px;color:#1B5E20;padding:8px 0">✅ Sin incumplimientos detectados en esta visita.</div>';
-  }
-}
-
-function addRecLibre() {
-  recLibres.push('');
-  const cont = document.getElementById('recs-libres');
-  const idx = recLibres.length - 1;
-  const div = document.createElement('div');
-  div.style.cssText = 'display:flex;gap:8px;margin-bottom:8px';
-  div.innerHTML = `<textarea placeholder="Recomendación libre..." style="flex:1;min-height:50px;font-size:13px;padding:8px 10px;border-radius:9px;border:1.5px solid #DDD;outline:none;font-family:inherit;resize:none"
-    oninput="recLibres[${idx}]=this.value"></textarea>
-    <button onclick="this.parentElement.remove();recLibres.splice(${idx},1)" 
-      style="padding:8px 12px;border:1.5px solid #EF5350;border-radius:9px;background:#fff;color:#EF5350;cursor:pointer;flex-shrink:0;align-self:flex-start;margin-top:4px">✕</button>`;
-  cont.appendChild(div);
-}
-
-// ═══════════════════════════════════════════════════════
-// FIRMA DIGITAL
-// ═══════════════════════════════════════════════════════
-function initFirma(n) {
-  const canvas = document.getElementById(`firma${n}-canvas`);
-  const hint = document.getElementById(`firma${n}-hint`);
-  const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#1A3A5C';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  let drawing = false, lastX = 0, lastY = 0;
-
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    if (e.touches) {
-      return [(e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY];
-    }
-    return [(e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY];
+  } else {
+    contHTML = `<div class="info-row"><span class="info-key">Contacto</span><span class="info-val">—</span></div>`;
   }
 
-  function start(e) { e.preventDefault(); drawing = true; [lastX, lastY] = getPos(e); hint.style.display = 'none'; }
-  function draw(e) {
-    if (!drawing) return; e.preventDefault();
-    const [x, y] = getPos(e);
-    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
-    [lastX, lastY] = [x, y];
+  // ART
+  let artHTML = '';
+  if (c.artNombre || c.artPoliza || c.artAccesos || c.artVto) {
+    artHTML = `<div class="art-box">
+      ${c.artNombre ? `<div class="art-row"><span class="art-key">ART</span><span class="art-val">${c.artNombre}</span></div>` : ''}
+      ${c.artPoliza ? `<div class="art-row"><span class="art-key">N° póliza</span><span class="art-val">${c.artPoliza}</span></div>` : ''}
+      ${c.artAccesos ? `<div class="art-row"><span class="art-key">Datos de acceso</span><span class="art-val">${c.artAccesos}</span></div>` : ''}
+      ${c.artVto ? `<div class="art-row"><span class="art-key">Vto. póliza</span><span class="art-val">${formatDate(c.artVto)}</span></div>` : ''}
+    </div>`;
+  } else {
+    artHTML = `<div style="font-size:13px;color:#888;margin-top:4px">Sin datos de ART cargados.</div>`;
   }
-  function stop() { drawing = false; }
 
-  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseleave', stop);
-  canvas.addEventListener('touchstart', start, {passive:false});
-  canvas.addEventListener('touchmove', draw, {passive:false});
-  canvas.addEventListener('touchend', stop);
+  document.getElementById('ficha-content').innerHTML = `
+    <div class="ficha-hero">
+      <div class="ficha-avatar-lg" style="background:${col.bg};color:${col.text}">${initials(c.razonSocial)}</div>
+      <div>
+        <div class="ficha-hero-name">${c.razonSocial || '—'}</div>
+        <div class="ficha-hero-cuit">CUIT ${c.cuit || 'sin datos'}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Datos generales</div>
+      <div class="info-row"><span class="info-key">Razón social</span><span class="info-val">${c.razonSocial || '—'}</span></div>
+      <div class="info-row"><span class="info-key">CUIT</span><span class="info-val">${c.cuit || '—'}</span></div>
+      <div class="info-row"><span class="info-key">Actividad / Rubro</span><span class="info-val">${c.actividad || '—'}</span></div>
+      <div class="info-row"><span class="info-key">Trabajadores</span><span class="info-val">${c.trabajadores || '—'}</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Establecimientos</div>
+      ${estHTML}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Contactos</div>
+      ${contHTML}
+    </div>
+
+    <div class="card">
+      <div class="card-title">ART contratada</div>
+      ${artHTML}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Historial de visitas</div>
+      <div class="info-row"><span class="info-key">Última visita</span><span class="info-val">${formatDate(c.ultimaVisita)}</span></div>
+      <div class="info-row"><span class="info-key">Próxima visita</span><span class="info-val">${formatDate(c.proximaVisita)}</span></div>
+      <div class="info-row"><span class="info-key">Frecuencia</span><span class="info-val">${c.frecuencia || '—'}</span></div>
+      ${badgeVisita}
+    </div>
+
+    ${c.notas ? `<div class="card">
+      <div class="card-title">Notas</div>
+      <div style="font-size:14px;color:#444;line-height:1.6">${c.notas}</div>
+    </div>` : ''}
+
+    <div class="nota">Al tocar "Usar en herramienta" los datos de este cliente se copian al portapapeles listos para pegar, hasta que implementemos la precarga automática entre apps.</div>
+
+    <button class="btn-usar" onclick="usarEnHerramienta(${idx})">📋 Copiar datos para herramienta</button>
+    <button class="btn-editar" onclick="goEditar(${idx})">✏️ Editar cliente</button>
+    <button class="btn-editar" onclick="registrarVisita(${idx})" style="color:#2E7D32;border-color:#C8E6C9">📅 Registrar visita hoy</button>
+    <button class="btn-danger" onclick="eliminarCliente(${idx})">🗑️ Eliminar cliente</button>
+  `;
 }
 
-function clearFirma(n) {
-  const canvas = document.getElementById(`firma${n}-canvas`);
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-  document.getElementById(`firma${n}-hint`).style.display = 'block';
-  document.getElementById(`firma${n}-done`).classList.add('hidden');
-  if (n === 1) { firma1Confirmed = false; firma1Data = null; }
-  else { firma2Confirmed = false; firma2Data = null; }
+function usarEnHerramienta(idx) {
+  const c = clientes[idx];
+  const est = c.establecimientos && c.establecimientos[0];
+  const cont = c.contactos && c.contactos[0];
+  let txt = `Cliente: ${c.razonSocial || ''}
+CUIT: ${c.cuit || ''}
+Dirección: ${est ? est.direccion : ''}
+Trabajadores: ${c.trabajadores || ''}
+Responsable: ${cont ? cont.nombre + (cont.rol ? ' (' + cont.rol + ')' : '') : ''}`;
+  navigator.clipboard && navigator.clipboard.writeText(txt);
+  const btn = document.querySelector('.btn-usar');
+  btn.textContent = '✅ Copiado al portapapeles';
+  setTimeout(() => btn.textContent = '📋 Copiar datos para herramienta', 2500);
 }
 
-function confirmFirma(n) {
-  const canvas = document.getElementById(`firma${n}-canvas`);
-  if (n === 1) { firma1Data = canvas.toDataURL('image/png'); firma1Confirmed = true; }
-  else { firma2Data = canvas.toDataURL('image/png'); firma2Confirmed = true; }
-  document.getElementById(`firma${n}-done`).classList.remove('hidden');
+function registrarVisita(idx) {
+  const hoy = new Date().toISOString().split('T')[0];
+  clientes[idx].ultimaVisita = hoy;
+  saveClientes(clientes);
+  renderFicha(idx);
+  alert('Visita registrada para hoy.');
 }
 
-// ═══════════════════════════════════════════════════════
-// GENERAR PDF
-// ═══════════════════════════════════════════════════════
-function generarPDF() {
-  const { jsPDF } = window.jspdf;
-  if (!jsPDF) { alert('Error al cargar el generador de PDF. Verificá tu conexión.'); return; }
-  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  const W = 210, M = 15;
-  let y = 15;
+function eliminarCliente(idx) {
+  if (!confirm('¿Eliminar este cliente? Esta acción no se puede deshacer.')) return;
+  clientes.splice(idx, 1);
+  saveClientes(clientes);
+  goBack();
+  renderLista();
+}
+
+// ══ FORMULARIO ═══════════════════════════════════════
+let formData = {};
+let editIdx = null;
+
+function goNuevo() {
+  editIdx = null;
+  formData = {
+    razonSocial:'', cuit:'', actividad:'', trabajadores:'',
+    establecimientos:[{nombre:'Planta principal', direccion:''}],
+    contactos:[{rol:'Responsable H&S', nombre:'', telefono:''}],
+    artNombre:'', artPoliza:'', artAccesos:'', artVto:'',
+    ultimaVisita:'', proximaVisita:'', frecuencia:'', notas:'',
+    colorIdx: Math.floor(Math.random() * COLORES.length)
+  };
+  renderForm();
+  viewHistory.push('form');
+  document.getElementById('topbar-title').textContent = 'Nuevo cliente';
+  showView('form');
+}
+
+function goEditar(idx) {
+  editIdx = idx;
+  formData = JSON.parse(JSON.stringify(clientes[idx]));
+  if (!formData.establecimientos) formData.establecimientos = [{nombre:'', direccion:''}];
+  if (!formData.contactos) formData.contactos = [{rol:'', nombre:'', telefono:''}];
+  renderForm();
+  viewHistory.push('form');
+  document.getElementById('topbar-title').textContent = 'Editar cliente';
+  showView('form');
+}
+
+function renderForm() {
+  // Establecimientos
+  let estHTML = formData.establecimientos.map((e, i) => `
+    <div class="sub-card">
+      <div class="sub-card-label">Establecimiento ${i+1}</div>
+      ${formData.establecimientos.length > 1 ? `<button class="rm-btn" onclick="removeEst(${i})">✕ Quitar</button>` : ''}
+      <label style="margin-top:0">Nombre / descripción</label>
+      <input type="text" value="${esc(e.nombre)}" placeholder="Ej: Planta principal, Depósito, Sucursal" oninput="formData.establecimientos[${i}].nombre=this.value">
+      <label>Dirección completa</label>
+      <input type="text" value="${esc(e.direccion)}" placeholder="Calle, número, localidad, provincia" oninput="formData.establecimientos[${i}].direccion=this.value">
+    </div>`).join('');
+
+  // Contactos
+  let contHTML = formData.contactos.map((ct, i) => `
+    <div class="sub-card">
+      <div class="sub-card-label">Contacto ${i+1}</div>
+      ${formData.contactos.length > 1 ? `<button class="rm-btn" onclick="removeCont(${i})">✕ Quitar</button>` : ''}
+      <label style="margin-top:0">Rol / cargo <span style="font-size:12px;color:#888;font-weight:400">(editable)</span></label>
+      <input type="text" value="${esc(ct.rol)}" placeholder="Ej: Responsable H&S, Dueño, Supervisor, RRHH" oninput="formData.contactos[${i}].rol=this.value">
+      <label>Nombre y apellido</label>
+      <input type="text" value="${esc(ct.nombre)}" placeholder="Nombre completo" oninput="formData.contactos[${i}].nombre=this.value">
+      <label>Teléfono</label>
+      <input type="tel" value="${esc(ct.telefono)}" placeholder="Ej: 11 4523-1234" oninput="formData.contactos[${i}].telefono=this.value">
+    </div>`).join('');
 
   // Colores
-  const azul = [26, 58, 92];
-  const grisClaro = [245, 247, 250];
-  const negro = [30, 30, 30];
-  const verde = [46, 125, 50];
-  const rojo = [198, 40, 40];
-  const gris = [120, 120, 120];
+  let coloresHTML = COLORES.map((col, i) => `
+    <div class="color-dot ${formData.colorIdx === i ? 'sel' : ''}"
+      style="background:${col.bg};border-color:${formData.colorIdx === i ? col.text : 'transparent'}"
+      onclick="selColor(${i})"></div>`).join('');
 
-  function setFont(style, size, color) {
-    doc.setFont('helvetica', style);
-    doc.setFontSize(size);
-    doc.setTextColor(...(color || negro));
+  document.getElementById('form-content').innerHTML = `
+    <div class="card">
+      <div class="card-title">Datos generales</div>
+      <label style="margin-top:0">Razón social <span class="req">*</span></label>
+      <input type="text" id="f-razon" value="${esc(formData.razonSocial)}" placeholder="Nombre de la empresa" oninput="formData.razonSocial=this.value">
+      <label>CUIT</label>
+      <input type="text" value="${esc(formData.cuit)}" placeholder="XX-XXXXXXXX-X" oninput="formData.cuit=this.value">
+      <label>Actividad / Rubro</label>
+      <input type="text" value="${esc(formData.actividad)}" placeholder="Ej: Metalúrgica, Depósito, Construcción" oninput="formData.actividad=this.value">
+      <label>Cantidad de trabajadores</label>
+      <input type="number" value="${formData.trabajadores}" placeholder="N° de empleados" min="1" oninput="formData.trabajadores=this.value">
+      <label>Color de avatar</label>
+      <div class="color-selector">${coloresHTML}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Establecimientos</div>
+      <div id="est-container">${estHTML}</div>
+      <button class="add-field-btn" onclick="addEst()">+ Agregar establecimiento</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Contactos</div>
+      <div id="cont-container">${contHTML}</div>
+      <button class="add-field-btn" onclick="addCont()">+ Agregar contacto</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ART contratada</div>
+      <label style="margin-top:0">Nombre de la ART</label>
+      <input type="text" value="${esc(formData.artNombre)}" placeholder="Ej: Galeno ART, Federación Patronal, Provincia ART" oninput="formData.artNombre=this.value">
+      <label>N° de póliza</label>
+      <input type="text" value="${esc(formData.artPoliza)}" placeholder="Número de póliza" oninput="formData.artPoliza=this.value">
+      <label>Datos de acceso <span style="font-size:12px;color:#888;font-weight:400">(usuario, contraseña, CUIT, etc.)</span></label>
+      <textarea placeholder="Ej: Usuario: 30-12345678-9 / Clave: miClave123&#10;O: user@empresa.com / pass: xxxxx" oninput="formData.artAccesos=this.value">${esc(formData.artAccesos)}</textarea>
+      <label>Vencimiento de póliza</label>
+      <input type="date" value="${formData.artVto}" oninput="formData.artVto=this.value">
+    </div>
+
+    <div class="card">
+      <div class="card-title">Visitas</div>
+      <div class="field-2">
+        <div>
+          <label style="margin-top:0">Última visita</label>
+          <input type="date" value="${formData.ultimaVisita}" oninput="formData.ultimaVisita=this.value">
+        </div>
+        <div>
+          <label style="margin-top:0">Próxima visita</label>
+          <input type="date" value="${formData.proximaVisita}" oninput="formData.proximaVisita=this.value">
+        </div>
+      </div>
+      <label>Frecuencia de visita</label>
+      <select onchange="formData.frecuencia=this.value">
+        <option value="" ${!formData.frecuencia?'selected':''}>— Seleccionar —</option>
+        <option value="Mensual" ${formData.frecuencia==='Mensual'?'selected':''}>Mensual</option>
+        <option value="Bimestral" ${formData.frecuencia==='Bimestral'?'selected':''}>Bimestral</option>
+        <option value="Trimestral" ${formData.frecuencia==='Trimestral'?'selected':''}>Trimestral</option>
+        <option value="Semestral" ${formData.frecuencia==='Semestral'?'selected':''}>Semestral</option>
+        <option value="Anual" ${formData.frecuencia==='Anual'?'selected':''}>Anual</option>
+        <option value="A demanda" ${formData.frecuencia==='A demanda'?'selected':''}>A demanda</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Notas</div>
+      <textarea placeholder="Observaciones, instrucciones de acceso, datos útiles del cliente..." oninput="formData.notas=this.value">${esc(formData.notas)}</textarea>
+    </div>
+
+    <button class="btn-save" onclick="guardarCliente()">💾 Guardar cliente</button>
+    <button class="btn-cancel" onclick="goBack()">Cancelar</button>
+  `;
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function selColor(i) {
+  formData.colorIdx = i;
+  renderForm();
+}
+
+function addEst() {
+  formData.establecimientos.push({nombre:'', direccion:''});
+  renderForm();
+}
+function removeEst(i) {
+  formData.establecimientos.splice(i, 1);
+  renderForm();
+}
+function addCont() {
+  formData.contactos.push({rol:'', nombre:'', telefono:''});
+  renderForm();
+}
+function removeCont(i) {
+  formData.contactos.splice(i, 1);
+  renderForm();
+}
+
+function guardarCliente() {
+  if (!formData.razonSocial.trim()) { alert('La razón social es obligatoria.'); return; }
+  if (editIdx !== null) {
+    clientes[editIdx] = {...formData};
+  } else {
+    clientes.push({...formData});
+    clienteActual = clientes.length - 1;
   }
-
-  // ── ENCABEZADO ──
-  doc.setFillColor(...azul);
-  doc.rect(0, 0, W, 22, 'F');
-  setFont('bold', 13, [255,255,255]);
-  doc.text('CONSTANCIA DE VISITA A OBRA — SEGURIDAD E HIGIENE', M, 10);
-  setFont('normal', 8, [180,200,220]);
-  doc.text('S&E Consultores · syeconsultores.com.ar · Dec. 911/96 · Res. 61/23', M, 16);
-  const fecha = document.getElementById('fecha').value;
-  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
-  doc.text('Generado: ' + dateStr, W - M, 16, {align:'right'});
-  y = 28;
-
-  // ── DATOS DE OBRA ──
-  doc.setFillColor(...grisClaro);
-  doc.roundedRect(M, y, W - M*2, 40, 2, 2, 'F');
-  setFont('bold', 9, azul);
-  doc.text('DATOS DE LA OBRA', M+4, y+6);
-  setFont('normal', 8.5, negro);
-  const empresa = document.getElementById('empresa').value || '—';
-  const cuit = document.getElementById('cuit').value || '—';
-  const denom = document.getElementById('denominacion').value || '—';
-  const domicilio = document.getElementById('domicilio').value || '—';
-  const esCaba = document.getElementById('es_caba').checked;
-  const horaIni = document.getElementById('hora_ini').value || '—';
-  const horaFin = document.getElementById('hora_fin').value || '—';
-  const nTrab = document.getElementById('n_trabajadores').value || '—';
-  const tecnico = document.getElementById('tecnico').value || '—';
-  const mat = document.getElementById('matricula').value || '—';
-  const respObra = document.getElementById('resp_obra').value || '—';
-  const col1 = M+4, col2 = M+4+60;
-  doc.text('Razón Social:', col1, y+13); setFont('bold',8.5,negro); doc.text(empresa, col1+28, y+13); setFont('normal',8.5,negro);
-  doc.text('CUIT:', col2, y+13); doc.text(cuit, col2+12, y+13);
-  doc.text('Denominación:', col1, y+19); setFont('bold',8.5,negro); doc.text(denom, col1+28, y+19); setFont('normal',8.5,negro);
-  doc.text('Domicilio:', col1, y+25); doc.text(domicilio + (esCaba?' (CABA)':''), col1+20, y+25);
-  doc.text('Fecha:', col1, y+31); doc.text(dateStr, col1+14, y+31);
-  doc.text('Hora: ' + horaIni + ' – ' + horaFin, col2, y+31);
-  doc.text('Trabajadores: ' + nTrab, col2+40, y+31);
-  doc.text('Técnico H&S: ' + tecnico + (mat !== '—' ? ' (Mat. '+mat+')' : ''), col1, y+37);
-  doc.text('Resp. Obra: ' + respObra, col2, y+37);
-  y += 46;
-
-  // ── TABLA DE ÍTEMS ──
-  // Header
-  doc.setFillColor(...azul);
-  doc.rect(M, y, W-M*2, 7, 'F');
-  setFont('bold', 8, [255,255,255]);
-  doc.text('N°', M+3, y+5);
-  doc.text('DESCRIPCIÓN', M+12, y+5);
-  doc.text('SI', W-M-18, y+5, {align:'center'});
-  doc.text('NO', W-M-11, y+5, {align:'center'});
-  doc.text('N/A', W-M-4, y+5, {align:'center'});
-  y += 8;
-
-  let rowNum = 0;
-  let noItems = [];
-
-  selectedTipos.forEach(id => {
-    const sec = CHECKS[id];
-    // Sección header
-    if (y > 255) { doc.addPage(); y = 15; }
-    doc.setFillColor(235, 240, 247);
-    doc.rect(M, y, W-M*2, 6, 'F');
-    setFont('bold', 8, azul);
-    doc.text(sec.ico + ' ' + sec.titulo.toUpperCase() + '  |  ' + sec.norma, M+3, y+4.5);
-    y += 7;
-
-    sec.items.forEach((item, i) => {
-      if (y > 262) { doc.addPage(); y = 15; }
-      rowNum++;
-      const st = checkState[id] ? checkState[id][i] : {val:null,obs:''};
-      const bg = rowNum % 2 === 0 ? [250,251,253] : [255,255,255];
-      doc.setFillColor(...bg);
-      const rowH = st.val === 'no' && st.obs ? 10 : 7;
-      doc.rect(M, y, W-M*2, rowH, 'F');
-      doc.setDrawColor(220,220,220);
-      doc.line(M, y+rowH, W-M, y+rowH);
-      setFont('normal', 7.5, negro);
-      doc.text(String(rowNum), M+3, y+5);
-      const txt = doc.splitTextToSize(item.q, 118);
-      doc.text(txt[0], M+12, y+5);
-      // Badges SI/NO/NA
-      const bx = W-M-18, by2 = W-M-11, bna = W-M-4;
-      if (st.val === 'si') { doc.setFillColor(...verde); doc.roundedRect(bx-4,y+1.5,8,4,1,1,'F'); setFont('bold',6,[255,255,255]); doc.text('SI',bx,y+4.8,{align:'center'}); }
-      else { setFont('normal',7.5,[200,200,200]); doc.text('SI',bx,y+5,{align:'center'}); }
-      if (st.val === 'no') { doc.setFillColor(...rojo); doc.roundedRect(by2-4,y+1.5,8,4,1,1,'F'); setFont('bold',6,[255,255,255]); doc.text('NO',by2,y+4.8,{align:'center'}); noItems.push({sec:sec.titulo, item:item.q, obs:st.obs}); }
-      else { setFont('normal',7.5,[200,200,200]); doc.text('NO',by2,y+5,{align:'center'}); }
-      if (st.val === 'na') { doc.setFillColor(150,150,150); doc.roundedRect(bna-5,y+1.5,9,4,1,1,'F'); setFont('bold',6,[255,255,255]); doc.text('N/A',bna,y+4.8,{align:'center'}); }
-      else { setFont('normal',7.5,[200,200,200]); doc.text('N/A',bna,y+5,{align:'center'}); }
-      y += rowH;
-    });
-  });
-  y += 5;
-
-  // ── RECOMENDACIONES ──
-  if (y > 230) { doc.addPage(); y = 15; }
-  doc.setFillColor(...azul);
-  doc.rect(M, y, W-M*2, 7, 'F');
-  setFont('bold', 8, [255,255,255]);
-  doc.text('RECOMENDACIONES', M+3, y+5);
-  y += 8;
-
-  let recNum = 0;
-  noItems.forEach(r => {
-    if (y > 262) { doc.addPage(); y = 15; }
-    recNum++;
-    doc.setFillColor(255,248,225);
-    const lines = doc.splitTextToSize(`${recNum}. [${r.sec}] ${r.item}${r.obs?' — '+r.obs:''}`, W-M*2-8);
-    const h = lines.length * 4.5 + 4;
-    doc.rect(M, y, W-M*2, h, 'F');
-    doc.setFillColor(245,127,23);
-    doc.rect(M, y, 2, h, 'F');
-    setFont('normal', 7.5, negro);
-    doc.text(lines, M+5, y+4);
-    y += h + 2;
-  });
-  recLibres.filter(Boolean).forEach(r => {
-    if (y > 262) { doc.addPage(); y = 15; }
-    recNum++;
-    doc.setFillColor(255,248,225);
-    const lines = doc.splitTextToSize(`${recNum}. ${r}`, W-M*2-8);
-    const h = lines.length * 4.5 + 4;
-    doc.rect(M, y, W-M*2, h, 'F');
-    doc.setFillColor(245,127,23);
-    doc.rect(M, y, 2, h, 'F');
-    setFont('normal', 7.5, negro);
-    doc.text(lines, M+5, y+4);
-    y += h + 2;
-  });
-  if (recNum === 0) {
-    doc.setFillColor(232,245,233);
-    doc.rect(M, y, W-M*2, 8, 'F');
-    setFont('normal', 8, verde);
-    doc.text('Sin incumplimientos detectados en esta visita.', M+5, y+5.5);
-    y += 10;
-  }
-  y += 6;
-
-  // ── FIRMAS ──
-  if (y > 230) { doc.addPage(); y = 15; }
-  const fw = (W-M*2-10)/2;
-  // Box firma 1
-  doc.setDrawColor(...azul); doc.setLineWidth(0.3);
-  doc.rect(M, y, fw, 30);
-  setFont('normal', 7, gris);
-  doc.text('Firma del Técnico de Higiene y Seguridad', M+fw/2, y+26, {align:'center'});
-  doc.text(tecnico !== '—' ? tecnico : '', M+fw/2, y+29, {align:'center'});
-  if (firma1Data) { try { doc.addImage(firma1Data,'PNG',M+2,y+2,fw-4,20); } catch(e){} }
-
-  // Box firma 2
-  doc.rect(M+fw+10, y, fw, 30);
-  doc.text('Firma del Responsable de Obra', M+fw+10+fw/2, y+26, {align:'center'});
-  doc.text(respObra !== '—' ? respObra : '', M+fw+10+fw/2, y+29, {align:'center'});
-  if (firma2Data) { try { doc.addImage(firma2Data,'PNG',M+fw+12,y+2,fw-4,20); } catch(e){} }
-  y += 36;
-
-  // ── PIE ──
-  setFont('normal', 7, gris);
-  doc.text('Las recomendaciones deben ser cumplimentadas en forma inmediata · S&E Consultores · syeconsultores.com.ar', W/2, y+4, {align:'center'});
-
-  // Guardar
-  const nombreArchivo = `Visita_Obra_${(document.getElementById('empresa').value||'obra').replace(/\s+/g,'_')}_${fecha||'sin_fecha'}.pdf`;
-  doc.save(nombreArchivo);
+  saveClientes(clientes);
+  viewHistory = ['lista'];
+  document.getElementById('topbar-title').textContent = 'Mis clientes';
+  renderLista();
+  showView('lista');
 }
 
-// ═══════════════════════════════════════════════════════
-// NAVEGACIÓN
-// ═══════════════════════════════════════════════════════
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-
-// ═══ GUARDAR EN GESTIÓN ═══
-const API_GESTION = 'https://script.google.com/macros/s/AKfycbwzEPMlIbNxymr2iqwHBcOjqg9s8dh1OqttmCNeG40aViGFkSke76x55zuKvOs6mpnL5w/exec';
-
-function guardarEnGestion() {
-  const btn = document.getElementById('btnGestion');
-  const status = document.getElementById('gestionStatus');
-  const empresa = document.getElementById('empresa').value.trim();
-  const fecha = document.getElementById('fecha').value;
-
-  if (!empresa || !fecha) {
-    status.style.display = 'block';
-    status.style.background = '#FDEDEC';
-    status.style.borderColor = '#F5C6CB';
-    status.style.color = '#C0392B';
-    status.textContent = 'Completá empresa y fecha antes de guardar.';
-    return;
-  }
-
-  // Armar resumen de checklists
-  const resumen = {};
-  selectedTipos.forEach(function(tid) {
-    const tipo = TIPOS.find(function(t){ return t.id === tid; });
-    if (!tipo) return;
-    const cumple = [], noCumple = [];
-    (tipo.checks || []).forEach(function(chk) {
-      const st = checkState[tid] && checkState[tid][chk.id];
-      if (!st) return;
-      if (st.estado === 'cumple') cumple.push(chk.label);
-      if (st.estado === 'nocumple') noCumple.push({item: chk.label, obs: st.obs || ''});
-    });
-    resumen[tipo.label] = {cumple: cumple, noCumple: noCumple};
-  });
-
-  const payload = {
-    accion: 'guardarRelevamiento',
-    datos: {
-      tipo: 'Visita a obra',
-      fecha: fecha,
-      cliente: empresa,
-      idCliente: '',
-      tecnico: document.getElementById('tecnico').value.trim(),
-      matricula: document.getElementById('matricula').value.trim(),
-      horaInicio: document.getElementById('hora_ini').value,
-      horaFin: document.getElementById('hora_fin').value,
-      direccion: document.getElementById('domicilio').value.trim(),
-      trabajadores: document.getElementById('n_trabajadores').value,
-      responsableObra: document.getElementById('resp_obra').value.trim(),
-      observaciones: document.getElementById('obs_grales').value.trim(),
-      datos: resumen
-    }
-  };
-
-  btn.textContent = 'Guardando…';
-  btn.disabled = true;
-  status.style.display = 'none';
-
-  fetch(API_GESTION, {
-    method: 'POST',
-    headers: {'Content-Type': 'text/plain;charset=utf-8'},
-    body: JSON.stringify(payload)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    btn.disabled = false;
-    if (res.ok) {
-      btn.textContent = '✅ Guardado en Gestión';
-      btn.style.background = '#1E7A44';
-      status.style.display = 'block';
-      status.style.background = '#E8F5E9';
-      status.style.borderColor = '#C8E6C9';
-      status.style.color = '#1E7A44';
-      status.textContent = 'Guardado correctamente. N° ' + res.nroInforme + ' · También registrado en Visitas.';
-    } else {
-      btn.textContent = '☁️ Guardar en Gestión';
-      status.style.display = 'block';
-      status.style.background = '#FDEDEC';
-      status.style.borderColor = '#F5C6CB';
-      status.style.color = '#C0392B';
-      status.textContent = 'Error: ' + (res.error || 'No se pudo guardar.');
-    }
-  })
-  .catch(function(){
-    btn.disabled = false;
-    btn.textContent = '☁️ Guardar en Gestión';
-    status.style.display = 'block';
-    status.style.background = '#FDEDEC';
-    status.style.borderColor = '#F5C6CB';
-    status.style.color = '#C0392B';
-    status.textContent = 'Sin conexion. Verificá internet e intentá de nuevo.';
-  });
-}
-
-function nuevaVisita() {
-  if (!confirm('¿Iniciás una nueva visita? Se perderán todos los datos actuales.')) return;
-  document.querySelectorAll('input[type=text],input[type=date],input[type=number],input[type=time],textarea').forEach(el=>el.value='');
-  document.getElementById('es_caba').checked = false;
-  selectedTipos = ['general'];
-  checkState = {};
-  firma1Confirmed = false; firma2Confirmed = false;
-  firma1Data = null; firma2Data = null;
-  recLibres = [];
-  clearFirma(1); clearFirma(2);
-  buildTipoGrid();
-  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-  showScreen('s1');
-}
-
-init();
+// ══ INIT ══════════════════════════════════════════════
+renderLista();
 </script>
 </body>
 </html>
