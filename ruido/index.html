@@ -800,7 +800,7 @@ function guardarEnGestion() {
   });
 }
 
-
+function nuevaMedicion() {
   if (!confirm('¿Iniciás una nueva medición? Se perderán todos los datos actuales.')) return;
   puestos = [];
   document.querySelectorAll('input,textarea').forEach(el => el.value = '');
