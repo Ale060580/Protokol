@@ -569,7 +569,7 @@ function ir(k, v) {
 // ══════════════════════════════════════════════════
 // COPIAR INFORME
 // ══════════════════════════════════════════════════
-function copiarInforme() {
+function generarTextoInforme() {
   const fechaIni = document.getElementById('fecha_ini').value;
   const fechaFin = document.getElementById('fecha_fin').value;
   const dateIni  = fechaIni ? new Date(fechaIni+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
@@ -694,6 +694,11 @@ function copiarInforme() {
   txt += '· Validez del protocolo: 12 meses desde la fecha de medición\n';
   txt += '\nGenerado con App Medición de Ruido Laboral — Res. SRT 85/12';
 
+  return txt;
+}
+
+function copiarInforme() {
+  const txt = generarTextoInforme();
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
   } else { fallbackCopy(txt); }
@@ -732,17 +737,8 @@ function guardarEnGestion() {
     return;
   }
 
-  // Armar resumen de puestos y resultados
-  const resumenPuestos = puestos.map(function(p) {
-    return {
-      puesto: p.nombre,
-      nTrabajadores: p.nTrab,
-      leq: p.leq,
-      horasExp: p.horasExp,
-      dosis: p.dosis,
-      resultado: p.resultado
-    };
-  });
+  // Usar el texto completo del informe
+  const textoInforme = generarTextoInforme();
 
   const payload = {
     accion: 'guardarRelevamiento',
@@ -753,13 +749,9 @@ function guardarEnGestion() {
       idCliente: '',
       tecnico: document.getElementById('profesional').value.trim(),
       matricula: document.getElementById('matricula').value.trim(),
-      direccion: '',
-      observaciones: document.getElementById('cond_normales').value.trim(),
-      datos: {
-        puestos: resumenPuestos,
-        condNormales: document.getElementById('cond_normales').value.trim(),
-        condMedicion: document.getElementById('cond_medicion').value.trim()
-      }
+      direccion: document.getElementById('direccion') ? document.getElementById('direccion').value.trim() : '',
+      observaciones: document.getElementById('cond_normales') ? document.getElementById('cond_normales').value.trim() : '',
+      datos: { informe: textoInforme }
     }
   };
 
