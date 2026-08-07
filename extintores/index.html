@@ -95,7 +95,9 @@ textarea{min-height:56px;resize:none}
   </div>
   <div id="informe-body"></div>
   <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF</button>
-  <button style="width:100%;padding:13px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevoControl()">🔄 Nuevo control</button>
+  <button style="width:100%;padding:13px;background:#B03030;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px"   <button id="btnGestion" onclick="guardarEnGestion()" style="width:100%;padding:14px;background:#0D1117;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">&#x2601;&#xFE0F; Guardar en Gestión</button>
+  <div id="gestionStatus" style="display:none;border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;text-align:center"></div>
+  onclick="nuevoControl()">🔄 Nuevo control</button>
 </div>
 
 <script>
@@ -333,6 +335,116 @@ function generarPDF(){
   }
 }
 
+
+// ═══ GUARDAR EN GESTIÓN ═══
+const API_GESTION = 'https://script.google.com/macros/s/AKfycbwzEPMlIbNxymr2iqwHBcOjqg9s8dh1OqttmCNeG40aViGFkSke76x55zuKvOs6mpnL5w/exec';
+
+function guardarEnGestion() {
+  const btn = document.getElementById('btnGestion');
+  const status = document.getElementById('gestionStatus');
+  const empresa = document.getElementById('empresa').value.trim();
+  const fecha = document.getElementById('fecha').value;
+  const tecnico = document.getElementById('responsable') ? document.getElementById('responsable').value.trim() : '';
+  const matricula = '';
+
+  if (!empresa || !fecha) {
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.color = '#C0392B';
+    status.textContent = 'Completá empresa y fecha antes de guardar.';
+    return;
+  }
+
+  const textoInforme = generarTextoInforme();
+  const payload = {
+    accion: 'guardarRelevamiento',
+    datos: {
+      tipo: 'Control de extintores',
+      fecha: fecha,
+      cliente: empresa,
+      idCliente: '',
+      tecnico: document.getElementById('responsable').value.trim(),
+      matricula: '',
+      direccion: '',
+      observaciones: '',
+      datos: { informe: textoInforme }
+    }
+  };
+
+  btn.textContent = 'Guardando…';
+  btn.disabled = true;
+  status.style.display = 'none';
+
+  fetch(API_GESTION, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    btn.disabled = false;
+    if (res.ok) {
+      btn.textContent = '✅ Guardado en Gestión';
+      btn.style.background = '#1E7A44';
+      status.style.display = 'block';
+      status.style.background = '#E8F5E9';
+      status.style.color = '#1E7A44';
+      status.textContent = 'Guardado correctamente. N° ' + res.nroInforme;
+    } else {
+      btn.textContent = '☁️ Guardar en Gestión';
+      status.style.display = 'block';
+      status.style.background = '#FDEDEC';
+      status.style.color = '#C0392B';
+      status.textContent = 'Error: ' + (res.error || 'No se pudo guardar.');
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '☁️ Guardar en Gestión';
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.color = '#C0392B';
+    status.textContent = 'Sin conexion. Verificá internet e intentá de nuevo.';
+  });
+}
+
+
+function generarTextoInforme() {
+  const SEP = '='.repeat(60);
+  const sep = '-'.repeat(42);
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  let txt = 'CONTROL DE EXTINTORES — INSPECCIÓN PERIÓDICA\n';
+  txt += 'Dec. 351/79 Art. 90 · S&E Consultores\n';
+  txt += SEP + '\n';
+  txt += 'Empresa: ' + (document.getElementById('empresa').value||'—') + '\n';
+  txt += 'Sector: ' + (document.getElementById('sector').value||'—') + '\n';
+  txt += 'Fecha: ' + dateStr + '\n';
+  txt += 'Responsable: ' + (document.getElementById('responsable').value||'—') + '\n';
+  txt += '\n' + SEP + '\nEXTINTORES INSPECCIONADOS\n' + SEP + '\n';
+  const hoy = new Date();
+  extintores.forEach((e, i) => {
+    txt += '\nEXTINTOR ' + (i+1) + ': ' + (e.id||'Sin ID') + '\n' + sep + '\n';
+    txt += 'Tipo: ' + (e.tipo||'—') + '  |  Capacidad: ' + (e.capacidad||'—') + '\n';
+    const vcarga = e.vcarga ? new Date(e.vcarga+'T12:00:00') : null;
+    const vret = e.vretimbrado ? new Date(e.vretimbrado+'T12:00:00') : null;
+    txt += 'Venc. carga: ' + (vcarga ? vcarga.toLocaleDateString('es-AR') + (vcarga>=hoy?' (Vigente)':' (VENCIDA)') : '—') + '\n';
+    txt += 'Venc. retimbrado: ' + (vret ? vret.toLocaleDateString('es-AR') + (vret>=hoy?' (Vigente)':' (VENCIDO)') : '—') + '\n';
+    txt += 'Presion manometro: ' + (e.presion||'—') + '\n';
+    txt += 'Estado fisico: ' + (e.estadoFisico==='si'?'Bueno':e.estadoFisico==='no'?'Con daños':'—') + '\n';
+    txt += 'Señalizacion: ' + (e.senalizacion==='si'?'OK':e.senalizacion==='no'?'No':e.senalizacion==='na'?'N/A':'—') + '\n';
+    txt += 'Acceso libre: ' + (e.accesoLibre==='si'?'Si':e.accesoLibre==='no'?'Obstruido':'—') + '\n';
+    txt += 'RESULTADO: ' + (e._cumple==='ok'?'CUMPLE':e._cumple==='fail'?'NO CUMPLE':'Sin evaluar') + '\n';
+    if (e.obs) txt += 'Observaciones: ' + e.obs + '\n';
+  });
+  const cumple = extintores.filter(e=>e._cumple==='ok').length;
+  const noCumple = extintores.filter(e=>e._cumple==='fail').length;
+  txt += '\n' + SEP + '\nRESUMEN\n' + SEP + '\n';
+  txt += 'Total inspeccionados: ' + extintores.length + '\n';
+  txt += 'Cumplen: ' + cumple + '  |  No cumplen: ' + noCumple + '\n';
+  txt += '\nGenerado con App PROTOKOL - By S&E Consultores';
+  return txt;
+}
 function nuevoControl(){
   if(!confirm('¿Nuevo control? Se perderán los datos actuales.'))return;
   extintores=[];
