@@ -245,7 +245,9 @@ textarea{min-height:56px;resize:none}
   <div id="informe-body"></div>
   <div class="nota">Datos para volcar al Formulario oficial Res. SRT 900/15. Validez del protocolo: 12 meses.</div>
   <button class="btn-copy" onclick="copiarInforme()">📋 Copiar datos para protocolo</button>
-  <button class="btn-danger" onclick="nuevaMedicion()">🔄 Nueva medición</button>
+  <button class="btn-danger"   <button id="btnGestion" onclick="guardarEnGestion()" style="width:100%;padding:14px;background:#0D1117;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">&#x2601;&#xFE0F; Guardar en Gestión</button>
+  <div id="gestionStatus" style="display:none;border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;text-align:center"></div>
+  onclick="nuevaMedicion()">🔄 Nueva medición</button>
 </div>
 
 <script>
@@ -762,7 +764,7 @@ function ir(k,v) {
 // ════════════════════════════════════════════════
 // COPIAR
 // ════════════════════════════════════════════════
-function copiarInforme() {
+function generarTextoInforme() {
   const fecha = document.getElementById('fecha').value;
   const dateStr = fecha?new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}):'—';
   const ect = document.getElementById('ect').value;
@@ -893,9 +895,15 @@ function copiarInforme() {
   txt += '· Validez del protocolo: 12 meses (Art. 2°, Res. SRT 900/15)\n';
   txt += '\nGenerado con App PROTOKOL - By S&E Consultores · syeconsultores.com.ar';
 
+  return txt;
+}
+
+function copiarInforme() {
+  const txt = generarTextoInforme();
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(txt).then(() => showCopied()).catch(() => fallbackCopy(txt));
   } else { fallbackCopy(txt); }
+}
 }
 
 function fallbackCopy(txt) {
@@ -912,6 +920,79 @@ function showCopied() {
   const orig = btn.textContent;
   btn.textContent = '✅ ¡Copiado!';
   setTimeout(() => btn.textContent = orig, 2500);
+}
+
+
+// ═══ GUARDAR EN GESTIÓN ═══
+const API_GESTION = 'https://script.google.com/macros/s/AKfycbwzEPMlIbNxymr2iqwHBcOjqg9s8dh1OqttmCNeG40aViGFkSke76x55zuKvOs6mpnL5w/exec';
+
+function guardarEnGestion() {
+  const btn = document.getElementById('btnGestion');
+  const status = document.getElementById('gestionStatus');
+  const empresa = document.getElementById('empresa').value.trim();
+  const fecha = document.getElementById('fecha').value;
+  const tecnico = document.getElementById('profesional') ? document.getElementById('profesional').value.trim() : '';
+  const matricula = '';
+
+  if (!empresa || !fecha) {
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.color = '#C0392B';
+    status.textContent = 'Completá empresa y fecha antes de guardar.';
+    return;
+  }
+
+  const textoInforme = generarTextoInforme();
+  const payload = {
+    accion: 'guardarRelevamiento',
+    datos: {
+      tipo: 'Puesta a tierra',
+      fecha: fecha,
+      cliente: empresa,
+      idCliente: '',
+      tecnico: document.getElementById('profesional').value.trim(),
+      matricula: '',
+      direccion: '',
+      observaciones: '',
+      datos: { informe: textoInforme }
+    }
+  };
+
+  btn.textContent = 'Guardando…';
+  btn.disabled = true;
+  status.style.display = 'none';
+
+  fetch(API_GESTION, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    btn.disabled = false;
+    if (res.ok) {
+      btn.textContent = '✅ Guardado en Gestión';
+      btn.style.background = '#1E7A44';
+      status.style.display = 'block';
+      status.style.background = '#E8F5E9';
+      status.style.color = '#1E7A44';
+      status.textContent = 'Guardado correctamente. N° ' + res.nroInforme;
+    } else {
+      btn.textContent = '☁️ Guardar en Gestión';
+      status.style.display = 'block';
+      status.style.background = '#FDEDEC';
+      status.style.color = '#C0392B';
+      status.textContent = 'Error: ' + (res.error || 'No se pudo guardar.');
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '☁️ Guardar en Gestión';
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.color = '#C0392B';
+    status.textContent = 'Sin conexion. Verificá internet e intentá de nuevo.';
+  });
 }
 
 function nuevaMedicion() {
