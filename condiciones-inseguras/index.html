@@ -106,7 +106,9 @@ textarea{min-height:70px;resize:none}
   </div>
   <div id="informe-body"></div>
   <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF con fotos</button>
-  <button style="width:100%;padding:13px;background:#E65100;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px" onclick="nuevoRelevamiento()">🔄 Nuevo relevamiento</button>
+  <button style="width:100%;padding:13px;background:#E65100;color:#fff;border:none;border-radius:13px;font-size:15px;cursor:pointer;margin-top:8px"   <button id="btnGestion" onclick="guardarEnGestion()" style="width:100%;padding:14px;background:#0D1117;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">&#x2601;&#xFE0F; Guardar en Gestión</button>
+  <div id="gestionStatus" style="display:none;border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;text-align:center"></div>
+  onclick="nuevoRelevamiento()">🔄 Nuevo relevamiento</button>
 </div>
 
 <script>
@@ -354,6 +356,110 @@ function generarPDF(){
   }
 }
 
+
+// ═══ GUARDAR EN GESTIÓN ═══
+const API_GESTION = 'https://script.google.com/macros/s/AKfycbwzEPMlIbNxymr2iqwHBcOjqg9s8dh1OqttmCNeG40aViGFkSke76x55zuKvOs6mpnL5w/exec';
+
+function guardarEnGestion() {
+  const btn = document.getElementById('btnGestion');
+  const status = document.getElementById('gestionStatus');
+  const empresa = document.getElementById('empresa').value.trim();
+  const fecha = document.getElementById('fecha').value;
+  const tecnico = '';
+  const matricula = '';
+
+  if (!empresa || !fecha) {
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.color = '#C0392B';
+    status.textContent = 'Completá empresa y fecha antes de guardar.';
+    return;
+  }
+
+  const textoInforme = generarTextoInforme();
+  const payload = {
+    accion: 'guardarRelevamiento',
+    datos: {
+      tipo: 'Condiciones inseguras',
+      fecha: fecha,
+      cliente: empresa,
+      idCliente: '',
+      tecnico: '',
+      matricula: '',
+      direccion: '',
+      observaciones: '',
+      datos: { informe: textoInforme }
+    }
+  };
+
+  btn.textContent = 'Guardando…';
+  btn.disabled = true;
+  status.style.display = 'none';
+
+  fetch(API_GESTION, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    btn.disabled = false;
+    if (res.ok) {
+      btn.textContent = '✅ Guardado en Gestión';
+      btn.style.background = '#1E7A44';
+      status.style.display = 'block';
+      status.style.background = '#E8F5E9';
+      status.style.color = '#1E7A44';
+      status.textContent = 'Guardado correctamente. N° ' + res.nroInforme;
+    } else {
+      btn.textContent = '☁️ Guardar en Gestión';
+      status.style.display = 'block';
+      status.style.background = '#FDEDEC';
+      status.style.color = '#C0392B';
+      status.textContent = 'Error: ' + (res.error || 'No se pudo guardar.');
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '☁️ Guardar en Gestión';
+    status.style.display = 'block';
+    status.style.background = '#FDEDEC';
+    status.style.color = '#C0392B';
+    status.textContent = 'Sin conexion. Verificá internet e intentá de nuevo.';
+  });
+}
+
+
+function generarTextoInforme() {
+  const SEP = '='.repeat(60);
+  const sep = '-'.repeat(42);
+  const fecha = document.getElementById('fecha').value;
+  const dateStr = fecha ? new Date(fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  let txt = 'REPORTE DE CONDICIONES INSEGURAS\n';
+  txt += 'Relevamiento y plan de accion — S&E Consultores\n';
+  txt += SEP + '\n';
+  txt += 'Empresa: ' + (document.getElementById('empresa').value||'—') + '\n';
+  txt += 'Fecha: ' + dateStr + '\n';
+  txt += '\n' + SEP + '\nCONDICIONES DETECTADAS\n' + SEP + '\n';
+  condiciones.forEach((c, i) => {
+    txt += '\nCONDICION ' + (i+1) + ' — ' + (c.criticidad||'').toUpperCase() + '\n' + sep + '\n';
+    txt += 'Descripcion: ' + (c.descripcion||'—') + '\n';
+    txt += 'Sector: ' + (c.sector||'—') + '\n';
+    txt += 'Tipo de riesgo: ' + (c.tipo||'—') + '\n';
+    txt += 'Criticidad: ' + (c.criticidad||'—') + '\n';
+    txt += 'Responsable correccion: ' + (c.responsable||'—') + '\n';
+    if (c.fechaLimite) txt += 'Fecha limite: ' + new Date(c.fechaLimite+'T12:00:00').toLocaleDateString('es-AR') + '\n';
+    if (c.obs) txt += 'Observaciones: ' + c.obs + '\n';
+  });
+  const inm = condiciones.filter(c=>c.criticidad==='inmediata').length;
+  const mod = condiciones.filter(c=>c.criticidad==='moderada').length;
+  const baj = condiciones.filter(c=>c.criticidad==='baja').length;
+  txt += '\n' + SEP + '\nRESUMEN\n' + SEP + '\n';
+  txt += 'Total condiciones: ' + condiciones.length + '\n';
+  txt += 'Inmediata: ' + inm + '  |  Moderada: ' + mod + '  |  Baja: ' + baj + '\n';
+  txt += '\nGenerado con App PROTOKOL - By S&E Consultores';
+  return txt;
+}
 function nuevoRelevamiento(){
   if(!confirm('¿Nuevo relevamiento? Se perderán los datos actuales.'))return;
   condiciones=[];
